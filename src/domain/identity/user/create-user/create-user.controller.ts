@@ -3,7 +3,7 @@ import {
   ConflictException,
   InternalServerErrorException,
 } from '@nestjs/common';
-import { IController } from 'src/common/interfaces/IController';
+import { IController } from 'src/core/interfaces/IController';
 import { ZodValidationPipe } from 'src/shared/pipes/zod-validation.pipe';
 import { z } from 'zod';
 import { CreateUserService } from './create-user.service';

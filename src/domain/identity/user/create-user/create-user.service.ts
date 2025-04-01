@@ -1,5 +1,5 @@
 import { Injectable } from '@nestjs/common';
-import { IService } from 'src/common/interfaces/IService';
+import { IService } from 'src/core/interfaces/IService';
 import { PrismaService } from 'src/shared/prisma/prisma.service';
 
 interface Input {
