@@ -2,7 +2,7 @@ import { Module } from '@nestjs/common';
 import { ConfigModule } from '@nestjs/config';
 import { AppController } from './app.controller';
 import { AppService } from './app.service';
-import { UserModule } from './domain/user/user.module';
+import { UserModule } from './domain/identity/user/user.module';
 import { envSchema } from './shared/env/env';
 
 @Module({
