@@ -3,30 +3,64 @@ generator client {
 }
 
 datasource db {
-  provider = "postgresql"
-  url      = env("DATABASE_URL")
+  provider  = "postgresql"
+  url       = env("DATABASE_URL")
+  directUrl = env("DIRECT_URL")
 }
 
-model User {
-  id        String    @id @default(uuid())
-  name      String
-  email     String    @unique
-  createdAt DateTime  @default(now()) @map("created_at")
-  updatedAt DateTime  @updatedAt @map("updated_at")
-  products  Product[]
-
-  @@map("users")
+// Enum para os papéis do usuário
+enum Role {
+USER
+ARTISAN
+MODERATOR
+ADMIN
 }
 
-model Product {
-  id          String   @id @default(uuid())
-  name        String
-  description String?
-  price       Float
-  createdAt   DateTime @default(now()) @map("created_at")
-  updatedAt   DateTime @updatedAt @map("updated_at")
-  userId      String   @map("user_id")
-  user        User     @relation(fields: [userId], references: [id])
+model users {
+id String @id @default(uuid())
+name String
+social_name String?
+email String @unique
+cpf String @unique
+dt_nascimento DateTime
+password String
+address String?
+phone String?
+avatar String?
+role Role
+created_at DateTime @default(now())
+updated_at DateTime @updatedAt
+forgot_password String?
+is_disable Boolean @default(false)
 
-  @@map("products")
+artisans artisans?
+sessions sessions[]
+}
+
+model artisans {
+id String @id @default(uuid())
+fk_user_id String @unique
+materia_prima String
+technique String
+finality_classification String
+sicab String
+sisab_cadastration_date DateTime
+sisab_valid_until DateTime
+created_at DateTime @default(now())
+updated_at DateTime @updatedAt
+pending_request Boolean @default(false)
+is_disable Boolean @default(false)
+
+user users @relation(fields: [fk_user_id], references: [id])
+}
+
+model sessions {
+id String @id @default(uuid())
+fk_user_id String
+started_at DateTime @default(now())
+ended_at DateTime?
+ip_host String
+device String
+
+user users @relation(fields: [fk_user_id], references: [id])
 }
