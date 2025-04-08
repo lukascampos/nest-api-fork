@@ -3,30 +3,76 @@ generator client {
 }
 
 datasource db {
-  provider = "postgresql"
-  url      = env("DATABASE_URL")
+  provider  = "postgresql"
+  url       = env("DATABASE_URL")
+  directUrl = env("DIRECT_URL")
+}
+
+// Enum para os papéis do usuário
+enum Role {
+  USER
+  ARTISAN
+  MODERATOR
+  ADMIN
 }
 
 model User {
-  id        String    @id @default(uuid())
-  name      String
-  email     String    @unique
-  createdAt DateTime  @default(now()) @map("created_at")
-  updatedAt DateTime  @updatedAt @map("updated_at")
-  products  Product[]
+  id String @id @default(uuid())
+  email String @unique
+  password String
+  created_at DateTime @default(now())
+  updated_at DateTime @updatedAt
+  role Role
+  is_disable Boolean @default(false)
 
+  artisans Artisan_Profile?
+  sessions Sessions[]
+  user_profile User_Profile?
   @@map("users")
 }
 
-model Product {
-  id          String   @id @default(uuid())
-  name        String
-  description String?
-  price       Float
-  createdAt   DateTime @default(now()) @map("created_at")
-  updatedAt   DateTime @updatedAt @map("updated_at")
-  userId      String   @map("user_id")
-  user        User     @relation(fields: [userId], references: [id])
+model User_Profile {
+  id String @id @default(uuid())
+  fk_user_id String @unique 
+  name String
+  social_name String?
+  cpf String @unique
+  dt_birth DateTime
+  street String?
+  postal_code String?
+  city String?
+  number String?
+  phone String?
+  avatar String?
 
-  @@map("products")
+  user User @relation(fields: [fk_user_id], references: [id])
+  @@map("users_profile")
+}
+
+model Artisan_Profile {
+  id String @id @default(uuid())
+  fk_user_id String @unique
+  raw_material String
+  technique String
+  finality_classification String
+  sicab String
+  sisab_cadastration_date DateTime
+  sisab_valid_until DateTime
+  pending_request Boolean @default(false)
+  is_disable Boolean @default(false)
+
+  user User @relation(fields: [fk_user_id], references: [id])
+  @@map("artisans_profile")
+}
+
+model Sessions {
+  id String @id @default(uuid())
+  fk_user_id String
+  started_at DateTime @default(now())
+  ended_at DateTime?
+  ip_host String
+  device String
+
+  user User @relation(fields: [fk_user_id], references: [id])
+  @@map("sessions")
 }
