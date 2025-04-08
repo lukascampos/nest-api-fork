@@ -16,45 +16,56 @@ enum Role {
   ADMIN
 }
 
-model users {
+model User {
   id String @id @default(uuid())
-  name String
-  social_name String?
   email String @unique
-  cpf String @unique
-  dt_nascimento DateTime
   password String
-  address String?
-  phone String?
-  avatar String?
-  role Role
   created_at DateTime @default(now())
   updated_at DateTime @updatedAt
-  forgot_password String?
+  role Role
   is_disable Boolean @default(false)
 
-  artisans artisans?
-  sessions sessions[]
+  artisans Artisan_Profile?
+  sessions Sessions[]
+  user_profile User_Profile?
+  @@map("users")
 }
 
-model artisans {
+model User_Profile {
+  id String @id @default(uuid())
+  fk_user_id String @unique 
+  name String
+  social_name String?
+  cpf String @unique
+  dt_birth DateTime
+  street String?
+  postal_code String?
+  city String?
+  number String?
+  phone String?
+  avatar String?
+
+  user User @relation(fields: [fk_user_id], references: [id])
+  @@map("users_profile")
+}
+
+model Artisan_Profile {
   id String @id @default(uuid())
   fk_user_id String @unique
-  materia_prima String
+  raw_material String
   technique String
   finality_classification String
   sicab String
   sisab_cadastration_date DateTime
   sisab_valid_until DateTime
-  created_at DateTime @default(now())
-  updated_at DateTime @updatedAt
   pending_request Boolean @default(false)
   is_disable Boolean @default(false)
 
-  user users @relation(fields: [fk_user_id], references: [id])
+  user User @relation(fields: [fk_user_id], references: [id])
+  @@map("artisans_profile")
 }
 
-model sessions {
+model Sessions {
   id String @id @default(uuid())
   fk_user_id String
   started_at DateTime @default(now())
@@ -62,5 +73,6 @@ model sessions {
   ip_host String
   device String
 
-  user users @relation(fields: [fk_user_id], references: [id])
+  user User @relation(fields: [fk_user_id], references: [id])
+  @@map("sessions")
 }
