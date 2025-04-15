@@ -10,7 +10,7 @@ export class TestService {
     return 'Você é administrador!';
   }
 
-  getArtsan(): string {
+  getArtisan(): string {
     return 'Você é um artesãos!';
   }
 

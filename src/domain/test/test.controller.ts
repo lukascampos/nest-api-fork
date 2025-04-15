@@ -22,8 +22,8 @@ export class TestController {
 
     @Get("artisan")
     @Roles(Role.ARTISAN, Role.ADMIN)
-    getArtsan(): string {
-        return this.testService.getArtsan();
+    getArtisan(): string {
+        return this.testService.getArtisan();
     }
 
     @Get("misto")
