@@ -45,7 +45,7 @@ export class CreateUserService {
       },
     });
 
-    const userProfileAlreadyExists = await this.prisma.user_Profile.findFirst({
+    const userProfileAlreadyExists = await this.prisma.userProfile.findFirst({
       where: {
         cpf,
       },
@@ -55,14 +55,14 @@ export class CreateUserService {
       throw new BadRequestException('User CPF already exists.');
     }
 
-    await this.prisma.user_Profile.create({
+    await this.prisma.userProfile.create({
       data: {
         cpf,
-        dt_birth: new Date(dtBirth),
+        birthDate: new Date(dtBirth),
         name,
-        social_name: socialName || null,
+        socialName: socialName || null,
         phone,
-        fk_user_id: user.id,
+        userId: user.id,
       },
     });
   }

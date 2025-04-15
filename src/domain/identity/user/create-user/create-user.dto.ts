@@ -33,7 +33,7 @@ export class CreateUserDto {
     password: string;
 
   @IsNotEmpty()
-    dtBirth: string;
+    birthDate: string;
 
   @IsNotEmpty()
   @IsString()
