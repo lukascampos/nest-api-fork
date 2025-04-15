@@ -12,11 +12,11 @@ export class CreateUserController {
   @Post()
   handle(@Body() body: CreateUserDto) {
     const {
-      password, email, cpf, dtBirth, name, phone, socialName,
+      password, email, cpf, birthDate, name, phone, socialName,
     } = body;
 
     return this.createUser.execute({
-      password, email, cpf, dtBirth, name, phone, socialName,
+      password, email, cpf, birthDate, name, phone, socialName,
     });
   }
 }
