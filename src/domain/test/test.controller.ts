@@ -26,9 +26,9 @@ export class TestController {
         return this.testService.getArtisan();
     }
 
-    @Get("misto")
-    @Roles(Role.ARTISAN, Role.USER)
-    getMisto(): string {
+    @Get("mix")
+    @Roles(Role.ARTISAN)
+    getMix(): string {
         return this.testService.getMisto();
     }
 
