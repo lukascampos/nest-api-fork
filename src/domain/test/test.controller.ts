@@ -1,35 +1,36 @@
-import { Controller, Get, UseGuards, Req} from "@nestjs/common";
-import { TestService }  from "./test.service";
-import { RolesGuard } from "@/shared/roles/roles.guard";
-import { Roles } from "@/shared/roles/roles.decorator";
-import { Role } from "@prisma/client";
+import {
+  Controller, Get, UseGuards,
+} from '@nestjs/common';
+import { Role } from '@prisma/client';
+import { TestService } from './test.service';
+import { RolesGuard } from '@/shared/roles/roles.guard';
+import { Roles } from '@/shared/roles/roles.decorator';
 
-@Controller("test")
+@Controller('test')
 @UseGuards(RolesGuard)
 export class TestController {
-    constructor(private readonly testService: TestService) {}
+  constructor(private readonly testService: TestService) {}
 
     @Get()
-    getLivre(): string {
-        return this.testService.getLivre();
-    }
+  getLivre(): string {
+    return this.testService.getLivre();
+  }
 
-    @Get("admin")
+    @Get('admin')
     @Roles(Role.ADMIN)
     getAdmin(): string {
-        return this.testService.getAdmin();
+      return this.testService.getAdmin();
     }
 
-    @Get("artisan")
+    @Get('artisan')
     @Roles(Role.ARTISAN, Role.ADMIN)
     getArtisan(): string {
-        return this.testService.getArtisan();
+      return this.testService.getArtisan();
     }
 
-    @Get("mix")
+    @Get('mix')
     @Roles(Role.ARTISAN)
     getMix(): string {
-        return this.testService.getMisto();
+      return this.testService.getMisto();
     }
-
 }

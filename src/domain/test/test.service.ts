@@ -1,4 +1,4 @@
-import  { Injectable } from '@nestjs/common';
+import { Injectable } from '@nestjs/common';
 
 @Injectable()
 export class TestService {
@@ -16,6 +16,5 @@ export class TestService {
 
   getMisto(): string {
     return 'Você é um usuario ou Artesão!';
-
   }
 }
