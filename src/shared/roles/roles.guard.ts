@@ -15,10 +15,10 @@ export class RolesGuard implements CanActivate {
   canActivate(context: ExecutionContext): boolean {
     const request = context.switchToHttp().getRequest();
 
-    //extrai diretamente o parâmetro da query
+    // extrai diretamente o parâmetro da query
     const roleFromQuery = request.query.role as string;
 
-    //Simulação de usuário autenticado com role da query (REMOVER QUANDO TIVERMOS O JWT)
+    // Simulação de usuário autenticado com role da query (REMOVER QUANDO TIVERMOS O JWT)
     request.user = {
       id: 'fake-id',
       role: roleFromQuery?.toUpperCase() as Role || Role.USER,
@@ -31,7 +31,7 @@ export class RolesGuard implements CanActivate {
 
     if (!requiredRoles) return true;
 
-    const user = request.user;
+    const { user } = request;
 
     if (!user || !user.role) {
       throw new ForbiddenException('Usuário não autenticado ou sem papel definido');
