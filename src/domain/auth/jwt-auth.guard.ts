@@ -1,10 +1,5 @@
-import { createParamDecorator, ExecutionContext } from '@nestjs/common';
-import { UserPayload } from './jwt.strategy';
+import { Injectable } from '@nestjs/common';
+import { AuthGuard } from '@nestjs/passport';
 
-export const CurrentUser = createParamDecorator(
-  (_: never, context: ExecutionContext) => {
-    const request = context.switchToHttp().getRequest();
-
-    return request.user as UserPayload;
-  },
-);
+@Injectable()
+export class JwtAuthGuard extends AuthGuard('jwt') {}

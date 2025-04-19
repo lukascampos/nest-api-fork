@@ -1,13 +1,15 @@
 import {
-  Controller, Get, UseGuards,
+  Controller, Get, UseGuards, Req,
 } from '@nestjs/common';
 import { Role } from '@prisma/client';
+import { Request } from 'express';
 import { TestService } from './test.service';
 import { RolesGuard } from '@/shared/roles/roles.guard';
 import { Roles } from '@/shared/roles/roles.decorator';
+import { JwtAuthGuard } from '../auth/jwt-auth.guard';
 
 @Controller('test')
-@UseGuards(RolesGuard)
+@UseGuards(JwtAuthGuard, RolesGuard)
 export class TestController {
   constructor(private readonly testService: TestService) {}
 
@@ -24,7 +26,8 @@ export class TestController {
 
     @Get('artisan')
     @Roles(Role.ARTISAN, Role.ADMIN)
-    getArtisan(): string {
+    getArtisan(@Req() req:Request): string {
+      console.log(req);
       return this.testService.getArtisan();
     }
 
