@@ -19,14 +19,12 @@ export class RolesGuard implements CanActivate {
     ]);
 
     const request = context.switchToHttp().getRequest();
+    const { user } = request;
 
-    // extrai diretamente o parâmetro da query
-    const roleFromQuery = request.user?.role;
-    console.log(roleFromQuery); // Verifica o que está sendo passado no request.user
+    console.log('[RolesGuard] Required:', requiredRoles);
+    console.log('[RolesGuard] User:', user);
 
     if (!requiredRoles) return true;
-
-    const { user } = request;
 
     if (!user || !user.role) {
       throw new ForbiddenException('Usuário não autenticado ou sem papel definido');

@@ -7,7 +7,7 @@ export class TestService {
   }
 
   getAdmin(): string {
-    return 'Você é administrador!';
+    return 'Você é um administrador!';
   }
 
   getArtisan(): string {

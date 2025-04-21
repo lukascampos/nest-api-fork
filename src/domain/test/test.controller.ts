@@ -1,39 +1,49 @@
 import {
-  Controller, Get, UseGuards, Req,
+  Controller, Get, UseGuards,
 } from '@nestjs/common';
 import { Role } from '@prisma/client';
-import { Request } from 'express';
 import { TestService } from './test.service';
 import { RolesGuard } from '@/shared/roles/roles.guard';
 import { Roles } from '@/shared/roles/roles.decorator';
 import { JwtAuthGuard } from '../auth/jwt-auth.guard';
+import { CurrentUser } from '../auth/current-user-decorator';
+import { UserPayload } from '../auth/jwt.strategy';
+import { Public } from '../auth/public.decorator';
 
 @Controller('test')
 @UseGuards(JwtAuthGuard, RolesGuard)
 export class TestController {
   constructor(private readonly testService: TestService) {}
 
-    @Get()
+  @Get()
+  @Public()
   getLivre(): string {
     return this.testService.getLivre();
   }
 
-    @Get('admin')
-    @Roles(Role.ADMIN)
-    getAdmin(): string {
-      return this.testService.getAdmin();
-    }
+  @Get('me')
+  getMe(@CurrentUser() user: UserPayload) {
+    return {
+      id: user.sub,
+      role: user.role,
+    };
+  }
 
-    @Get('artisan')
-    @Roles(Role.ARTISAN, Role.ADMIN)
-    getArtisan(@Req() req:Request): string {
-      console.log(req);
-      return this.testService.getArtisan();
-    }
+  @Get('admin')
+  @Roles(Role.ADMIN)
+  getAdmin() {
+    return this.testService.getAdmin();
+  }
 
-    @Get('mix')
-    @Roles(Role.ARTISAN)
-    getMix(): string {
-      return this.testService.getMisto();
-    }
+  @Get('artisan')
+  @Roles(Role.ARTISAN, Role.ADMIN)
+  getArtisan(): string {
+    return this.testService.getArtisan();
+  }
+
+  @Get('mix')
+  @Roles(Role.ARTISAN)
+  getMix(): string {
+    return this.testService.getMisto();
+  }
 }
