@@ -8,6 +8,7 @@ import { envSchema } from './shared/env/env';
 import { TestModule } from './domain/test/test.module';
 import { RolesGuard } from './shared/roles/roles.guard';
 import { AuthModule } from './domain/auth/auth.module';
+import { JwtAuthGuard } from './domain/auth/jwt-auth.guard';
 
 @Module({
   imports: [ConfigModule.forRoot({
@@ -18,6 +19,10 @@ import { AuthModule } from './domain/auth/auth.module';
   TestModule],
   controllers: [AppController],
   providers: [
+    {
+      provide: APP_GUARD,
+      useClass: JwtAuthGuard,
+    },
     {
       provide: APP_GUARD,
       useClass: RolesGuard,
