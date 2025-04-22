@@ -3,6 +3,7 @@ import {
   ExecutionContext,
   Injectable,
   ForbiddenException,
+  UnauthorizedException,
 } from '@nestjs/common';
 import { Reflector } from '@nestjs/core';
 import { Role } from '@prisma/client';
@@ -21,19 +22,16 @@ export class RolesGuard implements CanActivate {
     const request = context.switchToHttp().getRequest();
     const { user } = request;
 
-    // console.log('[RolesGuard] Required:', requiredRoles);
-    // console.log('[RolesGuard] User:', user);
-
     if (!requiredRoles) return true;
 
     if (!user || !user.role) {
-      throw new ForbiddenException('Usuário não autenticado ou sem papel definido');
+      throw new UnauthorizedException('User not authenticated or without defined role');
     }
 
     const hasRole = requiredRoles.includes(user.role);
 
     if (!hasRole) {
-      throw new ForbiddenException('Você não tem permissão para acessar essa rota');
+      throw new ForbiddenException('You do not have permission to access this route');
     }
 
     return true;
