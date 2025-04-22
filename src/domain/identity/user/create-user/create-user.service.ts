@@ -1,5 +1,6 @@
 import { BadRequestException, Injectable } from '@nestjs/common';
 import { hash } from 'bcryptjs';
+import { JwtService } from '@nestjs/jwt';
 import { PrismaService } from '@/shared/prisma/prisma.service';
 
 export interface CreateUserInput {
@@ -8,19 +9,22 @@ export interface CreateUserInput {
   cpf: string;
   socialName?: string;
   name: string;
-  dtBirth: string;
+  birthDate: string;
   phone: string;
 }
 
 @Injectable()
 export class CreateUserService {
-  constructor(private readonly prisma: PrismaService) {}
+  constructor(
+    private readonly prisma: PrismaService,
+    private readonly jwt: JwtService,
+  ) {}
 
   async execute({
     email,
     password,
     cpf,
-    dtBirth,
+    birthDate,
     name,
     phone,
     socialName,
@@ -45,7 +49,7 @@ export class CreateUserService {
       },
     });
 
-    const userProfileAlreadyExists = await this.prisma.user_Profile.findFirst({
+    const userProfileAlreadyExists = await this.prisma.userProfile.findFirst({
       where: {
         cpf,
       },
@@ -55,15 +59,22 @@ export class CreateUserService {
       throw new BadRequestException('User CPF already exists.');
     }
 
-    await this.prisma.user_Profile.create({
+    await this.prisma.userProfile.create({
       data: {
         cpf,
-        dt_birth: new Date(dtBirth),
+        birthDate: new Date(birthDate),
         name,
-        social_name: socialName || null,
+        socialName: socialName || null,
         phone,
-        fk_user_id: user.id,
+        userId: user.id,
       },
     });
+
+    const accessToken = this.jwt.sign({ sub: user.id, role: user.role });
+
+    return {
+      accessToken,
+      role: user.role,
+    };
   }
 }

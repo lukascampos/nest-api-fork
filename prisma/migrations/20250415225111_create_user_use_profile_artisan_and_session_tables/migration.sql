@@ -1,26 +1,18 @@
-/*
-  Warnings:
-
-  - You are about to drop the column `name` on the `users` table. All the data in the column will be lost.
-  - You are about to drop the `products` table. If the table is not empty, all the data it contains will be lost.
-  - Added the required column `password` to the `users` table without a default value. This is not possible if the table is not empty.
-  - Added the required column `role` to the `users` table without a default value. This is not possible if the table is not empty.
-
-*/
 -- CreateEnum
 CREATE TYPE "Role" AS ENUM ('USER', 'ARTISAN', 'MODERATOR', 'ADMIN');
 
--- DropForeignKey
-ALTER TABLE "products" DROP CONSTRAINT "products_user_id_fkey";
+-- CreateTable
+CREATE TABLE "users" (
+    "id" TEXT NOT NULL,
+    "email" TEXT NOT NULL,
+    "password" TEXT NOT NULL,
+    "role" "Role" NOT NULL,
+    "is_disabled" BOOLEAN NOT NULL DEFAULT false,
+    "created_at" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    "updated_at" TIMESTAMP(3) NOT NULL,
 
--- AlterTable
-ALTER TABLE "users" DROP COLUMN "name",
-ADD COLUMN     "is_disable" BOOLEAN NOT NULL DEFAULT false,
-ADD COLUMN     "password" TEXT NOT NULL,
-ADD COLUMN     "role" "Role" NOT NULL;
-
--- DropTable
-DROP TABLE "products";
+    CONSTRAINT "users_pkey" PRIMARY KEY ("id")
+);
 
 -- CreateTable
 CREATE TABLE "users_profile" (
@@ -48,7 +40,7 @@ CREATE TABLE "artisans_profile" (
     "technique" TEXT NOT NULL,
     "finality_classification" TEXT NOT NULL,
     "sicab" TEXT NOT NULL,
-    "sisab_cadastration_date" TIMESTAMP(3) NOT NULL,
+    "sisab_registration_date" TIMESTAMP(3) NOT NULL,
     "sisab_valid_until" TIMESTAMP(3) NOT NULL,
     "pending_request" BOOLEAN NOT NULL DEFAULT false,
     "is_disable" BOOLEAN NOT NULL DEFAULT false,
@@ -67,6 +59,9 @@ CREATE TABLE "sessions" (
 
     CONSTRAINT "sessions_pkey" PRIMARY KEY ("id")
 );
+
+-- CreateIndex
+CREATE UNIQUE INDEX "users_email_key" ON "users"("email");
 
 -- CreateIndex
 CREATE UNIQUE INDEX "users_profile_fk_user_id_key" ON "users_profile"("fk_user_id");
