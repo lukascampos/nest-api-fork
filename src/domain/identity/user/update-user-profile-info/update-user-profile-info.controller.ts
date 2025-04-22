@@ -20,7 +20,7 @@ export class UpdateUserProfileInfoController {
     @Body() body: UpdateUserProfileInfoDto,
   ) {
     if (userId.sub !== id) {
-      throw new ForbiddenException('You cannot edit anothers people profile');
+      throw new ForbiddenException('You cannot edit another person\'s profile');
     }
 
     await this.updateUserProfileInfo.execute({ ...body, userId: userId.sub });
