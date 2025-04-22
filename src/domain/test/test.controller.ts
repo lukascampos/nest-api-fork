@@ -3,8 +3,8 @@ import {
 } from '@nestjs/common';
 import { Role } from '@prisma/client';
 import { TestService } from './test.service';
-import { RolesGuard } from '@/shared/roles/roles.guard';
-import { Roles } from '@/shared/roles/roles.decorator';
+import { RolesGuard } from '@/domain/auth/roles/roles.guard';
+import { Roles } from '@/domain/auth/roles/roles.decorator';
 import { JwtAuthGuard } from '../auth/jwt-auth.guard';
 import { CurrentUser } from '../auth/current-user-decorator';
 import { UserPayload } from '../auth/jwt.strategy';
