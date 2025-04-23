@@ -7,7 +7,7 @@ import { PrismaService } from '@/shared/prisma/prisma.service';
 export class UpdateUserToModeratorService {
   constructor(private readonly prisma: PrismaService) {}
 
-  async UpdateUserRole({ userId, newRole }: UpdateUserToModeratorDto) {
+  async updateUserRole({ userId, newRole }: UpdateUserToModeratorDto) {
     const user = await this.prisma.user.findUnique({
       where: { id: userId },
     });

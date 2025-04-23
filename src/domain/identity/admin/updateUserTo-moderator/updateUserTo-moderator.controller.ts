@@ -18,6 +18,6 @@ export class UpdateUserToModeratorController {
   @Patch()
   @Roles(Role.ADMIN)
   handle(@Body() body: UpdateUserToModeratorDto) {
-    return this.updateUserToModerator.UpdateUserRole(body);
+    return this.updateUserToModerator.updateUserRole(body);
   }
 }
