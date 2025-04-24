@@ -1,4 +1,4 @@
-import { UnauthorizedException } from '@nestjs/common';
+import { UnauthorizedException, Injectable } from '@nestjs/common';
 import { PrismaService } from '@/shared/prisma/prisma.service';
 import { Role } from '@prisma/client'; 
 
@@ -7,16 +7,22 @@ interface User {
   role: Role;
 }
 
+@Injectable()
 export class ListUserService {
-  constructor(private prisma: PrismaService) { }
+
+  constructor(
+    private readonly prisma: PrismaService // Injetando o PrismaService para acessar o banco de dados
+  ){}
+
 
   async findAll(requestingUser: User) {
-    const { role, id } = requestingUser;
+    console.log('Prisma:', this.prisma);
+    const { id, role } = requestingUser; // Desestruturando o usuario recebido
 
-    if (role === Role.ADMIN) { // Admin pode ver todos os usuários
-      return this.prisma.user.findMany({
-        //include: { profile: true, artisan: true },
-      });
+    if (role === Role.ADMIN) {
+      console.log('Admin acessando todos os usuários');
+      // Admin pode ver todos os usuários
+      return this.prisma.user.findMany();
     }
 
     if (role === Role.MODERATOR) {
