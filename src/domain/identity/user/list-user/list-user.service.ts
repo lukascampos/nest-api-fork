@@ -1,6 +1,6 @@
 import { UnauthorizedException } from '@nestjs/common';
 import { PrismaService } from '@/shared/prisma/prisma.service';
-import { Role } from '@prisma/client'; // VERIFICAR SE É O CAMINHO CERTO
+import { Role } from '@prisma/client'; 
 
 interface User {
   id: string;
@@ -8,38 +8,29 @@ interface User {
 }
 
 export class ListUserService {
-  constructor(private prisma: PrismaService) {}
+  constructor(private prisma: PrismaService) { }
 
   async findAll(requestingUser: User) {
     const { role, id } = requestingUser;
 
     if (role === Role.ADMIN) { // Admin pode ver todos os usuários
       return this.prisma.user.findMany({
-        include: { profile: true, artisan: true },
+        //include: { profile: true, artisan: true },
       });
     }
 
-    if (role === Role.MODERATOR) {  // Moderador vê apenas USER e ARTISAN com solicitação pendente
+    if (role === Role.MODERATOR) {
+      // Moderador vê apenas "Usuarios"
       return this.prisma.user.findMany({
-        where: {
-          OR: [
-            { role: Role.USER },
-            {
-              role: Role.ARTISAN,
-              artisan: {
-                pendingRequest: true,
-              },
-            },
-          ],
-        },
-        include: { profile: true, artisan: true },
+        where: { role: Role.USER },
+        //include: { profile: true, artisan: true },
       });
     }
 
     if (role === Role.USER || role === Role.ARTISAN) {  // Usuários e artesãos veem apenas os próprios dados
       return this.prisma.user.findUnique({
         where: { id },
-        include: { profile: true, artisan: true },
+        //include: { profile: true, artisan: true },
       });
     }
 
@@ -52,4 +43,3 @@ export class ListUserService {
 
 
 
-  

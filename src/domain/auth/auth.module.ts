@@ -23,8 +23,8 @@ import { RolesGuard } from './roles/roles.guard';
 
         return {
           signOptions: { algorithm: 'RS256' },
-          privateKey: Buffer.from(privateKey, 'base64'),
-          publicKey: Buffer.from(publicKey, 'base64'),
+          privateKey: /**/Buffer.from(privateKey, 'base64'),
+          publicKey: /**/Buffer.from(publicKey, 'base64'),
         };
       },
     }),
