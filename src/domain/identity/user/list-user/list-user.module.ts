@@ -7,4 +7,6 @@ import { PrismaService } from '@/shared/prisma/prisma.service';
   controllers: [ListUserController],
   providers: [ListUserService, PrismaService],
 })
+
+
 export class ListUserModule {}
