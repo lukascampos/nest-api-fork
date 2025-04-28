@@ -32,7 +32,7 @@ export class DisableUserService {
       });
     }
 
-    if (currentUserRole === Role.MODERATOR && user.role === Role.ARTISAN) {
+    if (currentUserRole === Role.MODERATOR && user.role.includes(Role.ARTISAN)) {
       return this.prisma.user.update({
         where: { id: userId },
         data: { isDisabled: true },
