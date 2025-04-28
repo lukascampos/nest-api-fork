@@ -45,7 +45,7 @@ export class CreateUserService {
       data: {
         email,
         password: passwordHashed,
-        role: 'ADMIN',
+        role: 'USER',
       },
     });
 
