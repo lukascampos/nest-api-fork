@@ -1,6 +1,7 @@
 import { UnauthorizedException, Injectable } from '@nestjs/common';
 import { PrismaService } from '@/shared/prisma/prisma.service';
 import { Role } from '@prisma/client'; 
+import { UserPayload } from '@/domain/auth/jwt.strategy';
 
 interface User {
   id: string;
@@ -10,43 +11,37 @@ interface User {
 @Injectable()
 export class ListUserService {
 
-  constructor(
-    private readonly prisma: PrismaService // injecao o PrismaService para acesso ao banco
-  ){}
+  constructor(private readonly prisma: PrismaService ){}
 
-  async findAll(requestingUser: User) {
-    console.log('Prisma:', this.prisma);
-    const { id, role } = requestingUser; // Desestruturacao do objeto "Usuario" recebido
-    if (role === Role.ADMIN) {
-      console.log('Admin acessando todos os usuários');
-      // Admin pode ver todos os usuários
+  async findAll(requestingUser: UserPayload) {
+    
+    const { sub, role } = requestingUser;
+    if (role === 'ADMIN') {
       return this.prisma.user.findMany({
-        where: {isDisabled: false}, // Adicionando filtro para usuários não desativados
+        where: {isDisabled: false}, 
         include: { profile: true, artisan: true },
       });
     }
 
-    if (role === Role.MODERATOR) {
-      // Moderador vê apenas "Usuarios"
+    if (role === 'MODERATOR') {
       return this.prisma.user.findMany({
         where: { 
-          role: Role.USER,
+          role: 'USER',
           isDisabled: false,
          },
         include: { profile: true, artisan: true },
       });
     }
 
-    if (role === Role.USER || role === Role.ARTISAN) {
-      // Usuários e artesao veem apenas os próprios dados
+    if (role === 'USER' || role === 'ARTISAN') {
       const user = await this.prisma.user.findUnique({
-        where: { id },
+        where: { id: sub },
         include: { profile: true, artisan: true },
       });
   
       if (!user || user.isDisabled) {
         throw new UnauthorizedException('Usuário desativado ou não encontrado');
-      } // Garantia de que o usuário existe e não está desativado para listagem
+      }
   
       return user;
     }

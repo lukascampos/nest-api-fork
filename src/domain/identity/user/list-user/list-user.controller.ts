@@ -12,8 +12,6 @@ export class ListUserController {
 
   @Get()
   async handle(@Req() req: Request) {
-    
-    console.log(req.user);
      const { id, role } = req.user as { id: string; role: Role };
     return this.listUserService.findAll({ id , role});
   }
