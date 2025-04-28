@@ -23,7 +23,7 @@ export class UpdateUserToModeratorService {
     return this.prisma.user.update({
       where: { id: userId },
       data: {
-        role: [newRole as unknown as Role],
+        role: [newRole] as unknown as [Role],
       },
     });
   }
