@@ -1,6 +1,6 @@
 import { BadRequestException, Injectable, NotFoundException } from '@nestjs/common';
 import { Role } from '@prisma/client';
-import { UpdateUserToModeratorDto } from './updateUserTo-moderator.dto';
+import { UpdateUserToModeratorDto } from './update-user-to-moderator.dto';
 import { PrismaService } from '@/shared/prisma/prisma.service';
 
 @Injectable()
@@ -16,14 +16,14 @@ export class UpdateUserToModeratorService {
       throw new NotFoundException(`The user with the provided ID (${userId}) does not exist.`);
     }
 
-    if (!Object.values(Role).includes(newRole as Role)) {
+    if (!Object.values(Role).includes(newRole as unknown as Role)) {
       throw new BadRequestException(`Invalid role ${newRole}`);
     }
 
     return this.prisma.user.update({
       where: { id: userId },
       data: {
-        role: newRole as Role,
+        role: [newRole as unknown as Role],
       },
     });
   }

@@ -1,5 +1,5 @@
 import { Module } from '@nestjs/common';
-import { UpdateUserToModeratorModule } from './updateUserTo-moderator/updateUserTo-moderator.module';
+import { UpdateUserToModeratorModule } from './updateUserTo-moderator/update-user-to-moderator.module';
 
 @Module({
   imports: [UpdateUserToModeratorModule],

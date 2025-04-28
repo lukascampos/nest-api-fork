@@ -1,6 +1,6 @@
 import { Module } from '@nestjs/common';
-import { UpdateUserToModeratorService } from './updateUserTo-moderator.service';
-import { UpdateUserToModeratorController } from './updateUserTo-moderator.controller';
+import { UpdateUserToModeratorService } from './update-user-to-moderator.service';
+import { UpdateUserToModeratorController } from './update-user-to-moderator.controller';
 import { PrismaService } from '@/shared/prisma/prisma.service';
 
 @Module({

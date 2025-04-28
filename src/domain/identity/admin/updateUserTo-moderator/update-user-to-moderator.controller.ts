@@ -2,8 +2,8 @@ import {
   Body, Controller, Patch, UseGuards,
 } from '@nestjs/common';
 import { Role } from '@prisma/client';
-import { UpdateUserToModeratorService } from './updateUserTo-moderator.service';
-import { UpdateUserToModeratorDto } from './updateUserTo-moderator.dto';
+import { UpdateUserToModeratorService } from './update-user-to-moderator.service';
+import { UpdateUserToModeratorDto } from './update-user-to-moderator.dto';
 import { JwtAuthGuard } from '@/domain/auth/jwt-auth.guard';
 import { RolesGuard } from '@/domain/auth/roles/roles.guard';
 import { Roles } from '@/domain/auth/roles/roles.decorator';
