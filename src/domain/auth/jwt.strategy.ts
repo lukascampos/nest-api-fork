@@ -8,7 +8,7 @@ import { PrismaService } from '@/shared/prisma/prisma.service';
 
 const tokenPayloadSchema = z.object({
   sub: z.string().uuid(),
-  role: z.enum(['USER', 'ARTISAN', 'MODERATOR', 'ADMIN']),
+  role: z.array(z.enum(['USER', 'ARTISAN', 'MODERATOR', 'ADMIN'])),
 });
 
 export type UserPayload = z.infer<typeof tokenPayloadSchema>;

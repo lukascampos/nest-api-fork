@@ -24,11 +24,11 @@ export class RolesGuard implements CanActivate {
 
     if (!requiredRoles) return true;
 
-    if (!user || !user.role) {
+    if (!user || !user.role || !Array.isArray(user.role)) {
       throw new UnauthorizedException('User not authenticated or without defined role');
     }
 
-    const hasRole = requiredRoles.includes(user.role);
+    const hasRole = user.role.some((role: Role) => requiredRoles.includes(role));
 
     if (!hasRole) {
       throw new ForbiddenException('You do not have permission to access this route');
