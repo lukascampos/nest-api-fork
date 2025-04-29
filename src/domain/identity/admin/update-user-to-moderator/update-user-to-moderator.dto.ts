@@ -1,6 +1,6 @@
 import { IsUUID } from 'class-validator';
 
-export class DisableUserDto {
+export class UpdateUserToModeratorDto {
   @IsUUID()
     userId: string;
 }
