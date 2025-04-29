@@ -1,52 +1,46 @@
 import { UnauthorizedException, Injectable } from '@nestjs/common';
 import { PrismaService } from '@/shared/prisma/prisma.service';
-import { Role } from '@prisma/client'; 
+import { Role } from '@prisma/client';
 import { UserPayload } from '@/domain/auth/jwt.strategy';
 
-interface User {
-  id: string;
-  role: Role;
-}
 
 @Injectable()
 export class ListUserService {
 
-  constructor(private readonly prisma: PrismaService ){}
+  constructor(private readonly prisma: PrismaService) { }
 
   async findAll(requestingUser: UserPayload) {
-    
-    const { sub, role } = requestingUser;
-    if (role === 'ADMIN') {
-      return this.prisma.user.findMany({
-        where: {isDisabled: false}, 
-        include: { profile: true, artisan: true },
-      });
-    }
+    const { sub, role } = requestingUser
+    switch (role) {
+      case Role.ADMIN:
+        return this.prisma.user.findMany({
+          where: { isDisabled: false },
+          include: { profile: true, artisan: true },
+        });
 
-    if (role === 'MODERATOR') {
-      return this.prisma.user.findMany({
-        where: { 
-          role: 'USER',
-          isDisabled: false,
-         },
-        include: { profile: true, artisan: true },
-      });
-    }
+      case Role.MODERATOR:
+        return this.prisma.user.findMany({
+          where: { role: Role.USER, isDisabled: false },
+          include: { profile: true, artisan: true },
+        });
 
-    if (role === 'USER' || role === 'ARTISAN') {
-      const user = await this.prisma.user.findUnique({
-        where: { id: sub },
-        include: { profile: true, artisan: true },
-      });
-  
-      if (!user || user.isDisabled) {
-        throw new UnauthorizedException('Usuário desativado ou não encontrado');
+      case Role.USER:
+      case Role.ARTISAN: {
+        const result = await this.prisma.user.findUnique({
+          where: { id: sub },
+          include: { profile: true, artisan: true },
+        });
+
+        if (!result || result.isDisabled) {
+          throw new UnauthorizedException('Usuário desativado ou nao encontrado');
+        }
+
+        return result;
       }
-  
-      return user;
-    }
 
-    throw new UnauthorizedException('Acesso negado');
+      default:
+        throw new UnauthorizedException('Acesso não autorizado');
+    }
   }
 }
 
