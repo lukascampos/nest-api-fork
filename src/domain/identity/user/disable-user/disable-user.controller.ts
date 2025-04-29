@@ -8,7 +8,7 @@ import { UserPayload } from '@/domain/auth/jwt.strategy';
 import { DisableUserService } from './disable-user.service';
 import { DisableUserDto } from './disable-user.dto';
 
-@Controller('users/disable-user')
+@Controller('users/disable')
 @UseGuards(JwtAuthGuard, RolesGuard)
 export class DisableUserController {
   constructor(private readonly disableUserService: DisableUserService) {}
