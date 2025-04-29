@@ -6,7 +6,7 @@ import { TestService } from './test.service';
 import { RolesGuard } from '@/domain/auth/roles/roles.guard';
 import { Roles } from '@/domain/auth/roles/roles.decorator';
 import { JwtAuthGuard } from '../auth/jwt-auth.guard';
-import { CurrentUser } from '../auth/current-user-decorator';
+import { CurrentUser } from '../auth/current-user.decorator';
 import { UserPayload } from '../auth/jwt.strategy';
 import { Public } from '../auth/public.decorator';
 

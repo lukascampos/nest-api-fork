@@ -14,6 +14,12 @@ enum Role {
   ADMIN
 }
 
+enum RequestStatus {
+  PENDING
+  APPROVED
+  REJECTED
+}
+
 model User {
   id         String   @id @default(uuid())
   email      String   @unique
@@ -23,9 +29,11 @@ model User {
   createdAt  DateTime @default(now()) @map("created_at")
   updatedAt  DateTime @updatedAt @map("updated_at")
 
-  profile  UserProfile?
-  artisan  ArtisanProfile?
-  sessions Session[]
+  profile                         UserProfile?
+  artisan                         ArtisanProfile?
+  sessions                        Session[]
+  artisanCreationRequestsSent     ArtisanCreationRequest[] @relation("userRequesting")
+  artisanCreationRequestsReviewed ArtisanCreationRequest[] @relation("userReviewer")
 
   @@map("users")
 }
@@ -58,12 +66,27 @@ model ArtisanProfile {
   sicab                  String
   sisabRegistrationDate  DateTime @map("sisab_registration_date")
   sisabValidUntil        DateTime @map("sisab_valid_until")
-  pendingRequest         Boolean  @default(false) @map("pending_request")
-  isDisabled             Boolean  @default(false) @map("is_disable")
+  isDisabled             Boolean  @default(false) @map("is_disabled")
 
   user User @relation(fields: [userId], references: [id])
 
   @@map("artisans_profile")
+}
+
+model ArtisanCreationRequest {
+  id         String        @id @default(uuid())
+  userId     String        @map("fk_user_id")
+  createdAt  DateTime      @default(now()) @map("created_at")
+  updatedAt  DateTime      @default(now()) @map("updated_at")
+  status     RequestStatus @default(PENDING)
+  reviewerId String?       @map("fk_user_reviewer_id")
+  reviwedAt  DateTime?     @map("reviwed_at")
+  reason     String?
+
+  userRequesting User  @relation(fields: [userId], references: [id], name: "userRequesting")
+  userReviwer    User? @relation(fields: [reviewerId], references: [id], name: "userReviewer")
+
+  @@map("artisan_creation_requests")
 }
 
 model Session {
