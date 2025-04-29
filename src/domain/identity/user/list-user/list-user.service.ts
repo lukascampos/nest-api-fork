@@ -14,7 +14,6 @@ export class ListUserService {
     switch (role) {
       case Role.ADMIN:
         return this.prisma.user.findMany({
-          where: { isDisabled: false },
           include: { profile: true, artisan: true },
         });
 
@@ -32,14 +31,14 @@ export class ListUserService {
         });
 
         if (!result || result.isDisabled) {
-          throw new UnauthorizedException('Usuário desativado ou nao encontrado');
+          throw new UnauthorizedException('User disabled or not found.');
         }
 
         return result;
       }
 
       default:
-        throw new UnauthorizedException('Acesso não autorizado');
+        throw new UnauthorizedException('Access denied.');
     }
   }
 }
