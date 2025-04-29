@@ -1,6 +1,7 @@
 import { BadRequestException, Injectable } from '@nestjs/common';
 import { hash } from 'bcryptjs';
 import { JwtService } from '@nestjs/jwt';
+import { Role } from '@prisma/client';
 import { PrismaService } from '@/shared/prisma/prisma.service';
 
 export interface CreateUserInput {
@@ -45,7 +46,7 @@ export class CreateUserService {
       data: {
         email,
         password: passwordHashed,
-        role: 'USER',
+        role: [Role.USER],
       },
     });
 
