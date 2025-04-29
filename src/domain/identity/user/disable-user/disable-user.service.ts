@@ -1,16 +1,16 @@
 import { ForbiddenException, Injectable, NotFoundException } from '@nestjs/common';
 import { Role } from '@prisma/client';
 import { PrismaService } from '@/shared/prisma/prisma.service';
-import { DisableUserDto } from './disable-user.dto';
 import { UserPayload } from '@/domain/auth/jwt.strategy';
 
 @Injectable()
 export class DisableUserService {
   constructor(private readonly prisma: PrismaService) {}
 
-  async disableUser(dto: DisableUserDto, currentUser: UserPayload) {
-    const { userId } = dto;
+  async disableUser(userId: string, currentUser: UserPayload) {
     const { sub: currentUserId, role: currentUserRole } = currentUser;
+
+    console.log(userId);
 
     const user = await this.prisma.user.findUnique({
       where: { id: userId },
@@ -25,19 +25,21 @@ export class DisableUserService {
         data: { isDisabled: true },
       });
     }
-    if (currentUserRole === Role.ADMIN) {
+
+    if (currentUserRole.includes(Role.ADMIN)) {
       return this.prisma.user.update({
         where: { id: userId },
         data: { isDisabled: true },
       });
     }
 
-    if (currentUserRole === Role.MODERATOR && user.role.includes(Role.ARTISAN)) {
+    if (currentUserRole.includes(Role.MODERATOR) && user.role.includes(Role.ARTISAN)) {
       return this.prisma.user.update({
         where: { id: userId },
         data: { isDisabled: true },
       });
     }
+
     throw new ForbiddenException('You do not have permission to disable this user');
   }
 }
