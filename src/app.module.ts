@@ -13,7 +13,8 @@ import { AdminModule } from './domain/identity/admin/admin.module';
     validate: (env) => envSchema.parse(env),
     isGlobal: true,
   }),
-  UserModule, AuthModule, TestModule, AdminModule,
+  UserModule, AuthModule, TestModule
+  UserModule, AuthModule, TestModule, AdminModule
   ],
   controllers: [AppController],
   providers: [
