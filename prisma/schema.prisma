@@ -1,10 +1,12 @@
 generator client {
   provider = "prisma-client-js"
+  output   = "../node_modules/.prisma/client"
 }
 
 datasource db {
-  provider = "postgresql"
-  url      = env("DATABASE_URL")
+  provider  = "postgresql"
+  url       = env("DATABASE_URL")
+  directUrl = env("DIRECT_URL")
 }
 
 enum Role {
@@ -24,7 +26,7 @@ model User {
   id         String   @id @default(uuid())
   email      String   @unique
   password   String
-  role       Role
+  role       Role[]
   isDisabled Boolean  @default(false) @map("is_disabled")
   createdAt  DateTime @default(now()) @map("created_at")
   updatedAt  DateTime @updatedAt @map("updated_at")
@@ -66,7 +68,7 @@ model ArtisanProfile {
   sicab                  String
   sisabRegistrationDate  DateTime @map("sisab_registration_date")
   sisabValidUntil        DateTime @map("sisab_valid_until")
-  isDisabled             Boolean  @default(false) @map("is_disabled")
+  isDisabled             Boolean  @default(true) @map("is_disabled")
 
   user User @relation(fields: [userId], references: [id])
 
