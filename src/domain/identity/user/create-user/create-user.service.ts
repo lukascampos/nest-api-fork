@@ -32,7 +32,7 @@ export class CreateUserService {
   }: CreateUserInput, tx?: Prisma.TransactionClient) {
     const prismaClient = tx ?? this.prisma;
 
-    const userExists = await prismaClient.user.findFirst({
+    const userExists = await prismaClient.user.findUnique({
       where: {
         email,
       },
