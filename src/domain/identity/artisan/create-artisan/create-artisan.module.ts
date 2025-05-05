@@ -8,4 +8,8 @@ import { PrismaService } from '@/shared/prisma/prisma.service';
   controllers: [CreateArtisanController],
   providers: [CreateArtisanService, PrismaService],
 })
+<<<<<<< HEAD
 export class CreateArtisanModule { }
+=======
+export class CreateArtisanModule {}
+>>>>>>> 02056ddc10d5566d3993c49fe2417ba999ca94f0
