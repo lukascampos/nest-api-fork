@@ -19,7 +19,7 @@ export class RegisterWithArtisanService {
   async execute(input: RegisterWithArtisanInput) {
     return this.prisma.$transaction(async (tx) => {
       const user = await this.createUser.execute(input.user, tx);
-      const artisan = await this.createArtisan.execute(user.id, input.artisan, tx);
+      const artisan = await this.createArtisan.execute(user.id, input.artisan);
 
       return { user, artisan };
     });

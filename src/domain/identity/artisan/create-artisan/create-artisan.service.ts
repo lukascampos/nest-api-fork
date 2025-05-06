@@ -1,5 +1,4 @@
 import { BadRequestException, Injectable } from '@nestjs/common';
-import { Prisma } from '@prisma/client';
 import { PrismaService } from '@/shared/prisma/prisma.service';
 
 export interface CreateArtisanInput {
@@ -17,9 +16,7 @@ export class CreateArtisanService {
     private readonly prisma: PrismaService,
   ) {}
 
-  async execute(userId: string, input: CreateArtisanInput, tx?: Prisma.TransactionClient) {
-    const prismaClient = tx ?? this.prisma;
-
+  async execute(userId: string, input: CreateArtisanInput) {
     const createArtisanRequestExists = await this.prisma.artisanCreationRequest.findFirst({
       where: {
         userId,
@@ -30,7 +27,7 @@ export class CreateArtisanService {
       throw new BadRequestException('Request already exists. Status of the request: ', createArtisanRequestExists.status);
     }
 
-    const artisanProfile = await prismaClient.artisanProfile.create({
+    const artisanProfile = await this.prisma.artisanProfile.create({
       data: {
         userId,
         rawMaterial: input.rawMaterial,
@@ -42,7 +39,7 @@ export class CreateArtisanService {
       },
     });
 
-    const artisanCreationRequest = await prismaClient.artisanCreationRequest.create({
+    const artisanCreationRequest = await this.prisma.artisanCreationRequest.create({
       data: {
         userId,
       },
