@@ -32,7 +32,7 @@ export class CreateUserService {
   }: CreateUserInput, tx?: Prisma.TransactionClient) {
     const prismaClient = tx ?? this.prisma;
 
-    const userExists = await prismaClient.user.findUnique({
+    const userExists = await prismaClient.user.findFirst({
       where: {
         email,
       },
@@ -44,14 +44,6 @@ export class CreateUserService {
 
     const passwordHashed = await hash(password, 10);
 
-    const user = await prismaClient.user.create({
-      data: {
-        email,
-        password: passwordHashed,
-        role: [Role.USER],
-      },
-    });
-
     const userProfileAlreadyExists = await prismaClient.userProfile.findFirst({
       where: {
         cpf,
@@ -62,14 +54,23 @@ export class CreateUserService {
       throw new BadRequestException('User CPF already exists.');
     }
 
-    await prismaClient.userProfile.create({
+    const user = await prismaClient.user.create({
       data: {
-        cpf,
-        birthDate: new Date(birthDate),
-        name,
-        socialName: socialName || null,
-        phone,
-        userId: user.id,
+        email,
+        password: passwordHashed,
+        role: [Role.USER],
+        profile: {
+          create: {
+            cpf,
+            birthDate: new Date(birthDate),
+            name,
+            socialName: socialName || null,
+            phone,
+          },
+        },
+      },
+      include: {
+        profile: true,
       },
     });
 
