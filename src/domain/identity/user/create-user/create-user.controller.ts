@@ -9,7 +9,6 @@ import { Public } from '@/domain/auth/public.decorator';
 export class CreateUserController {
   constructor(
     private readonly createUser: CreateUserService,
-    private readonly createUserDto: CreateUserDto,
   ) { }
 
   @Post()

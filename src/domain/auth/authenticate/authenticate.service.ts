@@ -33,9 +33,17 @@ export class AuthenticateService {
         throw new UnauthorizedException('Invalid credentials');
       }
 
+      const userInfo = await this.prisma.userProfile.findUnique({
+        where: {
+          userId: user.id,
+        },
+      });
+
       const accessToken = this.jwt.sign({ sub: user.id, role: user.role });
 
-      return { accessToken, role: user.role };
+      return {
+        accessToken, role: user.role, name: userInfo?.name, avatar: userInfo?.avatar,
+      };
     } catch (error) {
       throw new InternalServerErrorException(error.message);
     }
