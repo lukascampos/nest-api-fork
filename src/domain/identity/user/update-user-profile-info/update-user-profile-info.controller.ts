@@ -2,8 +2,8 @@ import {
   Body,
   Controller, ForbiddenException, Param, Put,
 } from '@nestjs/common';
-import { CurrentUser } from '@/domain/auth/current-user.decorator';
-import { UserPayload } from '@/domain/auth/jwt.strategy';
+import { CurrentUser } from '@/domain/_shared/auth/decorators/current-user.decorator';
+import { UserPayload } from '@/domain/_shared/auth/jwt/jwt.strategy';
 import { UpdateUserProfileInfoService } from './update-user-profile-info.service';
 import { UpdateUserProfileInfoDto } from './update-user-profile-infor.dto';
 

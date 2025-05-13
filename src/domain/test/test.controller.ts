@@ -3,12 +3,12 @@ import {
 } from '@nestjs/common';
 import { Role } from '@prisma/client';
 import { TestService } from './test.service';
-import { RolesGuard } from '@/domain/auth/roles/roles.guard';
-import { Roles } from '@/domain/auth/roles/roles.decorator';
-import { JwtAuthGuard } from '../auth/jwt-auth.guard';
-import { CurrentUser } from '../auth/current-user.decorator';
-import { UserPayload } from '../auth/jwt.strategy';
-import { Public } from '../auth/public.decorator';
+import { RolesGuard } from '@/domain/_shared/auth/roles/roles.guard';
+import { Roles } from '@/domain/_shared/auth/decorators/roles.decorator';
+import { JwtAuthGuard } from '../_shared/auth/jwt/jwt-auth.guard';
+import { Public } from '../_shared/auth/decorators/public.decorator';
+import { CurrentUser } from '../_shared/auth/decorators/current-user.decorator';
+import { UserPayload } from '../_shared/auth/jwt/jwt.strategy';
 
 @Controller('test')
 @UseGuards(JwtAuthGuard, RolesGuard)

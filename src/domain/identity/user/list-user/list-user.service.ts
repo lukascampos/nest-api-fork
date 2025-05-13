@@ -1,6 +1,6 @@
 import { UnauthorizedException, Injectable, BadRequestException } from '@nestjs/common';
 import { PrismaService } from '@/shared/prisma/prisma.service';
-import { UserPayload } from '@/domain/auth/jwt.strategy';
+import { UserPayload } from '@/domain/_shared/auth/jwt/jwt.strategy';
 
 @Injectable()
 export class ListUserService {

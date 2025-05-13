@@ -1,9 +1,9 @@
 import { Controller, Get, UseGuards } from '@nestjs/common';
 import { ListUserService } from './list-user.service';
-import { UserPayload } from '@/domain/auth/jwt.strategy';
-import { CurrentUser } from '@/domain/auth/current-user.decorator';
-import { JwtAuthGuard } from '@/domain/auth/jwt-auth.guard';
-import { RolesGuard } from '@/domain/auth/roles/roles.guard';
+import { UserPayload } from '@/domain/_shared/auth/jwt/jwt.strategy';
+import { CurrentUser } from '@/domain/_shared/auth/decorators/current-user.decorator';
+import { JwtAuthGuard } from '@/domain/_shared/auth/jwt/jwt-auth.guard';
+import { RolesGuard } from '@/domain/_shared/auth/roles/roles.guard';
 
 @Controller('users')
 @UseGuards(JwtAuthGuard, RolesGuard)

@@ -2,10 +2,10 @@ import {
   Body, Controller, Post, UseGuards,
 } from '@nestjs/common';
 import { CreateArtisanService } from './create-artisan.service';
-import { CurrentUser } from '@/domain/auth/current-user.decorator';
+import { CurrentUser } from '@/domain/_shared/auth/decorators/current-user.decorator';
 import { CreateArtisanDto } from './create-artisan.dto';
-import { JwtAuthGuard } from '@/domain/auth/jwt-auth.guard';
-import { UserPayload } from '@/domain/auth/jwt.strategy';
+import { JwtAuthGuard } from '@/domain/_shared/auth/jwt/jwt-auth.guard';
+import { UserPayload } from '@/domain/_shared/auth/jwt/jwt.strategy';
 
 @Controller('artisans')
 @UseGuards(JwtAuthGuard)

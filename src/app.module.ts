@@ -5,7 +5,7 @@ import { AppService } from './app.service';
 import { UserModule } from './domain/identity/user/user.module';
 import { envSchema } from './shared/env/env';
 import { TestModule } from './domain/test/test.module';
-import { AuthModule } from './domain/auth/auth.module';
+import { AuthModule } from './domain/_shared/auth/auth.module';
 import { AdminModule } from './domain/identity/admin/admin.module';
 import { ArtisanModule } from './domain/identity/artisan/artisan.module';
 

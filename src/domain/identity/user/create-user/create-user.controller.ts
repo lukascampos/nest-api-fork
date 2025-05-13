@@ -3,7 +3,7 @@ import {
 } from '@nestjs/common';
 import { CreateUserService } from './create-user.service';
 import { CreateUserDto } from './create-user.dto';
-import { Public } from '@/domain/auth/public.decorator';
+import { Public } from '@/domain/_shared/auth/decorators/public.decorator';
 
 @Controller('/users')
 export class CreateUserController {
