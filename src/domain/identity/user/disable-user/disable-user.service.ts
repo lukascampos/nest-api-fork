@@ -8,7 +8,7 @@ export class DisableUserService {
   constructor(private readonly prisma: PrismaService) {}
 
   async disableUser(userId: string, currentUser: UserPayload) {
-    const { sub: currentUserId, role: currentUserRole } = currentUser;
+    const { sub: currentUserId, roles: currentUserRole } = currentUser;
 
     const user = await this.prisma.user.findUnique({
       where: { id: userId },

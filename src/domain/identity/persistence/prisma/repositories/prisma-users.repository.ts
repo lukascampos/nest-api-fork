@@ -21,7 +21,7 @@ export class PrismaUsersRepository implements UsersRepository {
 
     const userProfile = await this.prisma.userProfile.findUnique({
       where: {
-        userId: user?.id,
+        userId: user.id,
       },
     });
 
@@ -46,6 +46,26 @@ export class PrismaUsersRepository implements UsersRepository {
     });
 
     return PrismaUsersMapper.toDomain(user!, userProfile);
+  }
+
+  async findById(id: string): Promise<User | null> {
+    const user = await this.prisma.user.findUnique({
+      where: {
+        id,
+      },
+    });
+
+    if (!user) {
+      return null;
+    }
+
+    const userProfile = await this.prisma.userProfile.findUnique({
+      where: {
+        userId: user.id,
+      },
+    });
+
+    return PrismaUsersMapper.toDomain(user, userProfile!);
   }
 
   async save(user: User): Promise<void> {

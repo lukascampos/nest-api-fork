@@ -7,22 +7,22 @@ export class ListUserService {
   constructor(private readonly prisma: PrismaService) { }
 
   async execute(requestingUser: UserPayload) {
-    const { sub, role } = requestingUser;
+    const { sub, roles } = requestingUser;
 
-    if (role.includes('ADMIN')) {
+    if (roles.includes('ADMIN')) {
       return this.prisma.user.findMany({
         include: { profile: true, artisan: true },
       });
     }
 
-    if (role.includes('MODERATOR')) {
+    if (roles.includes('MODERATOR')) {
       return this.prisma.user.findMany({
         where: { role: { has: 'ARTISAN' }, isDisabled: false },
         include: { profile: true, artisan: true },
       });
     }
 
-    if (role.includes('ARTISAN') || role.includes('USER')) {
+    if (roles.includes('ARTISAN') || roles.includes('USER')) {
       const result = await this.prisma.user.findUnique({
         where: { id: sub },
         include: { profile: true, artisan: true },

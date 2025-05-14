@@ -46,6 +46,7 @@ describe('Authenticate Use Case', () => {
         roles: validUser.roles,
         userId: validUser.id,
         name: validUser.name,
+        socialName: validUser.socialName,
       });
     }
   });

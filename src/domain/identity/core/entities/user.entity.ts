@@ -43,7 +43,7 @@ export class User extends Entity<UserProps> {
   ): User {
     return new User({
       ...props,
-      roles: [UserRole.USER],
+      roles: props.roles ?? [UserRole.USER],
       isActive: true,
     }, id, createdAt, updatedAt);
   }
