@@ -6,7 +6,6 @@ import { APP_GUARD } from '@nestjs/core';
 import { Env } from '@/shared/env/env';
 import { PrismaService } from '@/shared/prisma/prisma.service';
 import { JwtStrategy } from '../auth/jwt/jwt.strategy';
-import { AuthenticateModule } from '../../auth/authenticate/authenticate.module';
 import { JwtAuthGuard } from './jwt/jwt-auth.guard';
 import { RolesGuard } from '@/domain/_shared/auth/roles/roles.guard';
 
@@ -28,7 +27,6 @@ import { RolesGuard } from '@/domain/_shared/auth/roles/roles.guard';
         };
       },
     }),
-    AuthenticateModule,
   ],
   providers: [JwtStrategy, PrismaService,
     {

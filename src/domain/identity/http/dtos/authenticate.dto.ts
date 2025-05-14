@@ -1,5 +1,5 @@
 import {
-  IsEmail, IsNotEmpty, IsString, IsStrongPassword,
+  IsEmail, IsNotEmpty, IsString,
 } from 'class-validator';
 
 export class AuthenticateDto {
@@ -9,7 +9,6 @@ export class AuthenticateDto {
     email: string;
 
   @IsNotEmpty()
-  @IsStrongPassword()
   @IsString()
     password: string;
 }

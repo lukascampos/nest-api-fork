@@ -16,6 +16,7 @@ export interface AuthenticateOutput {
   roles: UserRole[]
   userId: string;
   name: string;
+  socialName?: string;
 }
 
 type Output = Either<InvalidCredentialsError, AuthenticateOutput>
@@ -52,6 +53,7 @@ export class AuthenticateUseCase {
       roles: user.roles,
       userId: user.id,
       name: user.name,
+      socialName: user.socialName,
     });
   }
 }
