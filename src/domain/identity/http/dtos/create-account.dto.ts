@@ -4,15 +4,15 @@ import {
   MinLength,
 } from 'class-validator';
 
-export class CreateUserDto {
+export class CreateAccountDto {
   @IsString()
   @IsNotEmpty()
-  @MinLength(5)
+  @MinLength(3)
   @MaxLength(255)
     name: string;
 
   @IsString()
-  @MinLength(5)
+  @MinLength(3)
   @MaxLength(255)
   @IsOptional()
     socialName?: string;

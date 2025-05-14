@@ -5,7 +5,7 @@ import {
 import { Response } from 'express';
 import { AuthenticateService } from './authenticate.service';
 import { AuthenticateDto } from './authenticate.dto';
-import { Public } from '../../_shared/auth/decorators/public.decorator';
+import { Public } from '@/domain/_shared/auth/decorators/public.decorator';
 
 @Controller('/sessions')
 export class AuthenticateController {
