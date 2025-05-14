@@ -6,12 +6,12 @@ import { CreateAccountDto } from '../dtos/create-account.dto';
 import { UserAlreadyExistsError } from '../../core/errors/user-already-exists.error';
 import { Public } from '@/domain/_shared/auth/decorators/public.decorator';
 
-@Public()
 @Controller('users')
 export class CreateAccountController {
   constructor(private readonly createAccountUseCase: CreateAccountUseCase) {}
 
   @Post()
+  @Public()
   async handle(@Body() body: CreateAccountDto) {
     const result = await this.createAccountUseCase.execute({ ...body });
 
