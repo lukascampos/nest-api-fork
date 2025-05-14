@@ -10,8 +10,6 @@ async function bootstrap() {
   app.useGlobalPipes(new ValidationPipe());
   const port = configService.get('PORT', { infer: true });
 
-  console.log(`Server running on port ${port}`);
-
   await app.listen(port);
 }
 bootstrap();
