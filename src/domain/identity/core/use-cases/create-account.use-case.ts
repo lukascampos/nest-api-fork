@@ -4,6 +4,7 @@ import { User, UserRole } from '../entities/user.entity';
 import { UsersRepository } from '../repositories/users.repository';
 import { Cryptography } from '../utils/encryption/cryptography';
 import { UserAlreadyExistsError } from '../errors/user-already-exists.error';
+import { JwtEncrypter } from '../utils/encryption/jwt-encrypter';
 
 export interface CreateUserInput {
   email: string;
@@ -15,21 +16,23 @@ export interface CreateUserInput {
   phone: string;
 }
 
-interface CreateUserOutput {
+export interface CreateAccountOutput {
   id: string;
   name: string;
   socialName?: string;
   email: string;
   roles: UserRole[];
+  accessToken: string;
 }
 
-type Output = Either<UserAlreadyExistsError, { user: CreateUserOutput }>
+type Output = Either<UserAlreadyExistsError, CreateAccountOutput>
 
 @Injectable()
 export class CreateAccountUseCase {
   constructor(
     private readonly usersRepository: UsersRepository,
     private readonly cryptography: Cryptography,
+    private readonly jwtEncrypter: JwtEncrypter,
   ) {}
 
   async execute({
@@ -67,13 +70,15 @@ export class CreateAccountUseCase {
 
     await this.usersRepository.save(user);
 
+    const accessToken = await this.jwtEncrypter.encrypt({ sub: user.id, roles: user.roles });
+
     return right({
-      user: {
-        id: user.id,
-        name: user.name,
-        email: user.email,
-        roles: user.roles,
-      },
+      id: user.id,
+      name: user.name,
+      socialName: user.socialName,
+      email: user.email,
+      roles: user.roles,
+      accessToken,
     });
   }
 }

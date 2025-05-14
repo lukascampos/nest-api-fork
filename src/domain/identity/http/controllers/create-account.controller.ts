@@ -25,5 +25,9 @@ export class CreateAccountController {
           throw new BadRequestException(error.message);
       }
     }
+
+    const user = result.value;
+
+    return user;
   }
 }
