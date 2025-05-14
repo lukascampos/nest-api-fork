@@ -3,8 +3,6 @@ import { User, UserRole } from '@/domain/identity/core/entities/user.entity';
 
 export class PrismaUsersMapper {
   static toDomain(user: PrismaUser, profile: PrismaUserProfile): User {
-    console.log('PrismaUsersMapper.toDomain', user, profile);
-
     return User.create({
       name: profile.name,
       socialName: profile.socialName ?? undefined,

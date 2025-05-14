@@ -28,8 +28,6 @@ export class AddModeratorRoleUseCase {
   }: AddModeratorRoleInput): Promise<Output> {
     const user = await this.usersRepository.findById(userId);
 
-    console.log('user', user);
-
     if (!user) {
       return left(new UserNotFoundError(userId));
     }
