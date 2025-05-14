@@ -1,18 +1,23 @@
 import { User } from '../../entities/user.entity';
 import { InMemoryUsersRepository } from '../../repositories/__tests__/in-memory-users.repository';
 import { FakeCryptography } from '../../utils/encryption/__tests__/fake-cryptography';
+import { FakeJwtGenerator } from '../../utils/encryption/__tests__/fake-jwt-generator';
+import { Cryptography } from '../../utils/encryption/cryptography';
+import { JwtEncrypter } from '../../utils/encryption/jwt-encrypter';
 import { CreateAccountUseCase } from '../create-account.use-case';
 
 let sut: CreateAccountUseCase;
 let inMemoryRepository: InMemoryUsersRepository;
-let fakeCryptography: FakeCryptography;
+let fakeCryptography: Cryptography;
+let fakeJwtGenerator: JwtEncrypter;
 
 describe('Create User', () => {
   beforeEach(() => {
     inMemoryRepository = new InMemoryUsersRepository();
     fakeCryptography = new FakeCryptography();
+    fakeJwtGenerator = new FakeJwtGenerator();
 
-    sut = new CreateAccountUseCase(inMemoryRepository, fakeCryptography);
+    sut = new CreateAccountUseCase(inMemoryRepository, fakeCryptography, fakeJwtGenerator);
   });
 
   it('Should be able to create a new user', async () => {
