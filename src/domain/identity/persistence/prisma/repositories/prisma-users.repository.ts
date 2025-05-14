@@ -13,41 +13,39 @@ export class PrismaUsersRepository implements UsersRepository {
       where: {
         email,
       },
-      include: {
-        profile: true,
-      },
-    });
-
-    if (!user || !user.profile) {
-      return null;
-    }
-
-    return PrismaUsersMapper.toDomain({
-      ...user,
-      profile: {
-        ...user.profile,
-      },
-    });
-  }
-
-  async findByCpf(cpf: string): Promise<User | null> {
-    const user = await this.prisma.userProfile.findUnique({
-      where: {
-        cpf,
-      },
-      include: {
-        user: true,
-      },
     });
 
     if (!user) {
       return null;
     }
 
-    return PrismaUsersMapper.toDomain({
-      ...user.user,
-      profile: user,
+    const userProfile = await this.prisma.userProfile.findUnique({
+      where: {
+        userId: user?.id,
+      },
     });
+
+    return PrismaUsersMapper.toDomain(user, userProfile!);
+  }
+
+  async findByCpf(cpf: string): Promise<User | null> {
+    const userProfile = await this.prisma.userProfile.findUnique({
+      where: {
+        cpf,
+      },
+    });
+
+    if (!userProfile) {
+      return null;
+    }
+
+    const user = await this.prisma.user.findUnique({
+      where: {
+        id: userProfile.userId,
+      },
+    });
+
+    return PrismaUsersMapper.toDomain(user!, userProfile);
   }
 
   async save(user: User): Promise<void> {
@@ -65,7 +63,7 @@ export class PrismaUsersRepository implements UsersRepository {
             name: user.name,
             socialName: user.socialName,
             cpf: user.cpf,
-            birthDate: user.birthDate,
+            birthDate: new Date(user.birthDate),
             phone: user.phone,
           },
         },
@@ -79,7 +77,7 @@ export class PrismaUsersRepository implements UsersRepository {
             name: user.name,
             socialName: user.socialName,
             cpf: user.cpf,
-            birthDate: user.birthDate,
+            birthDate: new Date(user.birthDate),
             phone: user.phone,
           },
         },
