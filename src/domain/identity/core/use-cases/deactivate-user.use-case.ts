@@ -1,3 +1,4 @@
+import { Injectable } from '@nestjs/common';
 import { UsersRepository } from '../repositories/users.repository';
 import { UserNotFoundError } from '../errors/user-not-found.error';
 import { Either, left, right } from '@/domain/_shared/utils/either';
@@ -7,7 +8,7 @@ export interface DeactivateUserInput {
   userId: string;
 }
 
-interface DeactivateUserOutput {
+export interface DeactivateUserOutput {
   id: string;
   name: string;
   cpf: string;
@@ -17,6 +18,7 @@ interface DeactivateUserOutput {
 
 type Output = Either<UserNotFoundError, { user: DeactivateUserOutput }>
 
+@Injectable()
 export class DeactivateUserUseCase {
   constructor(
     private readonly usersRepository: UsersRepository,

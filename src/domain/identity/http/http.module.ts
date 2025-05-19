@@ -7,6 +7,8 @@ import { AuthenticateController } from './controllers/authenticate.controller';
 import { AuthenticateUseCase } from '../core/use-cases/authenticate.use-case';
 import { AddModeratorRoleController } from './controllers/update-user-to-moderator.controller';
 import { AddModeratorRoleUseCase } from '../core/use-cases/add-moderator-role.use-case';
+import { DeactivateUserController } from './controllers/deactivate-user.controller';
+import { DeactivateUserUseCase } from '../core/use-cases/deactivate-user.use-case';
 
 @Module({
   imports: [IdentityPersistenceModule, CryptographyModule],
@@ -14,11 +16,13 @@ import { AddModeratorRoleUseCase } from '../core/use-cases/add-moderator-role.us
     AddModeratorRoleController,
     AuthenticateController,
     CreateAccountController,
+    DeactivateUserController,
   ],
   providers: [
     AddModeratorRoleUseCase,
     AuthenticateUseCase,
     CreateAccountUseCase,
+    DeactivateUserUseCase,
   ],
 })
 export class HttpModule {}
