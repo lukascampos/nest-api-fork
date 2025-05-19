@@ -109,7 +109,7 @@ export class PrismaUsersRepository implements UsersRepository {
         profile: {
           update: {
             name: user.name,
-            socialName: user.socialName,
+            socialName: user.socialName === undefined ? null : user.socialName,
             cpf: user.cpf,
             birthDate: new Date(user.birthDate),
             phone: user.phone,

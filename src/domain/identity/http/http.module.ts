@@ -11,6 +11,8 @@ import { DeactivateUserController } from './controllers/deactivate-user.controll
 import { DeactivateUserUseCase } from '../core/use-cases/deactivate-user.use-case';
 import { GetAllUsersUseCase } from '../core/use-cases/gel-all-users.use-case';
 import { GetAllUsersController } from './controllers/get-all-users.controller';
+import { UpdatePersonalProfileDataUseCase } from '../core/use-cases/update-personal-profile-data.use-case';
+import { UpdatePersonalProfileDataController } from './controllers/update-personal-profile-data.controller';
 
 @Module({
   imports: [IdentityPersistenceModule, CryptographyModule],
@@ -20,6 +22,7 @@ import { GetAllUsersController } from './controllers/get-all-users.controller';
     CreateAccountController,
     DeactivateUserController,
     GetAllUsersController,
+    UpdatePersonalProfileDataController,
   ],
   providers: [
     AddModeratorRoleUseCase,
@@ -27,6 +30,7 @@ import { GetAllUsersController } from './controllers/get-all-users.controller';
     CreateAccountUseCase,
     DeactivateUserUseCase,
     GetAllUsersUseCase,
+    UpdatePersonalProfileDataUseCase,
   ],
 })
 export class HttpModule {}

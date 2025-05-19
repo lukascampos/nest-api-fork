@@ -88,7 +88,7 @@ export class User extends Entity<UserProps> {
     return this.props.socialName ?? undefined;
   }
 
-  set socialName(value: string) {
+  set socialName(value: string | undefined) {
     this.props.socialName = value;
     this.touch();
   }
