@@ -1,6 +1,6 @@
 import { IsNotEmpty, IsString } from 'class-validator';
 
-export class CreateArtisanDto {
+export class CreateArtisanApplicationDto {
   @IsString()
   @IsNotEmpty()
     rawMaterial: string;
@@ -18,8 +18,8 @@ export class CreateArtisanDto {
     sicab: string;
 
   @IsNotEmpty()
-    sisabRegistrationDate: string;
+    sicabRegistrationDate: string;
 
   @IsNotEmpty()
-    sisabValidUntil: string;
+    sicabValidUntil: string;
 }

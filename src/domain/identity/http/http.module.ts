@@ -13,6 +13,8 @@ import { GetAllUsersUseCase } from '../core/use-cases/gel-all-users.use-case';
 import { GetAllUsersController } from './controllers/get-all-users.controller';
 import { UpdatePersonalProfileDataUseCase } from '../core/use-cases/update-personal-profile-data.use-case';
 import { UpdatePersonalProfileDataController } from './controllers/update-personal-profile-data.controller';
+import { CreateArtisanApplicationController } from './controllers/create-artisan-application.controller';
+import { CreateArtisanApplicationUseCase } from '../core/use-cases/create-artisan-application.use-case';
 
 @Module({
   imports: [IdentityPersistenceModule, CryptographyModule],
@@ -23,6 +25,9 @@ import { UpdatePersonalProfileDataController } from './controllers/update-person
     DeactivateUserController,
     GetAllUsersController,
     UpdatePersonalProfileDataController,
+
+    // ArtisanModule,
+    CreateArtisanApplicationController,
   ],
   providers: [
     AddModeratorRoleUseCase,
@@ -31,6 +36,9 @@ import { UpdatePersonalProfileDataController } from './controllers/update-person
     DeactivateUserUseCase,
     GetAllUsersUseCase,
     UpdatePersonalProfileDataUseCase,
+
+    // ArtisanModule,
+    CreateArtisanApplicationUseCase,
   ],
 })
 export class HttpModule {}

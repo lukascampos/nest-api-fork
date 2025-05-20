@@ -5,7 +5,6 @@ import { AppService } from './app.service';
 import { envSchema } from './shared/env/env';
 import { TestModule } from './domain/test/test.module';
 import { AuthModule } from './domain/_shared/auth/auth.module';
-import { ArtisanModule } from './domain/identity/artisan/artisan.module';
 import { HttpModule } from './domain/identity/http/http.module';
 
 @Module({
@@ -14,7 +13,7 @@ import { HttpModule } from './domain/identity/http/http.module';
     isGlobal: true,
   }),
   HttpModule,
-  ArtisanModule, AuthModule, TestModule,
+  AuthModule, TestModule,
   ],
   controllers: [AppController],
   providers: [
