@@ -9,7 +9,7 @@ import { AddModeratorRoleController } from './controllers/update-user-to-moderat
 import { AddModeratorRoleUseCase } from '../core/use-cases/add-moderator-role.use-case';
 import { DeactivateUserController } from './controllers/deactivate-user.controller';
 import { DeactivateUserUseCase } from '../core/use-cases/deactivate-user.use-case';
-import { GetAllUsersUseCase } from '../core/use-cases/gel-all-users.use-case';
+import { GetAllUsersUseCase } from '../core/use-cases/get-all-users.use-case';
 import { GetAllUsersController } from './controllers/get-all-users.controller';
 import { UpdatePersonalProfileDataUseCase } from '../core/use-cases/update-personal-profile-data.use-case';
 import { UpdatePersonalProfileDataController } from './controllers/update-personal-profile-data.controller';
