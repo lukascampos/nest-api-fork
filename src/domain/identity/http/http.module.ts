@@ -5,7 +5,7 @@ import { IdentityPersistenceModule } from '../persistence/identity-persistence.m
 import { CryptographyModule } from '@/shared/cryptography/cryptography.module';
 import { AuthenticateController } from './controllers/authenticate.controller';
 import { AuthenticateUseCase } from '../core/use-cases/authenticate.use-case';
-import { AddModeratorRoleController } from './controllers/update-user-to-moderator.controller';
+import { AddModeratorRoleController } from './controllers/add-moderator-role.controller';
 import { AddModeratorRoleUseCase } from '../core/use-cases/add-moderator-role.use-case';
 import { DeactivateUserController } from './controllers/deactivate-user.controller';
 import { DeactivateUserUseCase } from '../core/use-cases/deactivate-user.use-case';
@@ -15,6 +15,8 @@ import { UpdatePersonalProfileDataUseCase } from '../core/use-cases/update-perso
 import { UpdatePersonalProfileDataController } from './controllers/update-personal-profile-data.controller';
 import { CreateArtisanApplicationController } from './controllers/create-artisan-application.controller';
 import { CreateArtisanApplicationUseCase } from '../core/use-cases/create-artisan-application.use-case';
+import { GetAllArtisanApplicationsWithUserNamesController } from './controllers/get-all-artisan-applications-with-user-names.controller';
+import { GetAllArtisanApplicationsWithUserNamesUseCase } from '../core/use-cases/get-all-artisan-applications-with-user-names.use-case';
 
 @Module({
   imports: [IdentityPersistenceModule, CryptographyModule],
@@ -28,6 +30,7 @@ import { CreateArtisanApplicationUseCase } from '../core/use-cases/create-artisa
 
     // ArtisanModule,
     CreateArtisanApplicationController,
+    GetAllArtisanApplicationsWithUserNamesController,
   ],
   providers: [
     AddModeratorRoleUseCase,
@@ -39,6 +42,7 @@ import { CreateArtisanApplicationUseCase } from '../core/use-cases/create-artisa
 
     // ArtisanModule,
     CreateArtisanApplicationUseCase,
+    GetAllArtisanApplicationsWithUserNamesUseCase,
   ],
 })
 export class HttpModule {}

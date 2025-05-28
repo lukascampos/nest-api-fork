@@ -1,3 +1,4 @@
+import { Injectable } from '@nestjs/common';
 import { ArtisanApplicationsRepository } from '../repositories/artisan-applications.repository';
 import { ArtisanApplication, ArtisanApplicationStatus } from '../entities/artisan-application.entity';
 import { Either, left, right } from '@/domain/_shared/utils/either';
@@ -18,6 +19,7 @@ type Output = Either <
   { artisanApplications: GetAllArtisanApplicationsWithUserNamesOutput[] }
 >
 
+@Injectable()
 export class GetAllArtisanApplicationsWithUserNamesUseCase {
   constructor(
     private readonly artisanApplicationsRepository: ArtisanApplicationsRepository,

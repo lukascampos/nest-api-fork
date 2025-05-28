@@ -22,6 +22,16 @@ export class PrismaArtisanApplicationsRepository implements ArtisanApplicationsR
     return artisanApplication.map((app) => PrismaArtisanApplicationsMapper.toDomain(app));
   }
 
+  async listAll(): Promise<ArtisanApplication[]> {
+    const artisanApplications = await this.prisma.artisanApplication.findMany();
+
+    if (artisanApplications.length === 0) {
+      return [];
+    }
+
+    return artisanApplications.map((ap) => PrismaArtisanApplicationsMapper.toDomain(ap));
+  }
+
   async save(artisanApplication: ArtisanApplication): Promise<void> {
     await this.prisma.artisanApplication.upsert({
       where: {
