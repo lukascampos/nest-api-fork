@@ -22,6 +22,20 @@ export class PrismaArtisanApplicationsRepository implements ArtisanApplicationsR
     return artisanApplication.map((app) => PrismaArtisanApplicationsMapper.toDomain(app));
   }
 
+  async findById(id: string): Promise<ArtisanApplication | null> {
+    const artisanApplication = await this.prisma.artisanApplication.findUnique({
+      where: {
+        id,
+      },
+    });
+
+    if (!artisanApplication) {
+      return null;
+    }
+
+    return PrismaArtisanApplicationsMapper.toDomain(artisanApplication);
+  }
+
   async listAll(): Promise<ArtisanApplication[]> {
     const artisanApplications = await this.prisma.artisanApplication.findMany();
 

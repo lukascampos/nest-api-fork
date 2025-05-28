@@ -9,6 +9,11 @@ export class InMemoryArtisanApplicationsRepository implements ArtisanApplication
     return artisanApplications.length > 0 ? artisanApplications : null;
   }
 
+  async findById(id: string): Promise<ArtisanApplication | null> {
+    const artisanApplication = this.items.find((item) => item.id === id);
+    return artisanApplication || null;
+  }
+
   async listAll(): Promise<ArtisanApplication[]> {
     return this.items;
   }

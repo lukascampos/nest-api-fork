@@ -17,6 +17,8 @@ import { CreateArtisanApplicationController } from './controllers/create-artisan
 import { CreateArtisanApplicationUseCase } from '../core/use-cases/create-artisan-application.use-case';
 import { GetAllArtisanApplicationsWithUserNamesController } from './controllers/get-all-artisan-applications-with-user-names.controller';
 import { GetAllArtisanApplicationsWithUserNamesUseCase } from '../core/use-cases/get-all-artisan-applications-with-user-names.use-case';
+import { GetArtisanApplicationDetailsController } from './controllers/get-artisan-application-details.controller';
+import { GetArtisanApplicationDetailsUseCase } from '../core/use-cases/get-artisan-application-details.use-case';
 
 @Module({
   imports: [IdentityPersistenceModule, CryptographyModule],
@@ -31,6 +33,7 @@ import { GetAllArtisanApplicationsWithUserNamesUseCase } from '../core/use-cases
     // ArtisanModule,
     CreateArtisanApplicationController,
     GetAllArtisanApplicationsWithUserNamesController,
+    GetArtisanApplicationDetailsController,
   ],
   providers: [
     AddModeratorRoleUseCase,
@@ -43,6 +46,7 @@ import { GetAllArtisanApplicationsWithUserNamesUseCase } from '../core/use-cases
     // ArtisanModule,
     CreateArtisanApplicationUseCase,
     GetAllArtisanApplicationsWithUserNamesUseCase,
+    GetArtisanApplicationDetailsUseCase,
   ],
 })
 export class HttpModule {}
