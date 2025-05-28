@@ -48,7 +48,7 @@ export class GetArtisanApplicationDetailsUseCase {
     const user = await this.usersRepository.findById(artisanApplication.userId);
 
     if (!user) {
-      return left(new ArtisanApplicationNotFoundError(artisanApplicationId));
+      return left(new UserNotFoundError(artisanApplication.userId));
     }
 
     return right({

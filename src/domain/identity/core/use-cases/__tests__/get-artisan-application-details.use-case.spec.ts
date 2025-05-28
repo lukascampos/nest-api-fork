@@ -1,6 +1,7 @@
 import { ArtisanApplication } from '../../entities/artisan-application.entity';
 import { User } from '../../entities/user.entity';
 import { ArtisanApplicationNotFoundError } from '../../errors/artisan-application-not-found.error';
+import { UserNotFoundError } from '../../errors/user-not-found.error';
 import { InMemoryArtisanApplicationsRepository } from '../../repositories/__tests__/in-memory-artisan-applications.repository';
 import { InMemoryUsersRepository } from '../../repositories/__tests__/in-memory-users.repository';
 import { GetArtisanApplicationDetailsUseCase } from '../get-artisan-application-details.use-case';
@@ -75,5 +76,14 @@ describe('get artisan applications details use case', () => {
 
     expect(result.isLeft()).toBe(true);
     expect(result.value).toBeInstanceOf(ArtisanApplicationNotFoundError);
+  });
+
+  it('should return error if no user was found', async () => {
+    artisanApplicationsRepository.save(artisanApplication);
+
+    const result = await sut.execute({ artisanApplicationId: 'artisan-application-id' });
+
+    expect(result.isLeft()).toBe(true);
+    expect(result.value).toBeInstanceOf(UserNotFoundError);
   });
 });
