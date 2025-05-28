@@ -1,7 +1,7 @@
 import { User } from '../../entities/user.entity';
 import { NoUsersFoundError } from '../../errors/no-users-found.error';
 import { InMemoryUsersRepository } from '../../repositories/__tests__/in-memory-users.repository';
-import { GetAllUsersUseCase } from '../gel-all-users.use-case';
+import { GetAllUsersUseCase } from '../get-all-users.use-case';
 
 let sut: GetAllUsersUseCase;
 let inMemoryRepository: InMemoryUsersRepository;
