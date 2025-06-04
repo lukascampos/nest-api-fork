@@ -8,6 +8,9 @@ export class CreateDisableArtisanRequestDto {
   @IsUUID('all', { message: 'Artisan ID must be a valid UUID' })
     artisanId: string;
 
+  @IsNotEmpty({ message: 'reviewerId ID is required' })
+    reviewerId: string;
+
   @IsNotEmpty({ message: 'Reason is required' })
   @IsString()
     reason: string;
