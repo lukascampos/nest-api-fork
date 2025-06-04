@@ -2,7 +2,6 @@ import { Module } from '@nestjs/common';
 import { CreateAccountController } from './controllers/create-account.controller';
 import { CreateAccountUseCase } from '../core/use-cases/create-account.use-case';
 import { IdentityPersistenceModule } from '../persistence/identity-persistence.module';
-import { CryptographyModule } from '@/shared/cryptography/cryptography.module';
 import { AuthenticateController } from './controllers/authenticate.controller';
 import { AuthenticateUseCase } from '../core/use-cases/authenticate.use-case';
 import { AddModeratorRoleController } from './controllers/add-moderator-role.controller';
@@ -21,7 +20,7 @@ import { GetArtisanApplicationDetailsController } from './controllers/get-artisa
 import { GetArtisanApplicationDetailsUseCase } from '../core/use-cases/get-artisan-application-details.use-case';
 
 @Module({
-  imports: [IdentityPersistenceModule, CryptographyModule],
+  imports: [IdentityPersistenceModule],
   controllers: [
     AddModeratorRoleController,
     AuthenticateController,

@@ -1,11 +1,10 @@
 import { Injectable } from '@nestjs/common';
 import { PrismaService } from '@/shared/prisma/prisma.service';
-import { ArtisanApplicationsRepository } from '@/domain/identity/core/repositories/artisan-applications.repository';
 import { ArtisanApplication } from '@/domain/identity/core/entities/artisan-application.entity';
 import { PrismaArtisanApplicationsMapper } from '../mappers/prisma-artisan-applications.mappers';
 
 @Injectable()
-export class PrismaArtisanApplicationsRepository implements ArtisanApplicationsRepository {
+export class PrismaArtisanApplicationsRepository {
   constructor(private readonly prisma: PrismaService) {}
 
   async findByUserId(userId: string): Promise<ArtisanApplication[] | null> {
