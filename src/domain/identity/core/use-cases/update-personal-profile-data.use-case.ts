@@ -1,7 +1,7 @@
 import { Injectable } from '@nestjs/common';
-import { UsersRepository } from '../repositories/users.repository';
 import { UserNotFoundError } from '../errors/user-not-found.error';
 import { Either, left, right } from '@/domain/_shared/utils/either';
+import { PrismaUsersRepository } from '../../persistence/prisma/repositories/prisma-users.repository';
 
 export interface UpdatePersonalProfileDataInput {
   userId: string;
@@ -21,7 +21,7 @@ type Output = Either<UserNotFoundError, { user: UpdatePersonalProfileDataOutput 
 @Injectable()
 export class UpdatePersonalProfileDataUseCase {
   constructor(
-    private readonly usersRepository: UsersRepository,
+    private readonly usersRepository: PrismaUsersRepository,
   ) {}
 
   async execute({

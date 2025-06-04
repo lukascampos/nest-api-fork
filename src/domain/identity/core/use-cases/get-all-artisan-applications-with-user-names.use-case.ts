@@ -1,9 +1,9 @@
 import { Injectable } from '@nestjs/common';
-import { ArtisanApplicationsRepository } from '../repositories/artisan-applications.repository';
 import { ArtisanApplication, ArtisanApplicationStatus } from '../entities/artisan-application.entity';
 import { Either, left, right } from '@/domain/_shared/utils/either';
-import { UsersRepository } from '../repositories/users.repository';
 import { NoArtisanApplicationsFoundError } from '../errors/no-artisan-applications-found.error';
+import { PrismaArtisanApplicationsRepository } from '../../persistence/prisma/repositories/prisma-artisan-applications.repository';
+import { PrismaUsersRepository } from '../../persistence/prisma/repositories/prisma-users.repository';
 
 export interface GetAllArtisanApplicationsWithUserNamesOutput {
   id: string;
@@ -22,8 +22,8 @@ type Output = Either <
 @Injectable()
 export class GetAllArtisanApplicationsWithUserNamesUseCase {
   constructor(
-    private readonly artisanApplicationsRepository: ArtisanApplicationsRepository,
-    private readonly usersRepository: UsersRepository,
+    private readonly artisanApplicationsRepository: PrismaArtisanApplicationsRepository,
+    private readonly usersRepository: PrismaUsersRepository,
   ) {}
 
   async execute(): Promise<Output> {
