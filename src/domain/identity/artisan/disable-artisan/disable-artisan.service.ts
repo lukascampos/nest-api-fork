@@ -3,7 +3,7 @@ import {
 } from '@nestjs/common';
 import { Prisma, RequestStatus, Role } from '@prisma/client';
 import { PrismaService } from '@/shared/prisma/prisma.service';
-import { UserPayload } from '@/domain/auth/jwt.strategy';
+import { UserPayload } from '@/domain/_shared/auth/jwt/jwt.strategy';
 import { ReviewDisableArtisanRequestDto } from './disable-artisan.dto';
 
 @Injectable()
