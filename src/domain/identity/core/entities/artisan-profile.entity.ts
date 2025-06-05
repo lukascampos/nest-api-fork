@@ -9,6 +9,7 @@ export interface ArtisanProfileProps {
   sicab: string;
   sicabRegistrationDate: Date;
   sicabValidUntil: Date;
+  isDisabled?: boolean;
 }
 
 export class ArtisanProfile extends Entity<ArtisanProfileProps> {
@@ -20,6 +21,7 @@ export class ArtisanProfile extends Entity<ArtisanProfileProps> {
   ): ArtisanProfile {
     return new ArtisanProfile({
       ...props,
+      isDisabled: props.isDisabled ?? false,
     }, id, createdAt, updatedAt);
   }
 
@@ -58,5 +60,19 @@ export class ArtisanProfile extends Entity<ArtisanProfileProps> {
 
   get sicabValidUntil() {
     return this.props.sicabValidUntil;
+  }
+
+  get isDisabled() {
+    return this.props.isDisabled ?? false;
+  }
+
+  enable() {
+    this.props.isDisabled = false;
+    this.touch();
+  }
+
+  disable() {
+    this.props.isDisabled = true;
+    this.touch();
   }
 }
