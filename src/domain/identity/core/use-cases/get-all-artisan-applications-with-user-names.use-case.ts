@@ -8,6 +8,7 @@ import { PrismaUsersRepository } from '../../persistence/prisma/repositories/pri
 export interface GetAllArtisanApplicationsWithUserNamesOutput {
   id: string;
   artisanName: string;
+  email: string;
   rawMaterial: string;
   technique: string;
   sicab: string;
@@ -43,6 +44,7 @@ export class GetAllArtisanApplicationsWithUserNamesUseCase {
       return {
         id: ap.id,
         artisanName: user?.name,
+        email: user?.email,
         rawMaterial: ap.rawMaterial,
         technique: ap.technique,
         sicab: ap.sicab,
