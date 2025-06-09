@@ -118,7 +118,9 @@ export class ModerateArtisanApplicationUseCase {
     application.approveApplication(reviewerId);
     await this.artisanApplicationRepository.save(application);
 
-    user.roles.push(UserRole.ARTISAN);
+    if (!user.roles.includes(UserRole.ARTISAN)) {
+      user.roles.push(UserRole.ARTISAN);
+    }
     await this.userRepository.save(user);
   }
 
