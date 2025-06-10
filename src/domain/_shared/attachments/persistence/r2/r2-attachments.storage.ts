@@ -17,7 +17,7 @@ export class R2AttachmentsStorage {
       private readonly s3Client: S3Client,
       private readonly config: ConfigService<Env, true>,
   ) {
-    const accountId = this.config.get('CLOUDFARE_ACCOUNT_ID', { infer: true });
+    const accountId = this.config.get('CLOUDFLARE_ACCOUNT_ID', { infer: true });
 
     this.client = new S3Client({
       endpoint: `https://${accountId}.r2.cloudflarestorage.com/`,
