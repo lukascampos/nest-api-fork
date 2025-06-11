@@ -29,7 +29,6 @@ export class ReviewDisableArtisanUseCase {
     if (input.status === RequestStatus.APPROVED) {
       application.approve(input.reviewerId);
     } else {
-      // para REJECTED certifique-se que rejectionReason não é undefined
       application.reject(input.rejectionReason!, input.reviewerId);
     }
     await this.repo.save(application);
