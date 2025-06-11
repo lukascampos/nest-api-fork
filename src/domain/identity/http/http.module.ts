@@ -1,7 +1,6 @@
 import { Module } from '@nestjs/common';
 import { PrismaArtisanApplicationsRepository } from '../persistence/prisma/repositories/prisma-artisan-applications.repository';
 import { IdentityPersistenceModule } from '../persistence/identity-persistence.module';
-import { CryptographyModule } from '@/shared/cryptography/cryptography.module';
 import { CreateAccountController } from './controllers/create-account.controller';
 import { AuthenticateController } from './controllers/authenticate.controller';
 import { AddModeratorRoleController } from './controllers/add-moderator-role.controller';
@@ -21,11 +20,11 @@ import { UpdatePersonalProfileDataUseCase } from '../core/use-cases/update-perso
 import { CreateArtisanApplicationUseCase } from '../core/use-cases/create-artisan-application.use-case';
 import { GetAllArtisanApplicationsWithUserNamesUseCase } from '../core/use-cases/get-all-artisan-applications-with-user-names.use-case';
 import { GetArtisanApplicationDetailsUseCase } from '../core/use-cases/get-artisan-application-details.use-case';
-import { RequestDisableArtisanUseCase } from '../core/use-cases/request-disable-artisan.use-case';
-import { ReviewDisableArtisanUseCase } from '../core/use-cases/review-disable-artisan.use-case';
+import { ModerateArtisanApplicationController } from './controllers/moderate-artisan-application.controller';
+import { ModerateArtisanApplicationUseCase } from '../core/use-cases/moderate-artisan-application.use-case';
 
 @Module({
-  imports: [IdentityPersistenceModule, CryptographyModule],
+  imports: [IdentityPersistenceModule],
   controllers: [
     AddModeratorRoleController,
     AuthenticateController,
@@ -33,10 +32,10 @@ import { ReviewDisableArtisanUseCase } from '../core/use-cases/review-disable-ar
     DeactivateUserController,
     GetAllUsersController,
     UpdatePersonalProfileDataController,
-    DisableArtisanController,
     CreateArtisanApplicationController,
     GetAllArtisanApplicationsWithUserNamesController,
     GetArtisanApplicationDetailsController,
+    ModerateArtisanApplicationController,
   ],
   providers: [
     AddModeratorRoleUseCase,
@@ -45,15 +44,10 @@ import { ReviewDisableArtisanUseCase } from '../core/use-cases/review-disable-ar
     DeactivateUserUseCase,
     GetAllUsersUseCase,
     UpdatePersonalProfileDataUseCase,
-    RequestDisableArtisanUseCase,
-    ReviewDisableArtisanUseCase,
     CreateArtisanApplicationUseCase,
     GetAllArtisanApplicationsWithUserNamesUseCase,
     GetArtisanApplicationDetailsUseCase,
-    {
-      provide: 'ArtisanApplicationsRepository',
-      useClass: PrismaArtisanApplicationsRepository,
-    },
+    ModerateArtisanApplicationUseCase,
   ],
 })
 export class HttpModule {}

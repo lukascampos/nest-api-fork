@@ -1,10 +1,10 @@
 import { Injectable } from '@nestjs/common';
 import { Either, left, right } from '@/domain/_shared/utils/either';
 import { UserRole } from '../entities/user.entity';
-import { UsersRepository } from '../repositories/users.repository';
 import { UserAlreadyExistsError } from '../errors/user-already-exists.error';
 import { UserNotFoundError } from '../errors/user-not-found.error';
 import { PropertyAlreadyExists } from '../errors/property-already-exists.error';
+import { PrismaUsersRepository } from '../../persistence/prisma/repositories/prisma-users.repository';
 
 export interface AddModeratorRoleInput {
   userId: string;
@@ -20,7 +20,7 @@ type Output = Either<UserAlreadyExistsError, AddModeratorRoleOutput>
 @Injectable()
 export class AddModeratorRoleUseCase {
   constructor(
-    private readonly usersRepository: UsersRepository,
+    private readonly usersRepository: PrismaUsersRepository,
   ) {}
 
   async execute({

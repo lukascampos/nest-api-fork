@@ -1,10 +1,10 @@
 import { Injectable } from '@nestjs/common';
+import { JwtService } from '@nestjs/jwt';
+import { hash } from 'bcryptjs';
 import { Either, left, right } from '@/domain/_shared/utils/either';
 import { User, UserRole } from '../entities/user.entity';
-import { UsersRepository } from '../repositories/users.repository';
-import { Cryptography } from '../utils/encryption/cryptography';
 import { UserAlreadyExistsError } from '../errors/user-already-exists.error';
-import { JwtEncrypter } from '../utils/encryption/jwt-encrypter';
+import { PrismaUsersRepository } from '../../persistence/prisma/repositories/prisma-users.repository';
 
 export interface CreateUserInput {
   email: string;
@@ -30,9 +30,8 @@ type Output = Either<UserAlreadyExistsError, CreateAccountOutput>
 @Injectable()
 export class CreateAccountUseCase {
   constructor(
-    private readonly usersRepository: UsersRepository,
-    private readonly cryptography: Cryptography,
-    private readonly jwtEncrypter: JwtEncrypter,
+    private readonly usersRepository: PrismaUsersRepository,
+    private readonly jwt: JwtService,
   ) {}
 
   async execute({
@@ -56,7 +55,7 @@ export class CreateAccountUseCase {
       return left(new UserAlreadyExistsError(cpf));
     }
 
-    const hashedPassword = await this.cryptography.hash(password);
+    const hashedPassword = await hash(password, 10);
 
     const user = User.create({
       name,
@@ -70,7 +69,7 @@ export class CreateAccountUseCase {
 
     await this.usersRepository.save(user);
 
-    const accessToken = await this.jwtEncrypter.encrypt({ sub: user.id, roles: user.roles });
+    const accessToken = this.jwt.sign({ sub: user.id, roles: user.roles });
 
     return right({
       id: user.id,

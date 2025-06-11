@@ -2,9 +2,9 @@ import { Injectable } from '@nestjs/common';
 import { Either, left, right } from '@/domain/_shared/utils/either';
 import { ArtisanApplication, ArtisanApplicationStatus } from '../entities/artisan-application.entity';
 import { PendingApplicationAlreadyExistsError } from '../errors/pending-application-already-exists.error';
-import { ArtisanApplicationsRepository } from '../repositories/artisan-applications.repository';
-import { UsersRepository } from '../repositories/users.repository';
 import { UserNotFoundError } from '../errors/user-not-found.error';
+import { PrismaArtisanApplicationsRepository } from '../../persistence/prisma/repositories/prisma-artisan-applications.repository';
+import { PrismaUsersRepository } from '../../persistence/prisma/repositories/prisma-users.repository';
 
 export interface CreateArtisanApplicationInput {
   userId: string;
@@ -21,8 +21,8 @@ type Output = Either<PendingApplicationAlreadyExistsError, ArtisanApplication>
 @Injectable()
 export class CreateArtisanApplicationUseCase {
   constructor(
-    private readonly artisanApplicationsRepository: ArtisanApplicationsRepository,
-    private readonly usersRepository: UsersRepository,
+    private readonly artisanApplicationsRepository: PrismaArtisanApplicationsRepository,
+    private readonly usersRepository: PrismaUsersRepository,
   ) {}
 
   async execute({

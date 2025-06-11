@@ -2,7 +2,7 @@ import { Injectable } from '@nestjs/common';
 import { Either, left, right } from '@/domain/_shared/utils/either';
 import { User, UserRole } from '../entities/user.entity';
 import { NoUsersFoundError } from '../errors/no-users-found.error';
-import { UsersRepository } from '../repositories/users.repository';
+import { PrismaUsersRepository } from '../../persistence/prisma/repositories/prisma-users.repository';
 
 export interface GetAllUsersOutput {
   name: string;
@@ -20,7 +20,7 @@ type Output = Either<NoUsersFoundError, { users: GetAllUsersOutput[] }>
 @Injectable()
 export class GetAllUsersUseCase {
   constructor(
-    private readonly usersRepository: UsersRepository,
+    private readonly usersRepository: PrismaUsersRepository,
   ) {}
 
   async execute(): Promise<Output> {
