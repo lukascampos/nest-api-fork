@@ -26,10 +26,12 @@ export class ReviewDisableArtisanUseCase {
     if (input.status === RequestStatus.REJECTED && !input.rejectionReason) {
       throw new Error('É necessário fornecer um motivo para reprovação');
     }
-    application.status = input.status;
-    application.reviewerId = input.reviewerId;
-    application.rejectionReason = input.rejectionReason ?? null;
-    application.updatedAt = new Date();
+    if (input.status === RequestStatus.APPROVED) {
+      application.approve(input.reviewerId);
+    } else {
+      // para REJECTED certifique-se que rejectionReason não é undefined
+      application.reject(input.rejectionReason!, input.reviewerId);
+    }
     await this.repo.save(application);
     return application;
   }

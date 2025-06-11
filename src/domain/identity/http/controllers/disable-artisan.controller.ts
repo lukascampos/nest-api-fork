@@ -1,12 +1,14 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import {
   Controller, Post, Patch, Req, Body, UseGuards, HttpException, HttpStatus,
 } from '@nestjs/common';
-import { JwtAuthGuard } from '@/shared/guards/jwt-auth.guard';
-import { RolesGuard } from '@/shared/guards/roles.guard';
-import { Roles } from '@/shared/decorators/roles.decorator';
+import { JwtAuthGuard } from '@/domain/_shared/auth/jwt/jwt-auth.guard';
+import { RolesGuard } from '@/domain/_shared/auth/roles/roles.guard';
+import { Roles } from '@/domain/_shared/auth/decorators/roles.decorator';
 import { RequestDisableArtisanUseCase } from '../../core/use-cases/request-disable-artisan.use-case';
 import { ReviewDisableArtisanUseCase } from '../../core/use-cases/review-disable-artisan.use-case';
-import { ReviewDisableArtisanDto } from '../dtos/disable-artisan.dto';
+import { ReviewDisableArtisanRequestDto } from '../dtos/disable-artisan.dto';
+import { UserRole } from '../../core/entities/user.entity';
 
 @Controller('artisans')
 export class DisableArtisanController {
@@ -27,8 +29,8 @@ export class DisableArtisanController {
 
   @Patch('disable')
   @UseGuards(JwtAuthGuard, RolesGuard)
-  @Roles('ADMIN', 'MODERATOR')
-  async review(@Body() dto: ReviewDisableArtisanDto, @Req() req: any) {
+  @Roles(UserRole.ADMIN, UserRole.MODERATOR)
+  async review(@Body() dto: ReviewDisableArtisanRequestDto, @Req() req: any) {
     try {
       return await this.reviewUseCase.execute({
         id: dto.id,

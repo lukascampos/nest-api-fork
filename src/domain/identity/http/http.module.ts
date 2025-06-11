@@ -23,9 +23,6 @@ import { GetArtisanApplicationDetailsUseCase } from '../core/use-cases/get-artis
 import { RequestDisableArtisanUseCase } from '../core/use-cases/request-disable-artisan.use-case';
 import { ReviewDisableArtisanUseCase } from '../core/use-cases/review-disable-artisan.use-case';
 
-// Repositories
-import { PrismaArtisanDeletionRequestRepository } from '../persistence/prisma/repositories/prisma-artisan-deletion-request.repository';
-
 @Module({
   imports: [IdentityPersistenceModule, CryptographyModule],
   controllers: [
@@ -52,10 +49,6 @@ import { PrismaArtisanDeletionRequestRepository } from '../persistence/prisma/re
     CreateArtisanApplicationUseCase,
     GetAllArtisanApplicationsWithUserNamesUseCase,
     GetArtisanApplicationDetailsUseCase,
-    {
-      provide: 'ArtisanDeletionRequestRepository',
-      useClass: PrismaArtisanDeletionRequestRepository,
-    },
   ],
 })
 export class HttpModule {}

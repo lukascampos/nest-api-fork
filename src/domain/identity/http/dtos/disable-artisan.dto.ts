@@ -28,4 +28,8 @@ export class ReviewDisableArtisanRequestDto {
   @IsOptional()
   @IsString()
     reason?: string;
+
+  id: string;
+
+  rejectionReason: string | undefined;
 }
