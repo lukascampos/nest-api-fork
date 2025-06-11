@@ -1,4 +1,5 @@
 import { Module } from '@nestjs/common';
+import { PrismaArtisanApplicationsRepository } from '../persistence/prisma/repositories/prisma-artisan-applications.repository';
 import { IdentityPersistenceModule } from '../persistence/identity-persistence.module';
 import { CryptographyModule } from '@/shared/cryptography/cryptography.module';
 import { CreateAccountController } from './controllers/create-account.controller';
@@ -49,6 +50,10 @@ import { ReviewDisableArtisanUseCase } from '../core/use-cases/review-disable-ar
     CreateArtisanApplicationUseCase,
     GetAllArtisanApplicationsWithUserNamesUseCase,
     GetArtisanApplicationDetailsUseCase,
+    {
+      provide: 'ArtisanApplicationsRepository',
+      useClass: PrismaArtisanApplicationsRepository,
+    },
   ],
 })
 export class HttpModule {}
