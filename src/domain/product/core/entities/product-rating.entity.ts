@@ -1,21 +1,21 @@
 import { Entity } from '@/domain/_shared/core/entities/entity';
 
-export interface ProductCommentProps {
+export interface ProductRatingProps {
   productId: string;
   userId: string;
-  content?: string;
+  comment?: string;
   rating: number;
 }
 
-export class ProductComment extends Entity<ProductCommentProps> {
+export class ProductRating extends Entity<ProductRatingProps> {
   static create(
-    props: ProductCommentProps,
+    props: ProductRatingProps,
     id?: string,
     createdAt?: Date,
     updatedAt?: Date,
-  ): ProductComment {
-    const productComment = new ProductComment(props, id, createdAt, updatedAt);
-    return productComment;
+  ): ProductRating {
+    const productRating = new ProductRating(props, id, createdAt, updatedAt);
+    return productRating;
   }
 
   get productId() {
@@ -27,12 +27,12 @@ export class ProductComment extends Entity<ProductCommentProps> {
   }
 
   get content(): string | undefined {
-    return this.props.content;
+    return this.props.comment;
   }
 
   set content(value: string) {
     this.touch();
-    this.props.content = value;
+    this.props.comment = value;
   }
 
   get rating() {
