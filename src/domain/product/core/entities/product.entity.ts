@@ -22,7 +22,12 @@ export class Product extends Entity<ProductProps> {
     createdAt?: Date,
     updatedAt?: Date,
   ): Product {
-    const product = new Product(props, id, createdAt, updatedAt);
+    const product = new Product({
+      ...props,
+      isActive: props.isActive ?? true,
+      likesCount: props.likesCount ?? 0,
+      averageRating: props.averageRating ?? 0,
+    }, id, createdAt, updatedAt);
 
     return product;
   }

@@ -3,7 +3,7 @@ import { Entity } from '@/domain/_shared/core/entities/entity';
 export interface ProductCommentProps {
   productId: string;
   userId: string;
-  content: string;
+  content?: string;
   rating: number;
 }
 
@@ -26,7 +26,7 @@ export class ProductComment extends Entity<ProductCommentProps> {
     return this.props.userId;
   }
 
-  get content() {
+  get content(): string | undefined {
     return this.props.content;
   }
 
