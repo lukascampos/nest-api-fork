@@ -6,10 +6,10 @@ export interface ProductProps {
   title: string;
   description: string;
   priceInCents: number;
-  categoryId: string;
+  categoryId: number;
   stock: number;
   likesCount: number;
-  photos: ProductPhotosList;
+  photos?: ProductPhotosList;
   coverPhotoId?: string;
   averageRating?: number;
   isActive?: boolean;
@@ -67,7 +67,7 @@ export class Product extends Entity<ProductProps> {
     return this.props.categoryId;
   }
 
-  set categoryId(value: string) {
+  set categoryId(value: number) {
     this.touch();
     this.props.categoryId = value;
   }
@@ -85,7 +85,7 @@ export class Product extends Entity<ProductProps> {
     return this.props.likesCount;
   }
 
-  get photos() {
+  get photos(): ProductPhotosList | undefined {
     return this.props.photos;
   }
 
