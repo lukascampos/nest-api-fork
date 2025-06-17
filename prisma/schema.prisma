@@ -135,7 +135,7 @@ model Product {
   createdAt     DateTime @default(now()) @map("created_at")
   updatedAt     DateTime @updatedAt @map("updated_at")
 
-  artisan         ArtisanProfile   @relation(fields: [artisanId], references: [id])
+  artisan         ArtisanProfile   @relation(fields: [artisanId], references: [userId])
   productCategory ProductCategory? @relation(fields: [categoryId], references: [id])
   productRating   ProductRating[]
   productLike     ProductLike[]
