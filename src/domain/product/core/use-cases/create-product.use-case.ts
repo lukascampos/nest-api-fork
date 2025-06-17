@@ -1,9 +1,13 @@
-import { Either, right } from '@/domain/_shared/utils/either';
+import { Either, left, right } from '@/domain/_shared/utils/either';
 import { Product } from '../entities/product.entity';
 import { PrismaProductsRepository } from '../../persistence/prisma/repositories/prisma-products.repository';
 import { ProductPhoto } from '../entities/product-photo.entity';
 import { ProductPhotosList } from '../entities/product-photos-list.entity';
 import { Injectable } from '@nestjs/common';
+import { PrismaArtisanProfilesRepository } from '@/domain/identity/persistence/prisma/repositories/prisma-artisan-profiles.repository';
+import { UserNotFoundError } from '@/domain/identity/core/errors/user-not-found.error';
+import { PrismaProductCategoriesRepository } from '../../persistence/prisma/repositories/prisma-product-categories.repository';
+import { ProductCategoryNotFound } from '../errors/product-category-not-found.error';
 
 export interface CreateProductInput {
   artisanId: string;
@@ -38,6 +42,8 @@ type Output = Either<Error, CreateProductOutput>;
 export class CreateProductUseCase {
   constructor(
     private readonly productsRepository: PrismaProductsRepository,
+    private readonly artisanRepository: PrismaArtisanProfilesRepository,
+    private readonly productCategoriesRepository: PrismaProductCategoriesRepository,
   ) {}
 
   async execute({
@@ -50,6 +56,18 @@ export class CreateProductUseCase {
     photoIds,
     coverPhotoId,
   }: CreateProductInput): Promise<Output> {
+    const artisan = await this.artisanRepository.findByUserId(artisanId);
+
+    if (!artisan) {
+      return left(new UserNotFoundError(artisanId));
+    }
+
+    const productCategoryExists = await this.productCategoriesRepository.findById(categoryId);
+
+    if (!productCategoryExists) {
+      return left(new ProductCategoryNotFound(categoryId));
+    }
+
     const product = Product.create({
       artisanId,
       title,

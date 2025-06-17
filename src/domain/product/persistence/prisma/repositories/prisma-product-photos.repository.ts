@@ -14,8 +14,6 @@ export class PrismaProductPhotosRepository {
 
     const data = PrismaProductPhotosMapper.toPrismaUpdateMany(photos);
     
-    console.log(data)
-
     await this.prisma.attachment.updateMany(data);
   }
 
