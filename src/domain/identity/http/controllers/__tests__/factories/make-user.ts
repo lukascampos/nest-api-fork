@@ -1,9 +1,9 @@
-import { User, UserProps, UserRole } from '@/domain/identity/core/entities/user.entity';
-import { PrismaUsersMapper } from '@/domain/identity/persistence/prisma/mappers/prisma-users.mapper';
-import { PrismaService } from '@/shared/prisma/prisma.service';
 import { faker } from '@faker-js/faker';
 import { Injectable } from '@nestjs/common';
 import { randomUUID } from 'crypto';
+import { User, UserProps, UserRole } from '@/domain/identity/core/entities/user.entity';
+import { PrismaUsersMapper } from '@/domain/identity/persistence/prisma/mappers/prisma-users.mapper';
+import { PrismaService } from '@/shared/prisma/prisma.service';
 
 export function makeUser(
   override: Partial<UserProps> = {},
