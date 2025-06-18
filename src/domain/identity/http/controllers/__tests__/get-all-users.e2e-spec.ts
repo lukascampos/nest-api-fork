@@ -29,16 +29,14 @@ describe('get all users (E2E)', () => {
   });
 
   test('[GET] /users', async () => {
-    const user = await factory.makePrismaUser();
+    await factory.makePrismaUser();
     const adminUser = await factory.makePrismaUser({ roles: [UserRole.ADMIN] });
 
     const accessToken = jwt.sign({ sub: adminUser.id, roles: adminUser.roles });
 
     const response = await request(app.getHttpServer())
-      .get(`/users`)
+      .get('/users')
       .set('Authorization', `Bearer ${accessToken}`);
-
-    console.log(response.body);
 
     expect(response.statusCode).toBe(200);
     expect(response.body).toHaveProperty('users');
@@ -72,13 +70,13 @@ describe('get all users (E2E) ERROR', () => {
   });
 
   test('[GET] /users', async () => {
-    const user = await factory.makePrismaUser();
+    await factory.makePrismaUser();
     const adminUser = await factory.makePrismaUser({ roles: [UserRole.ADMIN] });
 
     const accessToken = jwt.sign({ sub: adminUser.id, roles: adminUser.roles });
 
     const response = await request(app.getHttpServer())
-      .get(`/users`)
+      .get('/users')
       .set('Authorization', `Bearer ${accessToken}`);
 
     expect(response.statusCode).toBe(400);

@@ -1,12 +1,11 @@
 import { BadRequestException, INestApplication } from '@nestjs/common';
 import { Test } from '@nestjs/testing';
 import request from 'supertest';
-import { AppModule } from '@/app.module';
-import { makeUser, UserFactory } from './factories/make-user';
-import { PrismaService } from '@/shared/prisma/prisma.service';
-import { CreateAccountUseCase } from '@/domain/identity/core/use-cases/create-account.use-case';
-import { left } from '@/domain/_shared/utils/either';
 import { hash } from 'bcryptjs';
+import { AppModule } from '@/app.module';
+import { UserFactory } from './factories/make-user';
+import { PrismaService } from '@/shared/prisma/prisma.service';
+import { left } from '@/domain/_shared/utils/either';
 import { AuthenticateUseCase } from '@/domain/identity/core/use-cases/authenticate.use-case';
 
 describe('authenticate (E2E)', () => {

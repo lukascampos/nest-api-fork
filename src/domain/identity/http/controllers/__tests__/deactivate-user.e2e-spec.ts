@@ -45,7 +45,7 @@ describe('deactivate user (E2E) - admin', () => {
       name: user.name,
       cpf: user.cpf,
       roles: user.roles,
-      isActive: false
+      isActive: false,
     });
   });
 
@@ -98,7 +98,7 @@ describe('deactivate user (E2E) - own user', () => {
       name: user.name,
       cpf: user.cpf,
       roles: user.roles,
-      isActive: false
+      isActive: false,
     });
   });
 });

@@ -1,12 +1,11 @@
 import { BadRequestException, INestApplication } from '@nestjs/common';
 import { Test } from '@nestjs/testing';
 import request from 'supertest';
+import { JwtService } from '@nestjs/jwt';
 import { AppModule } from '@/app.module';
 import { makeUser, UserFactory } from './factories/make-user';
 import { PrismaService } from '@/shared/prisma/prisma.service';
-import { CreateAccountUseCase } from '@/domain/identity/core/use-cases/create-account.use-case';
 import { left } from '@/domain/_shared/utils/either';
-import { JwtService } from '@nestjs/jwt';
 import { UpdatePersonalProfileDataUseCase } from '@/domain/identity/core/use-cases/update-personal-profile-data.use-case';
 
 describe('update personal profile data (E2E)', () => {
@@ -24,7 +23,6 @@ describe('update personal profile data (E2E)', () => {
 
     factory = moduleRef.get(UserFactory);
     jwt = moduleRef.get(JwtService);
-    
 
     await app.init();
   });
