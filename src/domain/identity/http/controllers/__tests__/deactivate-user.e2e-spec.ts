@@ -132,8 +132,6 @@ describe('deactivate user (E2E) - another user', () => {
       .patch(`/users/${user2.id}/deactivate`)
       .set('Authorization', `Bearer ${accessToken}`);
 
-    console.log(response.body);
-
     expect(response.statusCode).toBe(400);
   });
 });
