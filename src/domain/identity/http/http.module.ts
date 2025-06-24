@@ -1,5 +1,4 @@
 import { Module } from '@nestjs/common';
-import { PrismaArtisanApplicationsRepository } from '../persistence/prisma/repositories/prisma-artisan-applications.repository';
 import { IdentityPersistenceModule } from '../persistence/identity-persistence.module';
 import { CreateAccountController } from './controllers/create-account.controller';
 import { AuthenticateController } from './controllers/authenticate.controller';
@@ -10,7 +9,6 @@ import { UpdatePersonalProfileDataController } from './controllers/update-person
 import { CreateArtisanApplicationController } from './controllers/create-artisan-application.controller';
 import { GetAllArtisanApplicationsWithUserNamesController } from './controllers/get-all-artisan-applications-with-user-names.controller';
 import { GetArtisanApplicationDetailsController } from './controllers/get-artisan-application-details.controller';
-import { DisableArtisanController } from './controllers/disable-artisan.controller';
 import { CreateAccountUseCase } from '../core/use-cases/create-account.use-case';
 import { AuthenticateUseCase } from '../core/use-cases/authenticate.use-case';
 import { AddModeratorRoleUseCase } from '../core/use-cases/add-moderator-role.use-case';
@@ -22,6 +20,9 @@ import { GetAllArtisanApplicationsWithUserNamesUseCase } from '../core/use-cases
 import { GetArtisanApplicationDetailsUseCase } from '../core/use-cases/get-artisan-application-details.use-case';
 import { ModerateArtisanApplicationController } from './controllers/moderate-artisan-application.controller';
 import { ModerateArtisanApplicationUseCase } from '../core/use-cases/moderate-artisan-application.use-case';
+import { DisableArtisanController } from './controllers/disable-artisan.controller';
+import { RequestDisableArtisanUseCase } from '../core/use-cases/request-disable-artisan.use-case';
+import { ReviewDisableArtisanUseCase } from '../core/use-cases/review-disable-artisan.use-case';
 
 @Module({
   imports: [IdentityPersistenceModule],
@@ -29,6 +30,7 @@ import { ModerateArtisanApplicationUseCase } from '../core/use-cases/moderate-ar
     AddModeratorRoleController,
     AuthenticateController,
     CreateAccountController,
+    DisableArtisanController,
     DeactivateUserController,
     GetAllUsersController,
     UpdatePersonalProfileDataController,
@@ -43,6 +45,8 @@ import { ModerateArtisanApplicationUseCase } from '../core/use-cases/moderate-ar
     CreateAccountUseCase,
     DeactivateUserUseCase,
     GetAllUsersUseCase,
+    RequestDisableArtisanUseCase,
+    ReviewDisableArtisanUseCase,
     UpdatePersonalProfileDataUseCase,
     CreateArtisanApplicationUseCase,
     GetAllArtisanApplicationsWithUserNamesUseCase,
