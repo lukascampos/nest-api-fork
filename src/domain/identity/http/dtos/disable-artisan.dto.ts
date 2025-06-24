@@ -1,35 +1,15 @@
-// eslint-disable-next-line max-classes-per-file
 import {
-  IsUUID, IsNotEmpty, IsString, IsOptional, IsEnum,
+  IsString, IsNotEmpty, IsOptional, IsIn,
 } from 'class-validator';
-import { RequestStatus } from '@prisma/client';
+import { ArtisanApplicationStatus } from '../../core/entities/artisan-application.entity';
 
-export class CreateDisableArtisanRequestDto {
-  @IsUUID('all', { message: 'Artisan ID must be a valid UUID' })
-    artisanId: string;
-
-  @IsNotEmpty({ message: 'reviewerId ID is required' })
-    reviewerId: string;
-
-  @IsNotEmpty({ message: 'Reason is required' })
+export class ReviewDisableArtisanDto {
   @IsString()
-    reason: string;
-}
+  @IsNotEmpty()
+  @IsIn([ArtisanApplicationStatus.APPROVED, ArtisanApplicationStatus.REJECTED])
+    status: ArtisanApplicationStatus.APPROVED | ArtisanApplicationStatus.REJECTED;
 
-export class ReviewDisableArtisanRequestDto {
-  @IsUUID('all', { message: 'Request ID must be a valid UUID' })
-    requestId: string;
-
-  @IsEnum(RequestStatus, {
-    message: `Status must be one of: ${Object.values(RequestStatus).join(', ')}`,
-  })
-    status: RequestStatus;
-
+  @IsString()
   @IsOptional()
-  @IsString()
-    reason?: string;
-
-  id: string;
-
-  rejectionReason: string | undefined;
+    rejectionReason?: string;
 }
