@@ -1,37 +1,46 @@
-import { Injectable, Inject } from '@nestjs/common';
-import { RequestStatus } from '@prisma/client';
-import { ArtisanApplicationsRepository } from '../repositories/artisan-applications.repository';
-import { ArtisanApplication } from '../entities/artisan-application.entity';
+import { Injectable } from '@nestjs/common';
+import { Either, left, right } from '@/domain/_shared/utils/either';
+import { ArtisanApplication, ArtisanApplicationStatus } from '../entities/artisan-application.entity';
+import { PrismaArtisanApplicationsRepository } from '../../persistence/prisma/repositories/prisma-artisan-applications.repository';
+import { ArtisanApplicationNotFoundError } from '../errors/artisan-application-not-found.error';
+import { ArtisanApplicationAlreadyModeratedError } from '../errors/artisan-application-already-moderated.error';
+import { PropertyMissingError } from '../errors/property-missing.error';
+
+interface Input {
+  applicationId: string;
+  reviewerId: string;
+  status: ArtisanApplicationStatus.APPROVED | ArtisanApplicationStatus.REJECTED;
+  rejectionReason?: string;
+}
+type Output = Either<Error, ArtisanApplication>;
 
 @Injectable()
 export class ReviewDisableArtisanUseCase {
   constructor(
-    @Inject('ArtisanApplicationsRepository')
-    private readonly repo: ArtisanApplicationsRepository,
+    private readonly applicationsRepo: PrismaArtisanApplicationsRepository,
   ) {}
 
-  async execute(input: {
-    id: string;
-    reviewerId: string;
-    status: RequestStatus;
-    rejectionReason?: string;
-  }): Promise<ArtisanApplication> {
-    const application = await this.repo.findById(input.id);
+  async execute(input: Input): Promise<Output> {
+    const {
+      applicationId, reviewerId, status, rejectionReason,
+    } = input;
+    const application = await this.applicationsRepo.findById(applicationId);
     if (!application) {
-      throw new Error('Solicitação não encontrada');
+      return left(new ArtisanApplicationNotFoundError(applicationId));
     }
-    if (application.status !== RequestStatus.PENDING) {
-      throw new Error('Esta solicitação já foi analisada');
+    if (application.status !== ArtisanApplicationStatus.PENDING) {
+      return left(new ArtisanApplicationAlreadyModeratedError(applicationId));
     }
-    if (input.status === RequestStatus.REJECTED && !input.rejectionReason) {
-      throw new Error('É necessário fornecer um motivo para reprovação');
+    if (status === ArtisanApplicationStatus.REJECTED && !rejectionReason) {
+      return left(new PropertyMissingError('rejectionReason'));
     }
-    if (input.status === RequestStatus.APPROVED) {
-      application.approve(input.reviewerId);
+
+    if (status === ArtisanApplicationStatus.APPROVED) {
+      application.approve(reviewerId);
     } else {
-      application.reject(input.rejectionReason!, input.reviewerId);
+      application.reject(rejectionReason!, reviewerId);
     }
-    await this.repo.save(application);
-    return application;
+    await this.applicationsRepo.save(application);
+    return right(application);
   }
 }

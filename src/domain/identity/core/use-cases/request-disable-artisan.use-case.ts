@@ -1,31 +1,33 @@
-import { Injectable, Inject } from '@nestjs/common';
-import { RequestStatus } from '@prisma/client';
-import { ArtisanApplicationsRepository } from '../repositories/artisan-applications.repository';
+import { Injectable } from '@nestjs/common';
+import { Either, left, right } from '@/domain/_shared/utils/either';
 import { ArtisanApplication, ArtisanApplicationStatus } from '../entities/artisan-application.entity';
-import { PrismaService } from '@/shared/prisma/prisma.service';
+import { PendingDisableRequestAlreadyExistsError } from '../errors/pending-disable-request-already-exists.error';
+import { ArtisanProfileNotFoundError } from '../errors/artisan-profile-not-found.error';
+import { PrismaArtisanApplicationsRepository } from '../../persistence/prisma/repositories/prisma-artisan-applications.repository';
+import { PrismaArtisanProfilesRepository } from '../../persistence/prisma/repositories/prisma-artisan-profiles.repository';
+
+type Input = { userId: string };
+type Output = Either<Error, ArtisanApplication>;
 
 @Injectable()
 export class RequestDisableArtisanUseCase {
   constructor(
-    @Inject('ArtisanApplicationsRepository')
-    private readonly repo: ArtisanApplicationsRepository,
-    private readonly prisma: PrismaService,
+    private readonly applicationsRepo: PrismaArtisanApplicationsRepository,
+    private readonly profilesRepo: PrismaArtisanProfilesRepository,
   ) {}
 
-  async execute(userId: string): Promise<ArtisanApplication> {
-    // Garante que não há solicitação pendente
-    const pendings = await this.repo.findByUserId(userId);
-    if (pendings?.some((p) => p.status === RequestStatus.PENDING)) {
-      throw new Error('Já existe uma solicitação pendente para este usuário');
+  async execute(input: Input): Promise<Output> {
+    const { userId } = input;
+    const existing = await this.applicationsRepo.findByUserId(userId);
+    if (existing?.some((a) => a.status === ArtisanApplicationStatus.PENDING)) {
+      return left(new PendingDisableRequestAlreadyExistsError(userId));
     }
-    // Busca perfil existente
-    const profile = await this.prisma.artisanProfile.findUnique({ where: { userId } });
+    const profile = await this.profilesRepo.findByUserId(userId);
     if (!profile) {
-      throw new Error('Perfil de artesão não encontrado');
+      return left(new ArtisanProfileNotFoundError(userId));
     }
-    // Cria nova aplicação de desativação
     const application = ArtisanApplication.create({
-      userId: profile.userId,
+      userId,
       rawMaterial: profile.rawMaterial,
       technique: profile.technique,
       finalityClassification: profile.finalityClassification,
@@ -33,10 +35,8 @@ export class RequestDisableArtisanUseCase {
       sicabRegistrationDate: profile.sicabRegistrationDate,
       sicabValidUntil: profile.sicabValidUntil,
       status: ArtisanApplicationStatus.PENDING,
-      reviewerId: undefined,
-      rejectionReason: undefined,
     });
-    await this.repo.save(application);
-    return application;
+    await this.applicationsRepo.save(application);
+    return right(application);
   }
 }
