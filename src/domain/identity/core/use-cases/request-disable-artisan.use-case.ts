@@ -1,4 +1,5 @@
 import { Injectable } from '@nestjs/common';
+import { ApplicationType } from '@prisma/client';
 import { Either, left, right } from '@/domain/_shared/utils/either';
 import { ArtisanApplication, ArtisanApplicationStatus } from '../entities/artisan-application.entity';
 import { PendingDisableRequestAlreadyExistsError } from '../errors/pending-disable-request-already-exists.error';
@@ -35,6 +36,7 @@ export class RequestDisableArtisanUseCase {
       sicabRegistrationDate: profile.sicabRegistrationDate,
       sicabValidUntil: profile.sicabValidUntil,
       status: ArtisanApplicationStatus.PENDING,
+      type: ApplicationType.DISABLE_PROFILE,
     });
     await this.applicationsRepo.save(application);
     return right(application);
