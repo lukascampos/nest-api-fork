@@ -23,6 +23,7 @@ import { ModerateArtisanApplicationUseCase } from '../core/use-cases/moderate-ar
 import { DisableArtisanController } from './controllers/disable-artisan.controller';
 import { RequestDisableArtisanUseCase } from '../core/use-cases/request-disable-artisan.use-case';
 import { ReviewDisableArtisanUseCase } from '../core/use-cases/review-disable-artisan.use-case';
+import { ConfirmDisableArtisanUseCase } from '../core/use-cases/confirm-disable-artisan.use-case';
 
 @Module({
   imports: [IdentityPersistenceModule],
@@ -42,6 +43,7 @@ import { ReviewDisableArtisanUseCase } from '../core/use-cases/review-disable-ar
   providers: [
     AddModeratorRoleUseCase,
     AuthenticateUseCase,
+    ConfirmDisableArtisanUseCase,
     CreateAccountUseCase,
     DeactivateUserUseCase,
     GetAllUsersUseCase,
@@ -52,6 +54,7 @@ import { ReviewDisableArtisanUseCase } from '../core/use-cases/review-disable-ar
     GetAllArtisanApplicationsWithUserNamesUseCase,
     GetArtisanApplicationDetailsUseCase,
     ModerateArtisanApplicationUseCase,
+
   ],
 })
 export class HttpModule {}

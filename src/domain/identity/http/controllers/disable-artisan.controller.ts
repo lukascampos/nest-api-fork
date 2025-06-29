@@ -14,16 +14,23 @@ import { ArtisanProfileNotFoundError } from '../../core/errors/artisan-profile-n
 import { ArtisanApplicationNotFoundError } from '../../core/errors/artisan-application-not-found.error';
 import { ArtisanApplicationAlreadyModeratedError } from '../../core/errors/artisan-application-already-moderated.error';
 import { PropertyMissingError } from '../../core/errors/property-missing.error';
+import { ConfirmDisableArtisanUseCase } from '../../core/use-cases/confirm-disable-artisan.use-case';
+import { Roles } from '@/domain/_shared/auth/decorators/roles.decorator';
+import { UserRole } from '../../core/entities/user.entity';
+import { ArtisanApplicationNotApprovedError } from '../../core/errors/artisan-application-not-approved.error';
 
 @Controller('artisan-applications')
+
 export class DisableArtisanController {
   constructor(
     private readonly requestUseCase: RequestDisableArtisanUseCase,
     private readonly reviewUseCase: ReviewDisableArtisanUseCase,
+    private readonly confirmUseCase: ConfirmDisableArtisanUseCase,
   ) {}
 
   @Post('disable')
-  @UseGuards(JwtAuthGuard)
+  @UseGuards(JwtAuthGuard, RolesGuard)
+  @Roles(UserRole.ARTISAN)
   async request(@CurrentUser() user: UserPayload) {
     const result = await this.requestUseCase.execute({ userId: user.sub });
     if (result.isLeft()) {
@@ -36,11 +43,12 @@ export class DisableArtisanController {
       }
       throw new BadRequestException(error.message);
     }
-    return { message: 'Solicitação de desativação enviada com sucesso' };
+    return { message: 'Disable request submitted successfully' };
   }
 
   @Patch('disable/:id')
   @UseGuards(JwtAuthGuard, RolesGuard)
+  @Roles(UserRole.MODERATOR, UserRole.ADMIN)
   async review(
     @Param('id') id: string,
     @Body() dto: ReviewDisableArtisanDto,
@@ -65,6 +73,28 @@ export class DisableArtisanController {
       }
       throw new BadRequestException(error.message);
     }
-    return { message: 'Solicitação de desativação analisada com sucesso' };
+    return { message: 'Disable request reviewed successfully' };
+  }
+
+  @Post('disable/:id/confirm')
+  @UseGuards(JwtAuthGuard, RolesGuard)
+  @Roles(UserRole.MODERATOR, UserRole.ADMIN)
+  async confirm(
+    @Param('id') applicationId: string,
+  ): Promise<{ message: string }> {
+    const result = await this.confirmUseCase.execute(applicationId);
+    if (result.isLeft()) {
+      const err = result.value as | ArtisanApplicationNotFoundError
+  | ArtisanApplicationNotApprovedError
+  | Error;
+      if (err instanceof ArtisanApplicationNotFoundError) {
+        throw new NotFoundException(err.message);
+      }
+      if (err instanceof ArtisanApplicationNotApprovedError) {
+        throw new ConflictException(err.message);
+      }
+      throw new BadRequestException(err.message);
+    }
+    return { message: 'Artisan profile disabled successfully' };
   }
 }
