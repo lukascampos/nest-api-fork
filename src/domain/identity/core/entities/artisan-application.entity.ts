@@ -1,3 +1,4 @@
+import { ApplicationType } from '@prisma/client';
 import { Entity } from '@/domain/_shared/core/entities/entity';
 
 export enum ArtisanApplicationStatus {
@@ -8,6 +9,7 @@ export enum ArtisanApplicationStatus {
 
 export interface ArtisanApplicationProps {
   userId: string;
+  type: ApplicationType;
   rawMaterial: string;
   technique: string;
   finalityClassification: string;
@@ -21,6 +23,7 @@ export interface ArtisanApplicationProps {
 
 type CreateArtisanApplicationProps = {
   userId: string;
+  type?: ApplicationType;
   rawMaterial: string;
   technique: string;
   finalityClassification: string;
@@ -42,6 +45,7 @@ export class ArtisanApplication extends Entity<ArtisanApplicationProps> {
     return new ArtisanApplication({
       ...props,
       status: props.status ?? ArtisanApplicationStatus.PENDING,
+      type: props.type ?? ApplicationType.BE_ARTISAN,
       reviewerId: props.reviewerId ?? undefined,
     }, id, createdAt, updatedAt);
   }
@@ -49,6 +53,7 @@ export class ArtisanApplication extends Entity<ArtisanApplicationProps> {
   approve(reviewerId: string) {
     this.props.reviewerId = reviewerId;
     this.props.status = ArtisanApplicationStatus.APPROVED;
+
     this.touch();
   }
 
@@ -61,6 +66,10 @@ export class ArtisanApplication extends Entity<ArtisanApplicationProps> {
 
   get userId() {
     return this.props.userId;
+  }
+
+  get type() {
+    return this.props.type;
   }
 
   get rawMaterial() {
