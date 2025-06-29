@@ -8,13 +8,13 @@
   "rules": {
     "import/no-extraneous-dependencies": ["off", {"devDependencies": true}],
     "class-methods-use-this": ["off", { "enforceForClassFields": false }],
-    "no-underscore-dangle": ["error", { "allowAfterThis": true }],
+    "no-underscore-dangle": ["off", { "allowAfterThis": true }],
     "import/no-unresolved": ["off", { "ignore": ["^@/"] }],
     "no-useless-constructor": "off",
     "no-empty-function": "off",
     "import/prefer-default-export": "off",
     "import/extensions": "off",
-    "linebreak-style": "off"
+    "linebreak-style": "off",
   },
   "settings": {
     "alias": {
