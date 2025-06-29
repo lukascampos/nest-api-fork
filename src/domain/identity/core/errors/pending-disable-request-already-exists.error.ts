@@ -1,5 +1,5 @@
 export class PendingDisableRequestAlreadyExistsError extends Error {
   constructor(userId: string) {
-    super(`Já existe uma solicitação de desativação pendente para o usuário ${userId}`);
+    super(`A pending artisan application already exists for this user ${userId}`);
   }
 }
