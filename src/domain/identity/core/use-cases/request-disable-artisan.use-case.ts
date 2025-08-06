@@ -22,18 +22,18 @@ export class RequestDisableArtisanUseCase {
     if (existing?.some((a) => a.status === ArtisanApplicationStatus.PENDING)) {
       return left(new PendingDisableRequestAlreadyExistsError(userId));
     }
-    const profile = await this.profilesRepo.findByUserId(userId);
-    if (!profile) {
+    const ArtisanProfile = await this.profilesRepo.findByUserId(userId);
+    if (!ArtisanProfile) {
       return left(new ArtisanProfileNotFoundError(userId));
     }
     const application = ArtisanApplication.create({
       userId,
-      rawMaterial: profile.rawMaterial,
-      technique: profile.technique,
-      finalityClassification: profile.finalityClassification,
-      sicab: profile.sicab,
-      sicabRegistrationDate: profile.sicabRegistrationDate,
-      sicabValidUntil: profile.sicabValidUntil,
+      rawMaterial: ArtisanProfile.rawMaterial,
+      technique: ArtisanProfile.technique,
+      finalityClassification: ArtisanProfile.finalityClassification,
+      sicab: ArtisanProfile.sicab,
+      sicabRegistrationDate: ArtisanProfile.sicabRegistrationDate,
+      sicabValidUntil: ArtisanProfile.sicabValidUntil,
       status: ArtisanApplicationStatus.PENDING,
       type: ApplicationType.DISABLE_PROFILE,
     });
