@@ -1,5 +1,5 @@
-import { Prisma, ArtisanApplication as PrismaArtisanApplication, ApplicationType } from '@prisma/client';
-import { ArtisanApplication, ArtisanApplicationStatus } from '@/domain/identity/core/entities/artisan-application.entity';
+import { Prisma, ArtisanApplication as PrismaArtisanApplication,  } from '@prisma/client';
+import { ArtisanApplication, ArtisanApplicationStatus, ApplicationType } from '@/domain/identity/core/entities/artisan-application.entity';
 
 export class PrismaArtisanApplicationsMapper {
   static toDomain(artisanApplication: PrismaArtisanApplication): ArtisanApplication {

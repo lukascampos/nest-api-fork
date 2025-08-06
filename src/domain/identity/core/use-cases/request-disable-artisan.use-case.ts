@@ -1,7 +1,6 @@
 import { Injectable } from '@nestjs/common';
-import { ApplicationType } from '@prisma/client';
 import { Either, left, right } from '@/domain/_shared/utils/either';
-import { ArtisanApplication, ArtisanApplicationStatus } from '../entities/artisan-application.entity';
+import { ArtisanApplication, ArtisanApplicationStatus, ApplicationType } from '../entities/artisan-application.entity';
 import { PendingDisableRequestAlreadyExistsError } from '../errors/pending-disable-request-already-exists.error';
 import { ArtisanProfileNotFoundError } from '../errors/artisan-profile-not-found.error';
 import { PrismaArtisanApplicationsRepository } from '../../persistence/prisma/repositories/prisma-artisan-applications.repository';

@@ -1,10 +1,14 @@
-import { ApplicationType } from '@prisma/client';
 import { Entity } from '@/domain/_shared/core/entities/entity';
 
 export enum ArtisanApplicationStatus {
   PENDING = 'PENDING',
   APPROVED = 'APPROVED',
   REJECTED = 'REJECTED',
+}
+
+export enum ApplicationType {
+  BE_ARTISAN = 'BE_ARTISAN',
+  DISABLE_PROFILE = 'DISABLE_PROFILE',
 }
 
 export interface ArtisanApplicationProps {
