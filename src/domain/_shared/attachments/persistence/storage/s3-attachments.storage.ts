@@ -10,21 +10,21 @@ export interface UploadParams {
 }
 
 @Injectable()
-export class R2AttachmentsStorage {
+export class S3AttachmentsStorage {
   private client: S3Client;
 
   constructor(
       private readonly s3Client: S3Client,
       private readonly config: ConfigService<Env, true>,
   ) {
-    const accountId = this.config.get('CLOUDFLARE_ACCOUNT_ID', { infer: true });
 
     this.client = new S3Client({
-      endpoint: `https://${accountId}.r2.cloudflarestorage.com/`,
+      endpoint: this.config.get('STORAGE_URL', { infer: true }),
       region: 'auto',
+      forcePathStyle: true,
       credentials: {
-        accessKeyId: this.config.get('AWS_ACCESS_KEY_ID', { infer: true }),
-        secretAccessKey: this.config.get('AWS_SECRET_ACCESS_KEY', { infer: true }),
+        accessKeyId: this.config.get('STORAGE_ACCESS_KEY_ID', { infer: true }),
+        secretAccessKey: this.config.get('STORAGE_SECRET_ACCESS_KEY', { infer: true }),
       },
     });
   }
@@ -37,7 +37,7 @@ export class R2AttachmentsStorage {
 
     await this.client.send(
       new PutObjectCommand({
-        Bucket: this.config.get('AWS_BUCKET_NAME', { infer: true }),
+        Bucket: this.config.get('STORAGE_BUCKET_NAME', { infer: true }),
         Key: newFileName,
         ContentType: fileType,
         Body: body,
