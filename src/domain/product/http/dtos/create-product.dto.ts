@@ -1,33 +1,35 @@
-import { IsArray, IsNotEmpty, IsNumber, IsOptional, IsString, IsUUID } from "class-validator";
+import {
+  IsArray, IsNotEmpty, IsNumber, IsOptional, IsString, IsUUID,
+} from 'class-validator';
 
 export class CreateProductDto {
   @IsNotEmpty()
   @IsString()
-  title: string;
+    title: string;
 
   @IsNotEmpty()
   @IsString()
-  description: string;
+    description: string;
 
   @IsNotEmpty()
   @IsNumber()
-  priceInCents: number;
+    priceInCents: number;
 
   @IsNotEmpty()
   @IsNumber()
-  categoryId: number;
+    categoryId: number;
 
   @IsNotEmpty()
   @IsNumber()
-  stock: number;
+    stock: number;
 
   @IsNotEmpty({ each: true })
   @IsArray()
   @IsString({ each: true })
-  photoIds: string[];
+    photoIds: string[];
 
   @IsOptional()
   @IsString()
   @IsUUID()
-  coverPhotoId?: string;
+    coverPhotoId?: string;
 }

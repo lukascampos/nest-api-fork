@@ -17,7 +17,6 @@ export class S3AttachmentsStorage {
       private readonly s3Client: S3Client,
       private readonly config: ConfigService<Env, true>,
   ) {
-
     this.client = new S3Client({
       endpoint: this.config.get('STORAGE_URL', { infer: true }),
       region: 'auto',

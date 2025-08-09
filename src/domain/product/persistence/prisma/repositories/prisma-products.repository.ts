@@ -1,8 +1,8 @@
+import { Injectable } from '@nestjs/common';
 import { ProductPhoto } from '@/domain/product/core/entities/product-photo.entity';
 import { Product } from '@/domain/product/core/entities/product.entity';
 import { PrismaService } from '@/shared/prisma/prisma.service';
 import { PrismaProductPhotosRepository } from './prisma-product-photos.repository';
-import { Injectable } from '@nestjs/common';
 import { PrismaProductsMapper } from '../mappers/prisma-products.mapper';
 
 @Injectable()
@@ -44,7 +44,12 @@ export class PrismaProductsRepository {
       }),
     ]);
 
-    return PrismaProductsMapper.toDomain(productsWithoutPhotos, productPhotos, likesCount, averageRating._avg.rating)
+    return PrismaProductsMapper.toDomain(
+      productsWithoutPhotos,
+      productPhotos,
+      likesCount,
+      averageRating._avg.rating,
+    );
   }
 
   async save(product: Product): Promise<void> {
@@ -60,23 +65,23 @@ export class PrismaProductsRepository {
 
     const productExists = await this.prisma.product.findUnique({
       where: { id: product.id },
-    })
+    });
 
-    if(!productExists) {
+    if (!productExists) {
       await this.prisma.product.create({
         data: {
           ...productData,
           id: product.id,
           createdAt: product.createdAt,
           updatedAt: product.updatedAt,
-        }
-      })
+        },
+      });
 
-      if(product.photos) {
-        await this.productPhotosRepository.createMany(product.photos.getItems())
+      if (product.photos) {
+        await this.productPhotosRepository.createMany(product.photos.getItems());
       }
 
-      return ;
+      return;
     }
 
     await this.prisma.product.update({
@@ -94,6 +99,6 @@ export class PrismaProductsRepository {
       this.productPhotosRepository.deleteMany(
         product.photos!.getRemovedItems(),
       ),
-    ])
+    ]);
   }
 }
