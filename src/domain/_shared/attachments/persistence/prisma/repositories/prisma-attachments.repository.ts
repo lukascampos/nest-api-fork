@@ -9,8 +9,6 @@ export class PrismaAttachmentsRepository {
   async save(attachment: Attachment): Promise<void> {
     const commonData = {
       id: attachment.id,
-      filePath: attachment.url,
-      fileName: attachment.fileName,
       fileType: attachment.mimeType,
       fileSize: attachment.sizeInBytes,
       createdAt: attachment.createdAt,
