@@ -1,4 +1,5 @@
-import { PutObjectCommand, S3Client } from '@aws-sdk/client-s3';
+import { GetObjectCommand, PutObjectCommand, S3Client } from '@aws-sdk/client-s3';
+import { getSignedUrl } from '@aws-sdk/s3-request-presigner';
 import { Injectable } from '@nestjs/common';
 import { randomUUID } from 'node:crypto';
 import { ConfigService } from '@nestjs/config';
@@ -31,20 +32,33 @@ export class S3AttachmentsStorage {
   async upload({
     fileType,
     body,
-  }: UploadParams): Promise<{ url: string }> {
-    const newFileName = randomUUID();
+  }: UploadParams): Promise<{id: string}> {
+    const fileName = randomUUID();
 
     await this.client.send(
       new PutObjectCommand({
         Bucket: this.config.get('STORAGE_BUCKET_NAME', { infer: true }),
-        Key: newFileName,
+        Key: fileName,
         ContentType: fileType,
         Body: body,
       }),
     );
 
     return {
-      url: newFileName,
+      id: fileName,
     };
+  }
+
+  async getUrlByFileName(fileName: string): Promise<string> {
+    const command = new GetObjectCommand({
+      Bucket: this.config.get('STORAGE_BUCKET_NAME', { infer: true }),
+      Key: fileName,
+    });
+
+    return getSignedUrl(
+      this.client,
+      command,
+      { expiresIn: 60 * 60 }, // 1 hour expiration
+    );
   }
 }
