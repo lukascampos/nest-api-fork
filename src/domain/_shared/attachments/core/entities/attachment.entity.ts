@@ -1,8 +1,6 @@
 import { Entity } from '../../../core/entities/entity';
 
 export interface AttachmentProps {
-  url: string;
-  fileName: string;
   mimeType: string;
   sizeInBytes: number;
 }
@@ -21,14 +19,6 @@ export class Attachment extends Entity<AttachmentProps> {
     return new Attachment({
       ...props,
     }, id, createdAt, updatedAt);
-  }
-
-  get url(): string {
-    return this.props.url;
-  }
-
-  get fileName(): string {
-    return this.props.fileName;
   }
 
   get mimeType(): string {

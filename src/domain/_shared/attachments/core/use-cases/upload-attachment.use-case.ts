@@ -33,17 +33,15 @@ export class UploadAttachmentUseCase {
       return left(new InvalidAttachmentTypeError(fileType));
     }
 
-    const { url } = await this.s3Storage.upload({
+    const { id } = await this.s3Storage.upload({
       fileType,
       body,
     });
 
     const attachment = Attachment.create({
-      url,
-      fileName: url,
       mimeType: fileType,
       sizeInBytes: fileSize,
-    });
+    }, id);
 
     await this.prismaAttachmentsRepository.save(attachment);
 
