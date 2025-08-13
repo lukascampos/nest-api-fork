@@ -40,12 +40,11 @@ export class PrismaArtisanApplicationsRepository {
     type?: ApplicationType,
     status?: RequestStatus,
   ): Promise<ArtisanApplication[]> {
-    const where: { type?: ApplicationType; status?: RequestStatus } = {};
-    if (type) where.type = type;
-    if (status) where.status = status;
-
     const artisanApplications = await this.prisma.artisanApplication.findMany({
-      where,
+      where: {
+        ...(type && { type }),
+        ...(status && { status }),
+      },
     });
 
     if (artisanApplications.length === 0) {
