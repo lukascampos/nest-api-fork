@@ -1,6 +1,7 @@
 import {
-  BadRequestException, Body, Controller, Post, UnauthorizedException,
+  BadRequestException, Body, Controller, Post, Res, UnauthorizedException,
 } from '@nestjs/common';
+import { Response } from 'express';
 import { Public } from '@/domain/_shared/auth/decorators/public.decorator';
 import { AuthenticateUseCase } from '../../core/use-cases/authenticate.use-case';
 import { AuthenticateDto } from '../dtos/authenticate.dto';
@@ -14,7 +15,7 @@ export class AuthenticateController {
 
   @Post()
   @Public()
-  async handle(@Body() body: AuthenticateDto) {
+  async handle(@Body() body: AuthenticateDto, @Res() response: Response) {
     const result = await this.authenticateUseCase.execute({ ...body });
 
     if (result.isLeft()) {
@@ -30,12 +31,17 @@ export class AuthenticateController {
 
     const { accessToken } = result.value;
 
-    return {
-      access_token: accessToken,
+    response.cookie('access_token', accessToken, {
+      httpOnly: true,
+      sameSite: 'lax',
+      maxAge: 1000 * 60 * 60 * 24,
+    });
+
+    response.send({
       roles: result.value.roles,
       userId: result.value.userId,
       name: result.value.name,
       socialName: result.value.socialName,
-    };
+    });
   }
 }

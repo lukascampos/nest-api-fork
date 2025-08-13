@@ -1,9 +1,9 @@
+import { Injectable } from '@nestjs/common';
 import { Either, left, right } from '@/domain/_shared/utils/either';
 import { Product } from '../entities/product.entity';
 import { PrismaProductsRepository } from '../../persistence/prisma/repositories/prisma-products.repository';
 import { ProductPhoto } from '../entities/product-photo.entity';
 import { ProductPhotosList } from '../entities/product-photos-list.entity';
-import { Injectable } from '@nestjs/common';
 import { PrismaArtisanProfilesRepository } from '@/domain/identity/persistence/prisma/repositories/prisma-artisan-profiles.repository';
 import { UserNotFoundError } from '@/domain/identity/core/errors/user-not-found.error';
 import { PrismaProductCategoriesRepository } from '../../persistence/prisma/repositories/prisma-product-categories.repository';
@@ -77,14 +77,12 @@ export class CreateProductUseCase {
       stock,
       coverPhotoId,
       likesCount: 0,
-    })
-
-    const productPhotos = photoIds.map((photoId) => {
-      return ProductPhoto.create({
-        attachmentId: photoId,
-        productId: product.id,
-      })
     });
+
+    const productPhotos = photoIds.map((photoId) => ProductPhoto.create({
+      attachmentId: photoId,
+      productId: product.id,
+    }));
 
     product.photos = new ProductPhotosList(productPhotos);
 
@@ -104,6 +102,6 @@ export class CreateProductUseCase {
       coverPhotoId: product.coverPhotoId,
       createdAt: product.createdAt,
       updatedAt: product.updatedAt,
-    })
+    });
   }
 }
