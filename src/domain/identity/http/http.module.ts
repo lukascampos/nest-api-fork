@@ -20,10 +20,12 @@ import { GetAllArtisanApplicationsWithUserNamesUseCase } from '../core/use-cases
 import { GetArtisanApplicationDetailsUseCase } from '../core/use-cases/get-artisan-application-details.use-case';
 import { ModerateArtisanApplicationController } from './controllers/moderate-artisan-application.controller';
 import { ModerateArtisanApplicationUseCase } from '../core/use-cases/moderate-artisan-application.use-case';
-import { DisableArtisanController } from './controllers/disable-artisan.controller';
 import { RequestDisableArtisanUseCase } from '../core/use-cases/request-disable-artisan.use-case';
 import { ReviewDisableArtisanUseCase } from '../core/use-cases/review-disable-artisan.use-case';
 import { ConfirmDisableArtisanUseCase } from '../core/use-cases/confirm-disable-artisan.use-case';
+import { ReviewArtisanController } from './controllers/artisan-applications.review.controller';
+import { ConfirmDisableArtisanController } from './controllers/artisan-applications.confirm.controller';
+import { RequestDisableArtisanController } from './controllers/artisan-applications.request-disable.controller';
 
 @Module({
   imports: [IdentityPersistenceModule],
@@ -31,7 +33,9 @@ import { ConfirmDisableArtisanUseCase } from '../core/use-cases/confirm-disable-
     AddModeratorRoleController,
     AuthenticateController,
     CreateAccountController,
-    DisableArtisanController,
+    ReviewArtisanController,
+    RequestDisableArtisanController,
+    ConfirmDisableArtisanController,
     DeactivateUserController,
     GetAllUsersController,
     UpdatePersonalProfileDataController,

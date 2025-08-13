@@ -1,15 +1,24 @@
 import {
-  IsString, IsNotEmpty, IsOptional, IsIn,
+  IsString, IsNotEmpty, IsIn,
+  ValidateIf,
 } from 'class-validator';
+import { Transform } from 'class-transformer';
 import { ArtisanApplicationStatus } from '../../core/entities/artisan-application.entity';
 
-export class ReviewDisableArtisanDto {
-  @IsString()
-  @IsNotEmpty()
-  @IsIn([ArtisanApplicationStatus.APPROVED, ArtisanApplicationStatus.REJECTED])
-    status: ArtisanApplicationStatus.APPROVED | ArtisanApplicationStatus.REJECTED;
+export const REVIEWED_STATUSES = [
+  ArtisanApplicationStatus.APPROVED,
+  ArtisanApplicationStatus.REJECTED,
+] as const;
+export type ReviewStatus = (typeof REVIEWED_STATUSES)[number];
 
+export class ReviewDisableArtisanDto {
+  @IsNotEmpty()
+  @Transform(({ value }) => (typeof value === 'string' ? value.toUpperCase() : value))
+  @IsIn(REVIEWED_STATUSES, { message: 'status must be PENDING, APPROVED or REJECTED' })
+    status: ReviewStatus;
+
+  @ValidateIf((o) => o.status === ArtisanApplicationStatus.REJECTED)
   @IsString()
-  @IsOptional()
+  @IsNotEmpty({ message: 'rejectionReason is required when status is REJECTED' })
     rejectionReason?: string;
 }

@@ -1,7 +1,6 @@
 import { Injectable } from '@nestjs/common';
-import { ApplicationType } from '@prisma/client';
 import { Either, left, right } from '@/domain/_shared/utils/either';
-import { ArtisanApplication, ArtisanApplicationStatus } from '../entities/artisan-application.entity';
+import { ArtisanApplication, ArtisanApplicationStatus, ApplicationType } from '../entities/artisan-application.entity';
 import { PendingDisableRequestAlreadyExistsError } from '../errors/pending-disable-request-already-exists.error';
 import { ArtisanProfileNotFoundError } from '../errors/artisan-profile-not-found.error';
 import { PrismaArtisanApplicationsRepository } from '../../persistence/prisma/repositories/prisma-artisan-applications.repository';
@@ -23,18 +22,18 @@ export class RequestDisableArtisanUseCase {
     if (existing?.some((a) => a.status === ArtisanApplicationStatus.PENDING)) {
       return left(new PendingDisableRequestAlreadyExistsError(userId));
     }
-    const profile = await this.profilesRepo.findByUserId(userId);
-    if (!profile) {
+    const ArtisanProfile = await this.profilesRepo.findByUserId(userId);
+    if (!ArtisanProfile) {
       return left(new ArtisanProfileNotFoundError(userId));
     }
     const application = ArtisanApplication.create({
       userId,
-      rawMaterial: profile.rawMaterial,
-      technique: profile.technique,
-      finalityClassification: profile.finalityClassification,
-      sicab: profile.sicab,
-      sicabRegistrationDate: profile.sicabRegistrationDate,
-      sicabValidUntil: profile.sicabValidUntil,
+      rawMaterial: ArtisanProfile.rawMaterial,
+      technique: ArtisanProfile.technique,
+      finalityClassification: ArtisanProfile.finalityClassification,
+      sicab: ArtisanProfile.sicab,
+      sicabRegistrationDate: ArtisanProfile.sicabRegistrationDate,
+      sicabValidUntil: ArtisanProfile.sicabValidUntil,
       status: ArtisanApplicationStatus.PENDING,
       type: ApplicationType.DISABLE_PROFILE,
     });

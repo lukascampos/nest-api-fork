@@ -1,5 +1,5 @@
-import { Prisma, ArtisanApplication as PrismaArtisanApplication, ApplicationType } from '@prisma/client';
-import { ArtisanApplication, ArtisanApplicationStatus } from '@/domain/identity/core/entities/artisan-application.entity';
+import { ArtisanApplication, ArtisanApplicationStatus, ApplicationType } from '@/domain/identity/core/entities/artisan-application.entity';
+import { Prisma, ArtisanApplication as PrismaArtisanApplication } from '@prisma/client';
 
 export class PrismaArtisanApplicationsMapper {
   static toDomain(artisanApplication: PrismaArtisanApplication): ArtisanApplication {
@@ -31,7 +31,7 @@ export class PrismaArtisanApplicationsMapper {
       sicab: artisanApplication.sicab,
       sicabRegistrationDate: artisanApplication.sicabRegistrationDate,
       sicabValidUntil: artisanApplication.sicabValidUntil,
-      status: artisanApplication.status as ArtisanApplicationStatus,
+      status: artisanApplication.status,
       reviewerId: artisanApplication.reviewerId ?? undefined,
       rejectionReason: artisanApplication.rejectionReason ?? undefined,
       createdAt: artisanApplication.createdAt,
