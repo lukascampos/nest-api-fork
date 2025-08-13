@@ -18,14 +18,14 @@ import { SingleUuidParamDto } from '../dtos/single-uuid-param.dto';
 @Controller('artisan-applications')
 export class ReviewArtisanController {
   constructor(
-    private readonly reviewUseCase: ReviewDisableArtisanUseCase
+    private readonly reviewUseCase: ReviewDisableArtisanUseCase,
   ) {}
 
   @Patch(':id/review')
   @UseGuards(JwtAuthGuard, RolesGuard)
   @Roles(UserRole.MODERATOR, UserRole.ADMIN)
   async review(
-    @Param(){ id}: SingleUuidParamDto,
+    @Param(){ id }: SingleUuidParamDto,
     @Body() dto: ReviewDisableArtisanDto,
     @CurrentUser() user: UserPayload,
   ) {
@@ -50,5 +50,4 @@ export class ReviewArtisanController {
     }
     return { message: 'Disable request reviewed successfully' };
   }
-
 }
