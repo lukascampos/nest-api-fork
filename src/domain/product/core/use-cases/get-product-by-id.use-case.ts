@@ -18,7 +18,7 @@ export interface GetProductByIdOutput {
   likesCount: number;
   averageRating: number;
   photos: string[];
-  coverPhoto: string;
+  coverPhoto?: string;
 }
 
 type Output = Either<Error, GetProductByIdOutput>;
@@ -40,13 +40,19 @@ export class GetProductByIdUseCase {
     }
 
     const urlPhotos = await Promise.all(
-      product
-        .photos!
-        .getItems()
-        .map((photo) => this.s3AttachmentStorage.getUrlByFileName(photo.attachmentId)),
+      (product.photos
+        ? product.photos.getItems()
+        : []
+      ).map((photo) => this.s3AttachmentStorage.getUrlByFileName(photo.attachmentId)),
     );
 
-    const urlCoverPhoto = await this.s3AttachmentStorage.getUrlByFileName(product.coverPhotoId!);
+    let coverPhoto: string | undefined;
+
+    if (!product.coverPhotoId) {
+      coverPhoto = undefined;
+    } else {
+      coverPhoto = await this.s3AttachmentStorage.getUrlByFileName(product.coverPhotoId);
+    }
 
     return right({
       id: product.id,
@@ -58,7 +64,7 @@ export class GetProductByIdUseCase {
       likesCount: product.likesCount,
       averageRating: product.averageRating ?? 0,
       photos: urlPhotos,
-      coverPhoto: urlCoverPhoto,
+      coverPhoto,
     });
   }
 }
