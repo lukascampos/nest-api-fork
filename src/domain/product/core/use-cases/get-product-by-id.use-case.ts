@@ -3,6 +3,7 @@ import { Either, left, right } from '@/domain/_shared/utils/either';
 import { PrismaProductsRepository } from '../../persistence/prisma/repositories/prisma-products.repository';
 import { ProductNotFoundError } from '../errors/product-not-found.error';
 import { S3AttachmentsStorage } from '@/domain/_shared/attachments/persistence/storage/s3-attachments.storage';
+import { PrismaUsersRepository } from '@/domain/identity/persistence/prisma/repositories/prisma-users.repository';
 
 export interface GetProductByIdInput {
   id: string;
@@ -10,6 +11,8 @@ export interface GetProductByIdInput {
 
 export interface GetProductByIdOutput {
   id: string;
+  authorName: string;
+  authorId: string;
   title: string;
   description: string;
   priceInCents: number;
@@ -28,6 +31,7 @@ export class GetProductByIdUseCase {
   constructor(
     private readonly productsRepository: PrismaProductsRepository,
     private readonly s3AttachmentStorage: S3AttachmentsStorage,
+    private readonly usersProfileRepository: PrismaUsersRepository,
   ) {}
 
   async execute({
@@ -54,8 +58,12 @@ export class GetProductByIdUseCase {
       coverPhoto = await this.s3AttachmentStorage.getUrlByFileName(product.coverPhotoId);
     }
 
+    const author = await this.usersProfileRepository.findById(product.artisanId);
+
     return right({
       id: product.id,
+      authorName: author!.name,
+      authorId: author!.id,
       title: product.title,
       description: product.description,
       priceInCents: product.priceInCents,
