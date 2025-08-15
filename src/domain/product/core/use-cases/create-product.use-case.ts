@@ -84,6 +84,10 @@ export class CreateProductUseCase {
       productId: product.id,
     }));
 
+    if (!coverPhotoId) {
+      product.coverPhotoId = productPhotos[0].attachmentId;
+    }
+
     product.photos = new ProductPhotosList(productPhotos);
 
     await this.productsRepository.save(product);
