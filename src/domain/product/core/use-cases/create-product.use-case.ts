@@ -84,7 +84,7 @@ export class CreateProductUseCase {
       productId: product.id,
     }));
 
-    if (!coverPhotoId) {
+    if (!coverPhotoId && productPhotos.length > 0) {
       product.coverPhotoId = productPhotos[0].attachmentId;
     }
 
