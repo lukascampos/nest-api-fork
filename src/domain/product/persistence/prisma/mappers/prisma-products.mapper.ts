@@ -7,15 +7,15 @@ export class PrismaProductsMapper {
   static toDomain(
     product: PrismaProduct,
     photos: ProductPhoto[],
-    likesCount: number,
-    averageRating: number | null,
+    likesCount?: number,
+    averageRating?: number | null,
   ): Product {
     return Product.create({
       artisanId: product.artisanId,
       categoryId: Number(product.categoryId),
       title: product.title,
       description: product.description,
-      likesCount,
+      likesCount: likesCount ?? 0,
       averageRating: averageRating ?? 0,
       priceInCents: Number(product.priceInCents),
       stock: Number(product.stock),
