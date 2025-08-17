@@ -99,6 +99,18 @@ Para gerar as migrações para produção:
 npx prisma migrate deploy
 ```
 
+## 🌱 Populando o Banco de Dados (Seed)
+
+Para popular o banco de dados com dados de exemplo, execute:
+
+```sh
+npx tsx prisma/seed.ts
+```
+
+O script utiliza o [faker.js](https://fakerjs.dev/) para gerar dados realistas e cobre todas as principais tabelas e relacionamentos do schema.
+
+Se necessário, ajuste o script em `prisma/seed.ts` para personalizar os dados gerados.
+
 ## 📌 Considerações Finais
 
 Caso tenha problemas com permissões, tente rodar os comandos com `sudo` (Linux/macOS) ou execute o terminal como administrador (Windows).
