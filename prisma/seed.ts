@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 /* eslint-disable no-console */
 /* eslint-disable max-len */
 /* eslint-disable @typescript-eslint/no-unused-vars */
@@ -16,15 +17,17 @@ import { randomUUID } from 'crypto';
 const prisma = new PrismaClient();
 
 async function main() {
+  console.log('Seed: starting...');
   // Criar categorias de produto
   const categories = await prisma.productCategory.createMany({
     data: [
-      { id: 1, name: 'Artesanato', type: 'manual' },
-      { id: 2, name: 'Decoração', type: 'decor' },
-      { id: 3, name: 'Utilidades', type: 'utility' },
+      { id: BigInt(1), name: 'Artesanato', type: 'manual' },
+      { id: BigInt(2), name: 'Decoração', type: 'decor' },
+      { id: BigInt(3), name: 'Utilidades', type: 'utility' },
     ],
     skipDuplicates: true,
   });
+  console.log('Seed: product categories createMany result:', categories);
 
   // Criar ao menos um usuário para cada role
   const roles = [Role.USER, Role.ARTISAN, Role.MODERATOR, Role.ADMIN];
@@ -118,7 +121,7 @@ async function main() {
           title: faker.commerce.productName(),
           description: faker.commerce.productDescription(),
           priceInCents: BigInt(faker.number.int({ min: 1000, max: 10000 })),
-          categoryId: faker.helpers.arrayElement([1, 2, 3]),
+          categoryId: faker.helpers.arrayElement([BigInt(1), BigInt(2), BigInt(3)]),
           stock: faker.number.int({ min: 1, max: 50 }),
           coverageImage: faker.image.urlPicsumPhotos(),
           isDisabled: faker.datatype.boolean(),
@@ -165,6 +168,7 @@ async function main() {
       },
     });
   }
+  console.log('Seed: created attachments for users');
   for (const artisan of artisans) {
     await prisma.attachment.create({
       data: {
@@ -174,6 +178,7 @@ async function main() {
       },
     });
   }
+  console.log('Seed: created attachments for artisans');
 
   // Upload das imagens de seed (prisma/seeds/images) e criação de attachments
   try {
@@ -225,6 +230,7 @@ async function main() {
         await prisma.attachment.create({
           data: attachmentData,
         });
+        console.log('Seed: created attachment record for uploaded file', key);
       }
     }
   } catch (err) {
@@ -233,7 +239,7 @@ async function main() {
     console.warn('Seed: não foi possível fazer upload das imagens para o storage:', err?.message ?? err);
   }
 }
-
+console.log('Seed: finished.');
 main()
   .catch((e) => {
     console.error(e);
