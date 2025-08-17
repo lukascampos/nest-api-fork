@@ -8,6 +8,10 @@ import {
   PrismaClient, Role, ApplicationType, RequestStatus,
 } from '@prisma/client';
 import { faker } from '@faker-js/faker';
+import { S3Client, PutObjectCommand } from '@aws-sdk/client-s3';
+import * as fs from 'fs';
+import * as path from 'path';
+import { randomUUID } from 'crypto';
 
 const prisma = new PrismaClient();
 
@@ -169,6 +173,64 @@ async function main() {
         fileSize: BigInt(faker.number.int({ min: 10000, max: 500000 })),
       },
     });
+  }
+
+  // Upload das imagens de seed (prisma/seeds/images) e criação de attachments
+  try {
+    const imagesDir = path.join(__dirname, 'seeds', 'images');
+    if (!fs.existsSync(imagesDir)) {
+      console.warn('Seed: diretório de imagens não encontrado em', imagesDir);
+    } else {
+      const imageFiles = fs.readdirSync(imagesDir).filter((f) => /\.(jpe?g|png)$/i.test(f));
+      const bucketName = process.env.STORAGE_BUCKET_NAME || process.env.S3_BUCKET_NAME || 'your-default-bucket-name';
+
+      const s3 = new S3Client({
+        endpoint: process.env.STORAGE_URL,
+        region: 'auto',
+        forcePathStyle: true,
+        credentials: {
+          accessKeyId: process.env.STORAGE_ACCESS_KEY_ID || '',
+          secretAccessKey: process.env.STORAGE_SECRET_ACCESS_KEY || '',
+        },
+      });
+
+      for (const file of imageFiles) {
+        const filePath = path.join(imagesDir, file);
+        const body = fs.readFileSync(filePath);
+        const ext = path.extname(file).toLowerCase();
+        const mime = ext === '.png' ? 'image/png' : 'image/jpeg';
+        const id = randomUUID(); // será usado como key/attachment id
+        const key = `${id}${ext}`;
+
+        // Enviar para o bucket
+        await s3.send(new PutObjectCommand({
+          Bucket: bucketName,
+          Key: key,
+          Body: body,
+          ContentType: mime,
+        }));
+
+        // Criar registro no banco usando o id gerado (igual ao Key sem extensão)
+        const attachmentData: any = {
+          id,
+          fileType: mime,
+          fileSize: BigInt(body.byteLength),
+        };
+
+        // Se houver artesãos criados, associe a primeira imagem ao primeiro artisan (ajuda no teste)
+        if (artisans.length > 0) {
+          attachmentData.artisanId = artisans[0].id;
+        }
+
+        await prisma.attachment.create({
+          data: attachmentData,
+        });
+      }
+    }
+  } catch (err) {
+    // não falha o seed se o MinIO não estiver disponível — apenas log
+    // eslint-disable-next-line no-console
+    console.warn('Seed: não foi possível fazer upload das imagens para o storage:', err?.message ?? err);
   }
 }
 
