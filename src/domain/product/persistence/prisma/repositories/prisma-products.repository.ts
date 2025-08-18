@@ -70,23 +70,25 @@ export class PrismaProductsRepository {
       return [];
     }
 
+    const productIds = productsWithoutPhotos.map((product) => product.id);
     const photos = await this.prisma.attachment.findMany({
-      where: { productId: id },
+      where: { productId: { in: productIds } },
     });
-
     if (!photos) {
       return [];
     }
-
-    const productPhotos = photos.map((photo) => ProductPhoto.create({
-      attachmentId: photo.id,
-      productId: photo.productId!,
-    }));
-
-    return productsWithoutPhotos.map((product) => PrismaProductsMapper.toDomain(
-      product,
-      productPhotos,
-    ));
+    return productsWithoutPhotos.map((product) => {
+      const productPhotos = photos
+        .filter((photo) => photo.productId === product.id)
+        .map((photo) => ProductPhoto.create({
+          attachmentId: photo.id,
+          productId: photo.productId!,
+        }));
+      return PrismaProductsMapper.toDomain(
+        product,
+        productPhotos,
+      );
+    });
   }
 
   async save(product: Product): Promise<void> {
