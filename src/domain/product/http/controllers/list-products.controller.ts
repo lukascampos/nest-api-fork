@@ -1,10 +1,11 @@
 import {
-  BadRequestException, Controller, Get, NotFoundException, UseGuards,
+  BadRequestException, Controller, Get, NotFoundException, Query, UseGuards,
 } from '@nestjs/common';
 import { RolesGuard } from '@/domain/_shared/auth/roles/roles.guard';
 import { ProductNotFoundError } from '../../core/errors/product-not-found.error';
 import { Public } from '@/domain/_shared/auth/decorators/public.decorator';
 import { ListProductsUseCase } from '../../core/use-cases/list-products.use-case';
+import { ListProductsQueryDto } from '../dtos/list-products-query.dto';
 
 @Controller('products')
 @UseGuards(RolesGuard)
@@ -15,8 +16,10 @@ export class ListProductsController {
 
   @Get()
   @Public()
-  async handle() {
-    const result = await this.listProductsUseCase.execute({});
+  async handle(
+    @Query() query: ListProductsQueryDto,
+  ) {
+    const result = await this.listProductsUseCase.execute({ ...query });
 
     if (result.isLeft()) {
       const error = result.value;
