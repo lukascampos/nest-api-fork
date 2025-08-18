@@ -66,7 +66,7 @@ export class PrismaProductsRepository {
       orderBy: { createdAt: 'desc' },
     });
 
-    if (!productsWithoutPhotos) {
+    if (productsWithoutPhotos.length === 0) {
       return [];
     }
 
@@ -74,7 +74,7 @@ export class PrismaProductsRepository {
     const photos = await this.prisma.attachment.findMany({
       where: { productId: { in: productIds } },
     });
-    if (!photos) {
+    if (photos.length === 0) {
       return [];
     }
     return productsWithoutPhotos.map((product) => {
