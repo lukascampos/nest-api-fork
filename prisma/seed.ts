@@ -1,3 +1,6 @@
+
+/* eslint-disable @typescript-eslint/no-explicit-any */
+
 /* eslint-disable no-console */
 /* eslint-disable max-len */
 /* eslint-disable @typescript-eslint/no-unused-vars */
@@ -9,18 +12,29 @@ import {
 } from '@prisma/client';
 import { faker } from '@faker-js/faker';
 
+import { S3Client, PutObjectCommand } from '@aws-sdk/client-s3';
+import * as fs from 'fs';
+import * as path from 'path';
+import { randomUUID } from 'crypto';
+
+
+
 const prisma = new PrismaClient();
 
 async function main() {
+
+  console.log('Seed: starting...');
   // Criar categorias de produto
   const categories = await prisma.productCategory.createMany({
     data: [
-      { id: 1, name: 'Artesanato', type: 'manual' },
-      { id: 2, name: 'Decoração', type: 'decor' },
-      { id: 3, name: 'Utilidades', type: 'utility' },
+      { id: BigInt(1), name: 'Artesanato', type: 'manual' },
+      { id: BigInt(2), name: 'Decoração', type: 'decor' },
+      { id: BigInt(3), name: 'Utilidades', type: 'utility' },
     ],
     skipDuplicates: true,
   });
+  console.log('Seed: product categories createMany result:', categories);
+
 
   // Criar ao menos um usuário para cada role
   const roles = [Role.USER, Role.ARTISAN, Role.MODERATOR, Role.ADMIN];
@@ -114,7 +128,8 @@ async function main() {
           title: faker.commerce.productName(),
           description: faker.commerce.productDescription(),
           priceInCents: BigInt(faker.number.int({ min: 1000, max: 10000 })),
-          categoryId: faker.helpers.arrayElement([1, 2, 3]),
+
+          categoryId: faker.helpers.arrayElement([BigInt(1), BigInt(2), BigInt(3)]),
           stock: faker.number.int({ min: 1, max: 50 }),
           coverageImage: faker.image.urlPicsumPhotos(),
           isDisabled: faker.datatype.boolean(),
@@ -161,6 +176,9 @@ async function main() {
       },
     });
   }
+
+  console.log('Seed: created attachments for users');
+
   for (const artisan of artisans) {
     await prisma.attachment.create({
       data: {
@@ -170,7 +188,69 @@ async function main() {
       },
     });
   }
+
+  console.log('Seed: created attachments for artisans');
+
+  // Upload das imagens de seed (prisma/seeds/images) e criação de attachments
+  try {
+    const imagesDir = path.join(__dirname, 'seeds', 'images');
+    if (!fs.existsSync(imagesDir)) {
+      console.warn('Seed: diretório de imagens não encontrado em', imagesDir);
+    } else {
+      const imageFiles = fs.readdirSync(imagesDir).filter((f) => /\.(jpe?g|png)$/i.test(f));
+      const bucketName = process.env.STORAGE_BUCKET_NAME || process.env.S3_BUCKET_NAME || 'your-default-bucket-name';
+
+      const s3 = new S3Client({
+        endpoint: process.env.STORAGE_URL,
+        region: 'auto',
+        forcePathStyle: true,
+        credentials: {
+          accessKeyId: process.env.STORAGE_ACCESS_KEY_ID || '',
+          secretAccessKey: process.env.STORAGE_SECRET_ACCESS_KEY || '',
+        },
+      });
+
+      for (const file of imageFiles) {
+        const filePath = path.join(imagesDir, file);
+        const body = fs.readFileSync(filePath);
+        const ext = path.extname(file).toLowerCase();
+        const mime = ext === '.png' ? 'image/png' : 'image/jpeg';
+        const id = randomUUID(); // será usado como key/attachment id
+        const key = `${id}${ext}`;
+
+        // Enviar para o bucket
+        await s3.send(new PutObjectCommand({
+          Bucket: bucketName,
+          Key: key,
+          Body: body,
+          ContentType: mime,
+        }));
+
+        // Criar registro no banco usando o id gerado (igual ao Key sem extensão)
+        const attachmentData: any = {
+          id,
+          fileType: mime,
+          fileSize: BigInt(body.byteLength),
+        };
+
+        // Se houver artesãos criados, associe a primeira imagem ao primeiro artisan (ajuda no teste)
+        if (artisans.length > 0) {
+          attachmentData.artisanId = artisans[0].id;
+        }
+
+        await prisma.attachment.create({
+          data: attachmentData,
+        });
+        console.log('Seed: created attachment record for uploaded file', key);
+      }
+    }
+  } catch (err) {
+    // não falha o seed se o MinIO não estiver disponível — apenas log
+    // eslint-disable-next-line no-console
+    console.warn('Seed: não foi possível fazer upload das imagens para o storage:', err?.message ?? err);
+  }
 }
+console.log('Seed: finished.');
 
 main()
   .catch((e) => {
