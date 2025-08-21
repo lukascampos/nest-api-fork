@@ -4,6 +4,7 @@ import { Product } from '@/domain/product/core/entities/product.entity';
 import { PrismaService } from '@/shared/prisma/prisma.service';
 import { PrismaProductPhotosRepository } from './prisma-product-photos.repository';
 import { PrismaProductsMapper } from '../mappers/prisma-products.mapper';
+import { ListProductsInput } from '@/domain/product/core/use-cases/list-products.use-case';
 
 @Injectable()
 export class PrismaProductsRepository {
@@ -50,6 +51,44 @@ export class PrismaProductsRepository {
       likesCount,
       averageRating._avg.rating,
     );
+  }
+
+  async list({
+    artisanId, categoryId, id, title,
+  }: ListProductsInput): Promise<Product[]> {
+    const productsWithoutPhotos = await this.prisma.product.findMany({
+      where: {
+        artisanId,
+        categoryId,
+        id,
+        title: title ? { contains: title, mode: 'insensitive' } : undefined,
+      },
+      orderBy: { createdAt: 'desc' },
+    });
+
+    if (productsWithoutPhotos.length === 0) {
+      return [];
+    }
+
+    const productIds = productsWithoutPhotos.map((product) => product.id);
+    const photos = await this.prisma.attachment.findMany({
+      where: { productId: { in: productIds } },
+    });
+    if (photos.length === 0) {
+      return [];
+    }
+    return productsWithoutPhotos.map((product) => {
+      const productPhotos = photos
+        .filter((photo) => photo.productId === product.id)
+        .map((photo) => ProductPhoto.create({
+          attachmentId: photo.id,
+          productId: photo.productId!,
+        }));
+      return PrismaProductsMapper.toDomain(
+        product,
+        productPhotos,
+      );
+    });
   }
 
   async save(product: Product): Promise<void> {

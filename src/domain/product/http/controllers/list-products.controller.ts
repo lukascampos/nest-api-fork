@@ -1,25 +1,25 @@
 import {
-  BadRequestException, Controller, Get, NotFoundException, Param, UseGuards,
+  BadRequestException, Controller, Get, NotFoundException, Query, UseGuards,
 } from '@nestjs/common';
 import { RolesGuard } from '@/domain/_shared/auth/roles/roles.guard';
-import { GetProductByIdUseCase } from '../../core/use-cases/get-product-by-id.use-case';
-import { ProductIdParamDto } from '../dtos/product-id-param.dto';
 import { ProductNotFoundError } from '../../core/errors/product-not-found.error';
 import { Public } from '@/domain/_shared/auth/decorators/public.decorator';
+import { ListProductsUseCase } from '../../core/use-cases/list-products.use-case';
+import { ListProductsQueryDto } from '../dtos/list-products-query.dto';
 
-@Controller('products/:id')
+@Controller('products')
 @UseGuards(RolesGuard)
-export class GetProductByIdController {
+export class ListProductsController {
   constructor(
-    private readonly getProductByIdUseCase: GetProductByIdUseCase,
+    private readonly listProductsUseCase: ListProductsUseCase,
   ) {}
 
   @Get()
   @Public()
   async handle(
-    @Param() param: ProductIdParamDto,
+    @Query() query: ListProductsQueryDto,
   ) {
-    const result = await this.getProductByIdUseCase.execute({ ...param });
+    const result = await this.listProductsUseCase.execute({ ...query });
 
     if (result.isLeft()) {
       const error = result.value;
