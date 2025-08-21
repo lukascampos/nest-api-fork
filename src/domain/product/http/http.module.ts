@@ -8,6 +8,8 @@ import { GetProductByIdController } from './controllers/get-product-by-id.contro
 import { IdentityPersistenceModule } from '@/domain/identity/persistence/identity-persistence.module';
 import { ListProductsController } from './controllers/list-products.controller';
 import { ListProductsUseCase } from '../core/use-cases/list-products.use-case';
+import { UpdateProductController } from './controllers/update-product.controller';
+import { UpdateProductUseCase } from '../core/use-cases/update-product.use-case';
 
 @Module({
   imports: [ProductPersistenceModule, AttachmentPersistenceModule, IdentityPersistenceModule],
@@ -15,11 +17,13 @@ import { ListProductsUseCase } from '../core/use-cases/list-products.use-case';
     CreateProductController,
     GetProductByIdController,
     ListProductsController,
+    UpdateProductController,
   ],
   providers: [
     CreateProductUseCase,
     GetProductByIdUseCase,
     ListProductsUseCase,
+    UpdateProductUseCase,
   ],
 })
 export class HttpModule {}
