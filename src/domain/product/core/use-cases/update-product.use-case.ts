@@ -1,10 +1,10 @@
 import { Injectable } from '@nestjs/common';
 import { Either, left, right } from '@/domain/_shared/utils/either';
 import { PrismaProductsRepository } from '../../persistence/prisma/repositories/prisma-products.repository';
-import { Product } from '../entities/product.entity';
 import { ProductNotFoundError } from '../errors/product-not-found.error';
 import { ProductPhoto } from '../entities/product-photo.entity';
 import { NotAlloweError } from '../errors/not-allowed.error';
+import { S3AttachmentsStorage } from '@/domain/_shared/attachments/persistence/storage/s3-attachments.storage';
 
 export interface UpdateProductInput {
   productId: string;
@@ -19,14 +19,25 @@ export interface UpdateProductInput {
 }
 
 export interface UpdateProductOutput {
-  product: Product;
+  id: string;
+  authorId: string;
+  title: string;
+  description?: string;
+  priceInCents: number;
+  stock: number;
+  categoryId: number;
+  photos: string[];
+  coverPhoto?: string;
 }
 
 type Output = Either<Error, UpdateProductOutput>;
 
 @Injectable()
 export class UpdateProductUseCase {
-  constructor(private readonly productRepository: PrismaProductsRepository) {}
+  constructor(
+    private readonly productRepository: PrismaProductsRepository,
+    private readonly s3AttachmentsStorage: S3AttachmentsStorage,
+  ) {}
 
   async execute({
     productId,
@@ -72,8 +83,11 @@ export class UpdateProductUseCase {
       });
     }
 
+    const photos: string[] = [];
+
     if (newPhotos && newPhotos.length > 0) {
-      newPhotos.forEach((photo) => {
+      newPhotos.forEach(async (photo) => {
+        photos.push(await this.s3AttachmentsStorage.getUrlByFileName(photo));
         const productPhoto = ProductPhoto.create({
           attachmentId: photo,
           productId: product.id,
@@ -83,7 +97,10 @@ export class UpdateProductUseCase {
       });
     }
 
+    let coverPhoto: string | undefined;
+
     if (coverPhotoId) {
+      coverPhoto = await this.s3AttachmentsStorage.getUrlByFileName(coverPhotoId);
       product.coverPhotoId = coverPhotoId;
     }
 
@@ -93,6 +110,16 @@ export class UpdateProductUseCase {
 
     await this.productRepository.save(product);
 
-    return right({ product });
+    return right({
+      id: product.id,
+      authorId: product.artisanId,
+      title: product.title,
+      description: product.description,
+      priceInCents: product.priceInCents,
+      stock: product.stock,
+      categoryId: product.categoryId,
+      photos,
+      coverPhoto: coverPhoto ?? undefined,
+    });
   }
 }
