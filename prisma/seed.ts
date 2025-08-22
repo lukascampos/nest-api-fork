@@ -243,10 +243,10 @@ async function main() {
   } catch (err) {
     // não falha o seed se o MinIO não estiver disponível — apenas log
     // eslint-disable-next-line no-console
-    console.warn('Seed: não foi possível fazer upload das imagens para o storage:', err?.message ?? err);
+    console.warn('Seed: could not upload images to storage:', err?.message ?? err);
   }
+  console.log('Seed: finished.');
 }
-console.log('Seed: finished.');
 
 main()
   .catch((e) => {
