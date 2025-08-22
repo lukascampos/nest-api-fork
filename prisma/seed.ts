@@ -1,4 +1,3 @@
-
 /* eslint-disable @typescript-eslint/no-explicit-any */
 
 /* eslint-disable no-console */
@@ -17,12 +16,9 @@ import * as fs from 'fs';
 import * as path from 'path';
 import { randomUUID } from 'crypto';
 
-
-
 const prisma = new PrismaClient();
 
 async function main() {
-
   console.log('Seed: starting...');
   // Criar categorias de produto
   const categories = await prisma.productCategory.createMany({
@@ -34,7 +30,6 @@ async function main() {
     skipDuplicates: true,
   });
   console.log('Seed: product categories createMany result:', categories);
-
 
   // Criar ao menos um usuário para cada role
   const roles = [Role.USER, Role.ARTISAN, Role.MODERATOR, Role.ADMIN];
@@ -54,7 +49,7 @@ async function main() {
     const user = await prisma.user.create({
       data: {
         email: faker.internet.email(),
-        password: faker.internet.password(),
+        password: 'senhaPadrao123',
         role: [faker.helpers.arrayElement(roles)],
       },
     });
