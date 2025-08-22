@@ -15,6 +15,7 @@ import { S3Client, PutObjectCommand } from '@aws-sdk/client-s3';
 import * as fs from 'fs';
 import * as path from 'path';
 import { randomUUID } from 'crypto';
+import { hash } from 'bcryptjs';
 
 const prisma = new PrismaClient();
 
@@ -49,7 +50,7 @@ async function main() {
     const user = await prisma.user.create({
       data: {
         email: faker.internet.email(),
-        password: 'senhaPadrao123',
+        password: await hash('senhaPadrao123', 10),
         role: [faker.helpers.arrayElement(roles)],
       },
     });
