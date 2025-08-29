@@ -92,15 +92,16 @@ export class UpdateProductUseCase {
     const photos: string[] = [];
 
     if (newPhotos && newPhotos.length > 0) {
-      newPhotos.forEach(async (photo) => {
-        photos.push(await this.s3AttachmentsStorage.getUrlByFileName(photo));
-        const productPhoto = ProductPhoto.create({
-          attachmentId: photo,
-          productId: product.id,
-        });
-
-        product.photos?.add(productPhoto);
-      });
+      await Promise.all(
+        newPhotos.map(async (photo) => {
+          photos.push(await this.s3AttachmentsStorage.getUrlByFileName(photo));
+          const productPhoto = ProductPhoto.create({
+            attachmentId: photo,
+            productId: product.id,
+          });
+          product.photos?.add(productPhoto);
+        }),
+      );
     }
 
     let coverPhoto: string | undefined;
