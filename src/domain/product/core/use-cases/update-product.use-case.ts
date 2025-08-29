@@ -3,12 +3,13 @@ import { Either, left, right } from '@/domain/_shared/utils/either';
 import { PrismaProductsRepository } from '../../persistence/prisma/repositories/prisma-products.repository';
 import { ProductNotFoundError } from '../errors/product-not-found.error';
 import { ProductPhoto } from '../entities/product-photo.entity';
-import { NotAlloweError } from '../errors/not-allowed.error';
+import { NotAllowedError } from '../errors/not-allowed.error';
 import { S3AttachmentsStorage } from '@/domain/_shared/attachments/persistence/storage/s3-attachments.storage';
 
 export interface UpdateProductInput {
   productId: string;
   authorId: string;
+  title?: string;
   description?: string;
   priceInCents?: number;
   stock?: number;
@@ -44,6 +45,7 @@ export class UpdateProductUseCase {
     authorId,
     categoryId,
     coverPhotoId,
+    title,
     description,
     deletedPhotos,
     newPhotos,
@@ -57,7 +59,11 @@ export class UpdateProductUseCase {
     }
 
     if (product.artisanId !== authorId) {
-      return left(new NotAlloweError());
+      return left(new NotAllowedError());
+    }
+
+    if (title) {
+      product.title = title;
     }
 
     if (description) {

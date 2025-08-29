@@ -97,6 +97,7 @@ export class PrismaProductsRepository {
       categoryId: product.categoryId,
       stock: product.stock,
       coverageImage: product.coverPhotoId,
+      updatedAt: product.updatedAt,
     };
 
     await this.prisma.$transaction(async (tx) => {
