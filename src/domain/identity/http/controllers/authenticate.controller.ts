@@ -33,7 +33,9 @@ export class AuthenticateController {
 
     response.cookie('access_token', accessToken, {
       httpOnly: true,
-      sameSite: 'lax',
+      sameSite: 'none',
+      secure: true,
+      path: '/',
       maxAge: 1000 * 60 * 60 * 24,
     });
 
