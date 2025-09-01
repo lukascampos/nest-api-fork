@@ -4,6 +4,7 @@ import { PrismaProductsRepository } from '../../persistence/prisma/repositories/
 import { ProductNotFoundError } from '../errors/product-not-found.error';
 import { S3AttachmentsStorage } from '@/domain/_shared/attachments/persistence/storage/s3-attachments.storage';
 import { PrismaUsersRepository } from '@/domain/identity/persistence/prisma/repositories/prisma-users.repository';
+import { PrismaArtisanProfilesRepository } from '@/domain/identity/persistence/prisma/repositories/prisma-artisan-profiles.repository';
 
 export interface GetProductByIdInput {
   id: string;
@@ -12,7 +13,9 @@ export interface GetProductByIdInput {
 export interface GetProductByIdOutput {
   id: string;
   authorName: string;
+  authorUserName: string;
   authorId: string;
+  authorPhoneNumber: string;
   title: string;
   description: string;
   priceInCents: number;
@@ -32,6 +35,7 @@ export class GetProductByIdUseCase {
     private readonly productsRepository: PrismaProductsRepository,
     private readonly s3AttachmentStorage: S3AttachmentsStorage,
     private readonly usersProfileRepository: PrismaUsersRepository,
+    private readonly artisanProfileRepository: PrismaArtisanProfilesRepository,
   ) {}
 
   async execute({
@@ -59,11 +63,14 @@ export class GetProductByIdUseCase {
     }
 
     const author = await this.usersProfileRepository.findById(product.artisanId);
+    const artisanProfile = await this.artisanProfileRepository.findByUserId(product.artisanId);
 
     return right({
       id: product.id,
       authorName: author!.name,
+      authorUserName: artisanProfile!.userName,
       authorId: author!.id,
+      authorPhoneNumber: author!.phone,
       title: product.title,
       description: product.description,
       priceInCents: product.priceInCents,
