@@ -1,6 +1,5 @@
 import { Injectable } from '@nestjs/common';
 import { Either, left, right } from '@/domain/_shared/utils/either';
-import { ArtisanApplicationNotFoundError } from '../errors/artisan-application-not-found.error';
 import { UserNotFoundError } from '../errors/user-not-found.error';
 import { PrismaUsersRepository } from '../../persistence/prisma/repositories/prisma-users.repository';
 import { PrismaArtisanProfilesRepository } from '../../persistence/prisma/repositories/prisma-artisan-profiles.repository';
@@ -25,7 +24,7 @@ export interface GetArtisanProfileByUsernameOutput {
 }
 
 type Output = Either<
-  ArtisanApplicationNotFoundError | UserNotFoundError,
+  ArtisanProfileNotFoundError | UserNotFoundError,
   GetArtisanProfileByUsernameOutput
 >;
 
