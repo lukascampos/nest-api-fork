@@ -12,6 +12,7 @@ export class PrismaUsersMapper {
       cpf: profile.cpf,
       birthDate: profile.birthDate.toISOString(),
       phone: profile.phone ?? '',
+      avatarId: profile.avatar ?? undefined,
     }, user.id, user.createdAt, user.updatedAt);
   }
 
@@ -28,6 +29,7 @@ export class PrismaUsersMapper {
           cpf: user.cpf,
           birthDate: new Date(user.birthDate),
           phone: user.phone,
+          avatar: user.avatarId ?? undefined,
         },
       },
     };

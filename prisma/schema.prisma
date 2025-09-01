@@ -9,8 +9,8 @@ datasource db {
 }
 
 enum ApplicationType {
-  BE_ARTISAN      
-  DISABLE_PROFILE 
+  BE_ARTISAN
+  DISABLE_PROFILE
 }
 
 enum Role {
@@ -76,6 +76,9 @@ model ArtisanProfile {
   sicab                  String
   sicabRegistrationDate  DateTime @map("sicab_registration_date")
   sicabValidUntil        DateTime @map("sicab_valid_until")
+  followersCount         Int      @default(0) @map("followers_count")
+  productsCount          Int      @default(0) @map("products_count")
+  bio                    String?  @map("bio")
   isDisabled             Boolean  @default(true) @map("is_disabled")
   createdAt              DateTime @default(now()) @map("created_at")
   updatedAt              DateTime @default(now()) @map("updated_at")
@@ -88,19 +91,19 @@ model ArtisanProfile {
 }
 
 model ArtisanApplication {
-  id                     String           @id @default(uuid())
-  userId                 String           @map("fk_user_id")
-  type                   ApplicationType  @default(BE_ARTISAN) @map("type")
-  rawMaterial            String           @map("raw_material")
+  id                     String          @id @default(uuid())
+  userId                 String          @map("fk_user_id")
+  type                   ApplicationType @default(BE_ARTISAN) @map("type")
+  rawMaterial            String          @map("raw_material")
   technique              String
-  finalityClassification String           @map("finality_classification")
+  finalityClassification String          @map("finality_classification")
   sicab                  String
-  sicabRegistrationDate  DateTime         @map("sicab_registration_date")
-  sicabValidUntil        DateTime         @map("sicab_valid_until")
-  status                 RequestStatus    @default(PENDING)
-  createdAt              DateTime         @default(now()) @map("created_at")
-  updatedAt              DateTime         @default(now()) @map("updated_at")
-  reviewerId             String?          @map("fk_user_reviewer_id")
+  sicabRegistrationDate  DateTime        @map("sicab_registration_date")
+  sicabValidUntil        DateTime        @map("sicab_valid_until")
+  status                 RequestStatus   @default(PENDING)
+  createdAt              DateTime        @default(now()) @map("created_at")
+  updatedAt              DateTime        @default(now()) @map("updated_at")
+  reviewerId             String?         @map("fk_user_reviewer_id")
   rejectionReason        String?
 
   userRequesting User  @relation(fields: [userId], references: [id], name: "userRequesting")
