@@ -10,6 +10,9 @@ describe('artisan profile entity', () => {
     sicab: '123456789',
     sicabRegistrationDate: new Date('2023-05-10'),
     sicabValidUntil: new Date('2029-05-09'),
+    followersCount: 100,
+    productsCount: 50,
+    bio: 'Experienced artisan specializing in woodcraft.',
   };
 
   it('should be defined as ArtisanProfile instance', () => {

@@ -89,6 +89,9 @@ export class ModerateArtisanApplicationUseCase {
           sicabRegistrationDate: application.sicabRegistrationDate,
           sicabValidUntil: application.sicabValidUntil,
           isDisabled: false,
+          bio: artisanProfile.bio,
+          followersCount: artisanProfile.followersCount,
+          productsCount: artisanProfile.productsCount,
         },
         artisanProfile.id,
         artisanProfile.createdAt,
@@ -110,6 +113,9 @@ export class ModerateArtisanApplicationUseCase {
         sicab: application.sicab,
         sicabRegistrationDate: application.sicabRegistrationDate,
         sicabValidUntil: application.sicabValidUntil,
+        bio: null,
+        followersCount: 0,
+        productsCount: 0,
       });
 
       await this.artisanRepository.save(newArtisanProfile);
