@@ -118,5 +118,14 @@ export class PrismaProductsRepository {
         ]);
       }
     });
+
+    const countProductByArtisan = await this.prisma.product.count({
+      where: { artisanId: productData.artisanId },
+    });
+
+    await this.prisma.artisanProfile.update({
+      where: { userId: product.artisanId },
+      data: { productsCount: countProductByArtisan },
+    });
   }
 }
