@@ -53,8 +53,6 @@ export class AuthenticateUseCase {
     if (user.roles.includes(UserRole.ARTISAN)) {
       const artisanProfile = await this.artisanProfileRepository.findByUserId(user.id);
 
-      console.log('Artisan profile found:', artisanProfile);
-
       artisanUserName = artisanProfile!.userName;
     }
 
