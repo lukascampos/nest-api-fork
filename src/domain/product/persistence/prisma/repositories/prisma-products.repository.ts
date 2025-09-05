@@ -140,4 +140,18 @@ export class PrismaProductsRepository {
       ),
     ]);
   }
+
+  async isDisabled(productId: string): Promise<boolean> {
+    const product = await this.prisma.product.findUnique({
+      where: { id: productId },
+    });
+    return !!product?.isDisabled;
+  }
+
+  async deactivate(productId: string): Promise<void> {
+    await this.prisma.product.update({
+      where: { id: productId },
+      data: { isDisabled: true },
+    });
+  }
 }
