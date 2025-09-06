@@ -38,12 +38,13 @@ async function main() {
   for (const role of roles) {
     const user = await prisma.user.create({
       data: {
-        email: faker.internet.email(),
-        password: faker.internet.password(),
+        email: `${role.toLowerCase()}@test.com`,
+        password: await hash('senhaPadrao123', 10),
         role: [role],
       },
     });
     users.push(user);
+    console.log(`Created user with email: ${user.email}`);
   }
   // Adiciona mais usuários aleatórios
   for (let i = 0; i < 2; i++) {
@@ -55,6 +56,7 @@ async function main() {
       },
     });
     users.push(user);
+    console.log(`Created user with email: ${user.email}`);
   }
 
   // Criar perfis de usuário
