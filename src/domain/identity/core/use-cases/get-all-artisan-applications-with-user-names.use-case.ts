@@ -1,6 +1,6 @@
 import { Injectable } from '@nestjs/common';
 import { ArtisanApplication, ArtisanApplicationStatus, ApplicationType } from '../entities/artisan-application.entity';
-import { Either, left, right } from '@/domain/_shared/utils/either';
+import { Either, right } from '@/domain/_shared/utils/either';
 import { NoArtisanApplicationsFoundError } from '../errors/no-artisan-applications-found.error';
 import { PrismaArtisanApplicationsRepository } from '../../persistence/prisma/repositories/prisma-artisan-applications.repository';
 import { PrismaUsersRepository } from '../../persistence/prisma/repositories/prisma-users.repository';
@@ -35,7 +35,7 @@ export class GetAllArtisanApplicationsWithUserNamesUseCase {
     const artisanApplications = await this.artisanApplicationsRepository.listAll(type, status);
 
     if (artisanApplications.length === 0) {
-      return left(new NoArtisanApplicationsFoundError());
+      return right({ artisanApplications: [] });
     }
 
     const users = await this.usersRepository.findManyByIds(

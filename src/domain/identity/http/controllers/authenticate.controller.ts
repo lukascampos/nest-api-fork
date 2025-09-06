@@ -42,6 +42,7 @@ export class AuthenticateController {
       userId: result.value.userId,
       name: result.value.name,
       socialName: result.value.socialName,
+      artisanUserName: result.value.artisanUserName,
     });
   }
 }

@@ -10,6 +10,8 @@ import { ListProductsController } from './controllers/list-products.controller';
 import { ListProductsUseCase } from '../core/use-cases/list-products.use-case';
 import { DeleteProductController } from './controllers/product.delete.controller';
 import { DeactivateProductUseCase } from '../core/use-cases/deactivate-product.use-case';
+import { UpdateProductUseCase } from '../core/use-cases/update-product.use-case';
+import { UpdateProductController } from './controllers/update-product.controller';
 
 @Module({
   imports: [ProductPersistenceModule, AttachmentPersistenceModule, IdentityPersistenceModule],
@@ -18,12 +20,14 @@ import { DeactivateProductUseCase } from '../core/use-cases/deactivate-product.u
     GetProductByIdController,
     ListProductsController,
     DeleteProductController,
+    UpdateProductController,
   ],
   providers: [
     CreateProductUseCase,
     GetProductByIdUseCase,
     ListProductsUseCase,
     DeactivateProductUseCase,
+    UpdateProductUseCase,
   ],
 })
 export class HttpModule {}

@@ -5,6 +5,7 @@ import { Either, left, right } from '@/domain/_shared/utils/either';
 import { InvalidCredentialsError } from '../errors/invalid-credentials.error';
 import { UserRole } from '../entities/user.entity';
 import { PrismaUsersRepository } from '../../persistence/prisma/repositories/prisma-users.repository';
+import { PrismaArtisanProfilesRepository } from '../../persistence/prisma/repositories/prisma-artisan-profiles.repository';
 
 export interface AuthenticateInput {
   email: string;
@@ -17,6 +18,7 @@ export interface AuthenticateOutput {
   userId: string;
   name: string;
   socialName?: string;
+  artisanUserName?: string;
 }
 
 type Output = Either<InvalidCredentialsError, AuthenticateOutput>
@@ -25,6 +27,7 @@ type Output = Either<InvalidCredentialsError, AuthenticateOutput>
 export class AuthenticateUseCase {
   constructor(
     private readonly usersRepository: PrismaUsersRepository,
+    private readonly artisanProfileRepository: PrismaArtisanProfilesRepository,
     private readonly jwt: JwtService,
   ) {}
 
@@ -45,6 +48,14 @@ export class AuthenticateUseCase {
       return left(new InvalidCredentialsError());
     }
 
+    let artisanUserName: string | undefined;
+
+    if (user.roles.includes(UserRole.ARTISAN)) {
+      const artisanProfile = await this.artisanProfileRepository.findByUserId(user.id);
+
+      artisanUserName = artisanProfile!.userName;
+    }
+
     const accessToken = this.jwt.sign({ sub: user.id, roles: user.roles });
 
     return right({
@@ -53,6 +64,7 @@ export class AuthenticateUseCase {
       userId: user.id,
       name: user.name,
       socialName: user.socialName,
+      artisanUserName,
     });
   }
 }
