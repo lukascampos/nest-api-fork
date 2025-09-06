@@ -26,9 +26,12 @@ import { ConfirmDisableArtisanUseCase } from '../core/use-cases/confirm-disable-
 import { ReviewArtisanController } from './controllers/artisan-applications.review.controller';
 import { ConfirmDisableArtisanController } from './controllers/artisan-applications.confirm.controller';
 import { RequestDisableArtisanController } from './controllers/artisan-applications.request-disable.controller';
+import { GetArtisanProfileByUsernameController } from './controllers/get-artisan-profile-by-username.controller';
+import { GetArtisanProfileByUsernameUseCase } from '../core/use-cases/get-artisan-profile-by-username.use-case';
+import { AttachmentPersistenceModule } from '@/domain/_shared/attachments/persistence/attachment-persistence.module';
 
 @Module({
-  imports: [IdentityPersistenceModule],
+  imports: [IdentityPersistenceModule, AttachmentPersistenceModule],
   controllers: [
     AddModeratorRoleController,
     AuthenticateController,
@@ -42,6 +45,7 @@ import { RequestDisableArtisanController } from './controllers/artisan-applicati
     CreateArtisanApplicationController,
     GetAllArtisanApplicationsWithUserNamesController,
     GetArtisanApplicationDetailsController,
+    GetArtisanProfileByUsernameController,
     ModerateArtisanApplicationController,
   ],
   providers: [
@@ -57,6 +61,7 @@ import { RequestDisableArtisanController } from './controllers/artisan-applicati
     CreateArtisanApplicationUseCase,
     GetAllArtisanApplicationsWithUserNamesUseCase,
     GetArtisanApplicationDetailsUseCase,
+    GetArtisanProfileByUsernameUseCase,
     ModerateArtisanApplicationUseCase,
 
   ],

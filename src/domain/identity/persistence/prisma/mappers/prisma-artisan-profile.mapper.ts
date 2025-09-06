@@ -12,6 +12,9 @@ export class PrismaArtisanProfileMapper {
       sicab: artisanProfile.sicab,
       sicabRegistrationDate: artisanProfile.sicabRegistrationDate,
       sicabValidUntil: artisanProfile.sicabValidUntil,
+      followersCount: artisanProfile.followersCount,
+      productsCount: artisanProfile.productsCount,
+      bio: artisanProfile.bio,
     }, artisanProfile.id, artisanProfile.createdAt, artisanProfile.updatedAt);
   }
 
@@ -28,6 +31,7 @@ export class PrismaArtisanProfileMapper {
       sicab: artisanProfile.sicab,
       sicabRegistrationDate: artisanProfile.sicabRegistrationDate,
       sicabValidUntil: artisanProfile.sicabValidUntil,
+      bio: artisanProfile.bio,
       isDisabled: artisanProfile.isDisabled,
       createdAt: artisanProfile.createdAt,
       updatedAt: artisanProfile.updatedAt,

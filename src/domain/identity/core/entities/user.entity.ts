@@ -16,6 +16,7 @@ export interface UserProps {
   birthDate: string;
   phone: string;
   roles: UserRole[];
+  avatarId: string | null;
   isActive: boolean;
 }
 
@@ -27,6 +28,7 @@ type CreateUserProps = {
   socialName?: string;
   birthDate: string;
   phone: string;
+  avatarId?: string;
   roles?: UserRole[];
 };
 
@@ -45,6 +47,7 @@ export class User extends Entity<UserProps> {
       ...props,
       roles: props.roles ?? [UserRole.USER],
       isActive: true,
+      avatarId: props.avatarId ?? null,
     }, id, createdAt, updatedAt);
   }
 
@@ -113,6 +116,15 @@ export class User extends Entity<UserProps> {
 
   get roles(): UserRole[] {
     return this.props.roles;
+  }
+
+  get avatarId(): string | null {
+    return this.props.avatarId;
+  }
+
+  set avatarId(value: string) {
+    this.props.avatarId = value;
+    this.touch();
   }
 
   get isActive(): boolean {
