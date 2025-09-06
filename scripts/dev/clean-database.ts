@@ -4,42 +4,42 @@ import { PrismaClient } from '@prisma/client';
 const prisma = new PrismaClient();
 
 export async function cleanDatabase() {
-  // Ordem importante devido às foreign keys
-  console.log(' Iniciando limpeza do banco de dados...');
+  // Important order due to foreign keys
+  console.log('Starting database cleanup...');
 
   await prisma.productLike.deleteMany();
-  console.log('✓ Likes de produtos removidos');
+  console.log('✓ Product likes removed');
 
   await prisma.productRating.deleteMany();
-  console.log('✓ Avaliações de produtos removidas');
+  console.log('✓ Product ratings removed');
 
   await prisma.attachment.deleteMany();
-  console.log('✓ Anexos removidos');
+  console.log('✓ Attachments removed');
 
   await prisma.product.deleteMany();
-  console.log('✓ Produtos removidos');
+  console.log('✓ Products removed');
 
   await prisma.artisanApplication.deleteMany();
-  console.log('✓ Solicitações de artesão removidas');
+  console.log('✓ Artisan applications removed');
 
   await prisma.artisanProfile.deleteMany();
-  console.log('✓ Perfis de artesão removidos');
+  console.log('✓ Artisan profiles removed');
 
   await prisma.userProfile.deleteMany();
-  console.log('✓ Perfis de usuário removidos');
+  console.log('✓ User profiles removed');
 
   await prisma.user.deleteMany();
-  console.log('✓ Usuários removidos');
+  console.log('✓ Users removed');
 
   await prisma.productCategory.deleteMany();
-  console.log('✓ Categorias de produtos removidas');
+  console.log('✓ Product categories removed');
 
-  console.log(' Banco de dados limpo com sucesso!');
+  console.log('Database cleaned successfully!');
 }
 
 cleanDatabase()
   .catch((e) => {
-    console.error('❌ Erro ao limpar banco:', e);
+    console.error('❌ Error cleaning database:', e);
     process.exit(1);
   })
   .finally(async () => {
