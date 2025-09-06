@@ -16,11 +16,17 @@ import * as fs from 'fs';
 import * as path from 'path';
 import { randomUUID } from 'crypto';
 import { hash } from 'bcryptjs';
+import { cleanDatabase } from '../scripts/dev/clean-database';
 
 const prisma = new PrismaClient();
 
 async function main() {
   console.log('Seed: starting...');
+
+  // Limpando banco
+  await cleanDatabase();
+  console.log('Banco de dados limpo');
+
   // Criar categorias de produto
   const categories = await prisma.productCategory.createMany({
     data: [
