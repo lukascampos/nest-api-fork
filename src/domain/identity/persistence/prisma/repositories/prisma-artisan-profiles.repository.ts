@@ -21,6 +21,20 @@ export class PrismaArtisanProfilesRepository {
     return PrismaArtisanProfileMapper.toDomain(artisanProfile);
   }
 
+  async findByUsername(userName: string): Promise<ArtisanProfile | null> {
+    const artisanProfile = await this.prisma.artisanProfile.findUnique({
+      where: {
+        userName,
+      },
+    });
+
+    if (!artisanProfile) {
+      return null;
+    }
+
+    return PrismaArtisanProfileMapper.toDomain(artisanProfile);
+  }
+
   async listAll(): Promise<ArtisanProfile[]> {
     const artisanProfiles = await this.prisma.artisanProfile.findMany();
     return artisanProfiles.map(PrismaArtisanProfileMapper.toDomain);
@@ -41,6 +55,7 @@ export class PrismaArtisanProfilesRepository {
         sicab: artisanProfile.sicab,
         sicabRegistrationDate: artisanProfile.sicabRegistrationDate,
         sicabValidUntil: artisanProfile.sicabValidUntil,
+        bio: artisanProfile.bio,
         isDisabled: artisanProfile.isDisabled,
         updatedAt: artisanProfile.updatedAt,
       },

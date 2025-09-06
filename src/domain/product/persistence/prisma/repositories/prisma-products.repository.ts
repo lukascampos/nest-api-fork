@@ -26,10 +26,6 @@ export class PrismaProductsRepository {
       where: { productId: id },
     });
 
-    if (!photos) {
-      return null;
-    }
-
     const productPhotos = photos.map((photo) => ProductPhoto.create({
       attachmentId: photo.id,
       productId: photo.productId!,
@@ -93,6 +89,7 @@ export class PrismaProductsRepository {
 
   async save(product: Product): Promise<void> {
     const productData = {
+      id: product.id,
       artisanId: product.artisanId,
       title: product.title,
       description: product.description,
@@ -100,45 +97,36 @@ export class PrismaProductsRepository {
       categoryId: product.categoryId,
       stock: product.stock,
       coverageImage: product.coverPhotoId,
+      updatedAt: new Date(),
     };
 
-    const productExists = await this.prisma.product.findUnique({
-      where: { id: product.id },
-    });
-
-    if (!productExists) {
-      await this.prisma.product.create({
-        data: {
-          ...productData,
-          id: product.id,
-          createdAt: product.createdAt,
-          updatedAt: product.updatedAt,
-        },
+    await this.prisma.$transaction(async (tx) => {
+      const productExists = await tx.product.findUnique({
+        where: { id: product.id },
       });
+      if (!productExists) {
+        await tx.product.create({ data: productData });
 
-      if (product.photos) {
-        await this.productPhotosRepository.createMany(product.photos.getItems());
+        if (product.photos) {
+          await this.productPhotosRepository.createManyWithTx(tx, product.photos.getItems());
+        }
+      } else {
+        await tx.product.update({ where: { id: product.id }, data: productData });
+        await Promise.all([
+          this.productPhotosRepository.createManyWithTx(tx, product.photos!.getNewItems()),
+          this.productPhotosRepository.deleteManyWithTx(tx, product.photos!.getRemovedItems()),
+        ]);
       }
-
-      return;
-    }
-
-    await this.prisma.product.update({
-      where: { id: product.id },
-      data: {
-        ...productData,
-        updatedAt: new Date(),
-      },
     });
 
-    await Promise.all([
-      this.productPhotosRepository.createMany(
-        product.photos!.getNewItems(),
-      ),
-      this.productPhotosRepository.deleteMany(
-        product.photos!.getRemovedItems(),
-      ),
-    ]);
+    const countProductByArtisan = await this.prisma.product.count({
+      where: { artisanId: productData.artisanId },
+    });
+
+    await this.prisma.artisanProfile.update({
+      where: { userId: product.artisanId },
+      data: { productsCount: countProductByArtisan },
+    });
   }
 
   async isDisabled(productId: string): Promise<boolean> {
