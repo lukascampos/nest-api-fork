@@ -24,6 +24,7 @@ export class DeleteProductController {
     const result = await this.deleteProductUseCase.execute({
       productId: id,
       requesterId: user.sub,
+      requesterRole: user.roles,
     });
 
     if (result.isLeft()) {

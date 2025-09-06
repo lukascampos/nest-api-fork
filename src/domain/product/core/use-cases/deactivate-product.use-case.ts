@@ -8,6 +8,7 @@ import { ProductAlreadyInactiveError } from '../errors/product-already-inactive.
 export interface DeactivateProductInput {
     productId: string;
     requesterId: string;
+    requesterRole: string[];
 }
 
 type Output = Either<
@@ -19,14 +20,20 @@ type Output = Either<
 export class DeactivateProductUseCase {
   constructor(private readonly productsRepository: PrismaProductsRepository) {}
 
-  async execute({ productId, requesterId }: DeactivateProductInput): Promise<Output> {
+  async execute({
+    productId, requesterId, requesterRole,
+  }: DeactivateProductInput): Promise<Output> {
     const product = await this.productsRepository.findById(productId);
 
     if (!product) {
       return left(new ProductNotFoundError(productId));
     }
 
-    if (product.artisanId !== requesterId) {
+    const isOwner = product.artisanId === requesterId;
+    const isAdmin = requesterRole.includes('ADMIN');
+    const canManage = isOwner || isAdmin;
+
+    if (!canManage) {
       return left(new NotAllowedError());
     }
 
