@@ -16,11 +16,17 @@ import * as fs from 'fs';
 import * as path from 'path';
 import { randomUUID } from 'crypto';
 import { hash } from 'bcryptjs';
+import { cleanDatabase } from '../scripts/dev/clean-database';
 
 const prisma = new PrismaClient();
 
 async function main() {
   console.log('Seed: starting...');
+
+  // Limpando banco
+  await cleanDatabase();
+  console.log('Banco de dados limpo');
+
   // Criar categorias de produto
   const categories = await prisma.productCategory.createMany({
     data: [
@@ -38,12 +44,13 @@ async function main() {
   for (const role of roles) {
     const user = await prisma.user.create({
       data: {
-        email: faker.internet.email(),
-        password: faker.internet.password(),
+        email: `${role.toLowerCase()}@test.com`,
+        password: await hash('senhaPadrao123', 10),
         role: [role],
       },
     });
     users.push(user);
+    console.log(`Created user with email: ${user.email}`);
   }
   // Adiciona mais usuários aleatórios
   for (let i = 0; i < 2; i++) {
@@ -55,6 +62,7 @@ async function main() {
       },
     });
     users.push(user);
+    console.log(`Created user with email: ${user.email}`);
   }
 
   // Criar perfis de usuário
