@@ -1,6 +1,6 @@
 export class UserAlreadyExistsError extends Error {
-  constructor(identifier: string) {
-    super(`User with same ${identifier} already exists.`);
+  constructor(identifier: string, field: 'email' | 'cpf' | 'phone') {
+    super(`Usuário já existe com este ${field}: ${identifier}`);
     this.name = 'UserAlreadyExistsError';
   }
 }
