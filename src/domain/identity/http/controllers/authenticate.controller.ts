@@ -1,22 +1,38 @@
 import {
-  BadRequestException, Body, Controller, Post, Res, UnauthorizedException,
+  Controller,
+  Post,
+  Body,
+  UnauthorizedException,
+  Res,
+  Req,
+  HttpCode,
 } from '@nestjs/common';
-import { Response } from 'express';
+import { Request, Response } from 'express';
+import { AuthenticateDto } from '../dtos/authenticate.dto';
 import { Public } from '@/domain/_shared/auth/decorators/public.decorator';
 import { AuthenticateUseCase } from '../../core/use-cases/authenticate.use-case';
-import { AuthenticateDto } from '../dtos/authenticate.dto';
 import { InvalidCredentialsError } from '../../core/errors/invalid-credentials.error';
 
-@Controller('/sessions')
+@Controller('auth')
 export class AuthenticateController {
-  constructor(
-    private readonly authenticateUseCase: AuthenticateUseCase,
-  ) {}
+  constructor(private readonly authenticateUseCase: AuthenticateUseCase) {}
 
-  @Post()
+  @Post('login')
   @Public()
-  async handle(@Body() body: AuthenticateDto, @Res() response: Response) {
-    const result = await this.authenticateUseCase.execute({ ...body });
+  @HttpCode(200)
+  async handle(
+    @Body() body: AuthenticateDto,
+    @Req() request: Request,
+    @Res() response: Response,
+  ) {
+    const ipHost = request.ip || request.socket.remoteAddress || 'unknown';
+    const userAgent = request.get('User-Agent') || 'unknown';
+
+    const result = await this.authenticateUseCase.execute({
+      ...body,
+      ipHost,
+      userAgent,
+    });
 
     if (result.isLeft()) {
       const error = result.value;
@@ -25,24 +41,31 @@ export class AuthenticateController {
         case InvalidCredentialsError:
           throw new UnauthorizedException(error.message);
         default:
-          throw new BadRequestException(error.message);
+          throw new UnauthorizedException('Erro de autenticação');
       }
     }
 
-    const { accessToken } = result.value;
+    const { user, session } = result.value;
 
-    response.cookie('access_token', accessToken, {
+    response.cookie('access_token', session.accessToken, {
       httpOnly: true,
       sameSite: 'lax',
-      maxAge: 1000 * 60 * 60 * 24,
+      maxAge: 24 * 60 * 60 * 1000, // 1 day
+      path: '/',
     });
 
-    response.send({
-      roles: result.value.roles,
-      userId: result.value.userId,
-      name: result.value.name,
-      socialName: result.value.socialName,
-      artisanUserName: result.value.artisanUserName,
+    response.json({
+      user: {
+        id: user.id,
+        name: user.name,
+        socialName: user.socialName,
+        email: user.email,
+        roles: user.roles,
+      },
+      session: {
+        id: session.id,
+        expiresAt: session.expiresAt,
+      },
     });
   }
 }
