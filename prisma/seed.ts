@@ -10,15 +10,12 @@
 //   PrismaClient, Role, ApplicationType, RequestStatus,
 // } from '@prisma/client';
 // import { faker } from '@faker-js/faker';
-
 // import { S3Client, PutObjectCommand } from '@aws-sdk/client-s3';
 // import * as fs from 'fs';
 // import * as path from 'path';
 // import { randomUUID } from 'crypto';
 // import { hash } from 'bcryptjs';
-
 // const prisma = new PrismaClient();
-
 // async function main() {
 //   console.log('Seed: starting...');
 //   // Criar categorias de produto
@@ -56,7 +53,6 @@
 //     });
 //     users.push(user);
 //   }
-
 //   // Criar perfis de usuário
 //   for (const user of users) {
 //     await prisma.userProfile.create({
