@@ -46,7 +46,7 @@ CREATE TABLE "product_categories" (
 CREATE TABLE "products" (
     "id" TEXT NOT NULL,
     "fk_artisan_id" TEXT NOT NULL,
-    "fk_category_id" BIGINT NOT NULL,
+    "category_ids" BIGINT[],
     "title" TEXT NOT NULL,
     "description" TEXT NOT NULL,
     "price_in_cents" BIGINT NOT NULL,
@@ -59,6 +59,7 @@ CREATE TABLE "products" (
     "average_rating" DOUBLE PRECISION,
     "created_at" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
     "updated_at" TIMESTAMP(3) NOT NULL,
+    "productCategoryId" BIGINT,
 
     CONSTRAINT "products_pkey" PRIMARY KEY ("id")
 );
@@ -104,13 +105,7 @@ CREATE UNIQUE INDEX "products_slug_key" ON "products"("slug");
 CREATE INDEX "products_fk_artisan_id_is_active_idx" ON "products"("fk_artisan_id", "is_active");
 
 -- CreateIndex
-CREATE INDEX "products_fk_category_id_is_active_idx" ON "products"("fk_category_id", "is_active");
-
--- CreateIndex
 CREATE INDEX "products_slug_idx" ON "products"("slug");
-
--- CreateIndex
-CREATE INDEX "products_is_active_idx" ON "products"("is_active");
 
 -- CreateIndex
 CREATE UNIQUE INDEX "product_ratings_fk_product_id_fk_user_id_key" ON "product_ratings"("fk_product_id", "fk_user_id");
@@ -122,10 +117,10 @@ CREATE UNIQUE INDEX "product_likes_fk_product_id_fk_user_id_key" ON "product_lik
 ALTER TABLE "products" ADD CONSTRAINT "products_fk_artisan_id_fkey" FOREIGN KEY ("fk_artisan_id") REFERENCES "artisan_profiles"("fk_user_id") ON DELETE RESTRICT ON UPDATE CASCADE;
 
 -- AddForeignKey
-ALTER TABLE "products" ADD CONSTRAINT "products_fk_category_id_fkey" FOREIGN KEY ("fk_category_id") REFERENCES "product_categories"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
+ALTER TABLE "products" ADD CONSTRAINT "products_fk_cover_image_id_fkey" FOREIGN KEY ("fk_cover_image_id") REFERENCES "attachments"("id") ON DELETE SET NULL ON UPDATE CASCADE;
 
 -- AddForeignKey
-ALTER TABLE "products" ADD CONSTRAINT "products_fk_cover_image_id_fkey" FOREIGN KEY ("fk_cover_image_id") REFERENCES "attachments"("id") ON DELETE SET NULL ON UPDATE CASCADE;
+ALTER TABLE "products" ADD CONSTRAINT "products_productCategoryId_fkey" FOREIGN KEY ("productCategoryId") REFERENCES "product_categories"("id") ON DELETE SET NULL ON UPDATE CASCADE;
 
 -- AddForeignKey
 ALTER TABLE "product_ratings" ADD CONSTRAINT "product_ratings_fk_product_id_fkey" FOREIGN KEY ("fk_product_id") REFERENCES "products"("id") ON DELETE CASCADE ON UPDATE CASCADE;

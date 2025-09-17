@@ -176,7 +176,7 @@ model ProductCategory {
 model Product {
   id            String   @id @default(uuid())
   artisanId     String   @map("fk_artisan_id")
-  categoryId    BigInt   @map("fk_category_id")
+  categoryIds   BigInt[] @map("category_ids")
   title         String
   description   String
   priceInCents  BigInt   @map("price_in_cents")
@@ -190,17 +190,16 @@ model Product {
   createdAt     DateTime @default(now()) @map("created_at")
   updatedAt     DateTime @updatedAt @map("updated_at")
 
-  artisan    ArtisanProfile  @relation(fields: [artisanId], references: [userId])
-  category   ProductCategory @relation(fields: [categoryId], references: [id])
-  ratings    ProductRating[]
-  likes      ProductLike[]
-  coverImage Attachment?     @relation("ProductCoverImage", fields: [coverImageId], references: [id])
-  images     Attachment[]    @relation("ProductImages")
+  artisan           ArtisanProfile   @relation(fields: [artisanId], references: [userId])
+  ratings           ProductRating[]
+  likes             ProductLike[]
+  coverImage        Attachment?      @relation("ProductCoverImage", fields: [coverImageId], references: [id])
+  images            Attachment[]     @relation("ProductImages")
+  ProductCategory   ProductCategory? @relation(fields: [productCategoryId], references: [id])
+  productCategoryId BigInt?
 
   @@index([artisanId, isActive])
-  @@index([categoryId, isActive])
   @@index([slug])
-  @@index([isActive])
   @@map("products")
 }
 
