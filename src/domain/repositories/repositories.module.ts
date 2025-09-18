@@ -4,6 +4,7 @@ import { ArtisanApplicationsRepository } from './artisan-applications.repository
 import { ArtisanProfilesRepository } from './artisan-profiles.repository';
 import { UsersRepository } from './users.repository';
 import { PrismaService } from '@/shared/prisma/prisma.service';
+import { ProductsRepository } from './products.repository';
 
 @Module({
   providers: [
@@ -12,12 +13,14 @@ import { PrismaService } from '@/shared/prisma/prisma.service';
     AttachmentsRepository,
     ArtisanApplicationsRepository,
     ArtisanProfilesRepository,
+    ProductsRepository,
   ],
   exports: [PrismaService,
     UsersRepository,
     AttachmentsRepository,
     ArtisanApplicationsRepository,
     ArtisanProfilesRepository,
+    ProductsRepository,
   ],
 })
 export class RepositoriesModule {}

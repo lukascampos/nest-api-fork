@@ -46,6 +46,13 @@ export class AttachmentsRepository {
     });
   }
 
+  async findManyByIds(ids: string[]): Promise<Attachment[]> {
+    return this.prisma.attachment.findMany({
+      where: { id: { in: ids } },
+      orderBy: { createdAt: 'desc' },
+    });
+  }
+
   async findByUserId(userId: string): Promise<Attachment[]> {
     return this.prisma.attachment.findMany({
       where: { userId },
@@ -72,6 +79,19 @@ export class AttachmentsRepository {
       },
       data: {
         artisanApplicationId,
+      },
+    });
+  }
+
+  async linkToProduct(attachmentIds: string[], productId: string): Promise<void> {
+    await this.prisma.attachment.updateMany({
+      where: {
+        id: {
+          in: attachmentIds,
+        },
+      },
+      data: {
+        productId,
       },
     });
   }
