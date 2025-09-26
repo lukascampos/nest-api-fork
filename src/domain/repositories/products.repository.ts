@@ -1,5 +1,7 @@
 import { Injectable } from '@nestjs/common';
+import { Product } from '@prisma/client';
 import { PrismaService } from '@/shared/prisma/prisma.service';
+import { ListProductsInput } from '../products/core/use-cases/list-products.use-case';
 
 @Injectable()
 export class ProductsRepository {
@@ -29,5 +31,33 @@ export class ProductsRepository {
     return this.prisma.product.findUnique({
       where: { slug },
     });
+  }
+
+  async list({
+    artisanId,
+    categoryId,
+    id,
+    title,
+  }: ListProductsInput): Promise<Product[]> {
+    const productsWithPhotos = await this.prisma.product.findMany({
+      where: {
+        artisanId,
+        categoryIds: categoryId ? { has: BigInt(categoryId) } : undefined,
+        id,
+        title: title ? { contains: title, mode: 'insensitive' } : undefined,
+      },
+      orderBy: { createdAt: 'desc' },
+      include: {
+        images: true,
+      },
+    });
+
+    return productsWithPhotos.map((product) => ({
+      ...product,
+      photos: product.images.map((photo) => ({
+        attachmentId: photo.id,
+        productId: photo.productId!,
+      })),
+    }));
   }
 }

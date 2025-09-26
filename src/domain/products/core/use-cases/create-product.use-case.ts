@@ -109,6 +109,7 @@ export class CreateProductUseCase {
             description,
             priceInCents,
             stock,
+            coverImageId: photosIds[0],
             slug,
             isActive: true,
             likesCount: 0,
