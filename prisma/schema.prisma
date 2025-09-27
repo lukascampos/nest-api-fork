@@ -21,6 +21,7 @@ model User {
   password   String
   roles      Roles[]
   name       String
+  phone      String
   socialName String?  @map("social_name")
   avatar     String?
   isDisabled Boolean  @default(false) @map("is_disabled")
