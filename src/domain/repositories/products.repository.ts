@@ -33,6 +33,21 @@ export class ProductsRepository {
     });
   }
 
+  async save(product: Product): Promise<void> {
+    await this.prisma.product.update({
+      where: { id: product.id },
+      data: {
+        title: product.title,
+        description: product.description,
+        priceInCents: product.priceInCents,
+        stock: product.stock,
+        categoryIds: product.categoryIds,
+        coverImageId: product.coverImageId,
+        updatedAt: new Date(),
+      },
+    });
+  }
+
   async list({
     artisanId,
     categoryId,
