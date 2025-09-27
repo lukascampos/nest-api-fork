@@ -89,6 +89,7 @@ export class CreateUserUseCase {
             password: hashedPassword,
             name,
             socialName,
+            phone,
             roles: [Roles.USER],
             profile: {
               create: {
