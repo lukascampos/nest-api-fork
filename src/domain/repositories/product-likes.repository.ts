@@ -39,7 +39,9 @@ export class ProductLikesRepository {
       orderBy: { createdAt: 'desc' },
       skip: (page - 1) * limit,
       take: limit,
-      include: {
+      select: {
+        id: true,
+        createdAt: true,
         user: {
           select: {
             id: true,
