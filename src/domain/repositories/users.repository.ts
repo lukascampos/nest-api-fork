@@ -84,6 +84,7 @@ export class UsersRepository {
       where: { email: data.email },
       create: {
         ...userData,
+        phone,
         roles: [Roles.USER],
         profile: {
           create: {
