@@ -1,70 +1,119 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, Logger } from '@nestjs/common';
+import { Attachment } from '@prisma/client';
 import { Either, left, right } from '@/domain/_shared/utils/either';
-import { ArtisanApplicationStatus } from '../entities/artisan-application.entity';
-import { ArtisanApplicationNotFoundError } from '../errors/artisan-application-not-found.error';
-import { UserNotFoundError } from '../errors/user-not-found.error';
-import { PrismaArtisanApplicationsRepository } from '../../persistence/prisma/repositories/prisma-artisan-applications.repository';
-import { PrismaUsersRepository } from '../../persistence/prisma/repositories/prisma-users.repository';
+import { S3StorageService } from '@/domain/attachments/s3-storage.service';
+import { ArtisanApplicationsRepository } from '@/domain/repositories/artisan-applications.repository';
+import { AttachmentsRepository } from '@/domain/repositories/attachments.repository';
+import { ApplicationNotFoundError } from '../errors/application-not-found.error';
 
 export interface GetArtisanApplicationDetailsInput {
-  artisanApplicationId: string;
+  applicationId: string;
+  userId?: string; // Para validação de segurança
+}
+
+export interface PhotoDetails {
+  id: string;
+  fileType: string;
+  fileSize: number;
+  createdAt: Date;
+  url: string;
 }
 
 export interface GetArtisanApplicationDetailsOutput {
+  id: string;
   userId: string;
-  userName: string;
-  userEmail: string;
-  userPhone: string;
-  rawMaterial: string;
-  technique: string;
-  finalityClassification: string;
-  sicab: string;
-  sicabRegistrationDate: Date;
-  sicabValidUntil: Date;
-  status: ArtisanApplicationStatus;
+  formStatus: string;
+  status: string;
+  rawMaterial: string[];
+  technique: string[];
+  finalityClassification: string[];
+  sicab: string | null;
+  sicabRegistrationDate: Date | null;
+  sicabValidUntil: Date | null;
+  bio: string | null;
+  photos: string[];
 }
 
-type Output = Either<
-  ArtisanApplicationNotFoundError | UserNotFoundError,
-  { artisanApplication: GetArtisanApplicationDetailsOutput }
->;
+type Output = Either<ApplicationNotFoundError, GetArtisanApplicationDetailsOutput>;
 
 @Injectable()
 export class GetArtisanApplicationDetailsUseCase {
+  private readonly logger = new Logger(GetArtisanApplicationDetailsUseCase.name);
+
   constructor(
-    private readonly artisanApplicationsRepository: PrismaArtisanApplicationsRepository,
-    private readonly usersRepository: PrismaUsersRepository,
+    private readonly artisanApplicationsRepository: ArtisanApplicationsRepository,
+    private readonly attachmentsRepository: AttachmentsRepository,
+    private readonly s3StorageService: S3StorageService,
   ) {}
 
-  async execute({ artisanApplicationId }: GetArtisanApplicationDetailsInput): Promise<Output> {
-    const artisanApplication = await this
-      .artisanApplicationsRepository
-      .findById(artisanApplicationId);
+  async execute(input: GetArtisanApplicationDetailsInput): Promise<Output> {
+    const { applicationId } = input;
 
-    if (!artisanApplication) {
-      return left(new ArtisanApplicationNotFoundError(artisanApplicationId));
+    try {
+      const application = await this.artisanApplicationsRepository.findById(applicationId);
+
+      if (!application) {
+        this.logger.warn(`Application not found: ${applicationId}`);
+        return left(new ApplicationNotFoundError());
+      }
+
+      const attachments = await this
+        .attachmentsRepository
+        .findByArtisanApplicationId(applicationId);
+
+      const photosWithUrls = await this.generatePhotoUrls(attachments);
+
+      this.logger.debug(`Retrieved application details: ${applicationId} with ${photosWithUrls.photos.length} photos`);
+
+      return right({
+        id: application.id,
+        userId: application.userId,
+        formStatus: application.formStatus,
+        status: application.status,
+        rawMaterial: application.rawMaterial,
+        technique: application.technique,
+        finalityClassification: application.finalityClassification,
+        sicab: application.sicab,
+        sicabRegistrationDate: application.sicabRegistrationDate,
+        sicabValidUntil: application.sicabValidUntil,
+        bio: application.bio,
+        photos: photosWithUrls.photos,
+      });
+    } catch (error) {
+      this.logger.error(`Error getting application details: ${applicationId}`, error);
+      return left(new ApplicationNotFoundError());
+    }
+  }
+
+  private async generatePhotoUrls(attachments: Attachment[]): Promise<{photos: string[]}> {
+    if (!attachments.length) {
+      return {
+        photos: [],
+      };
     }
 
-    const user = await this.usersRepository.findById(artisanApplication.userId);
+    try {
+      const photosWithUrls = await Promise.all(
+        attachments.map(async (attachment) => {
+          try {
+            const url = await this.s3StorageService.getUrlByFileName(attachment.id);
 
-    if (!user) {
-      return left(new UserNotFoundError(artisanApplication.userId));
+            return {
+              url,
+            };
+          } catch (urlError) {
+            this.logger.warn(`Failed to generate URL for attachment ${attachment.id}:`, urlError);
+            return undefined;
+          }
+        }),
+      );
+
+      return {
+        photos: photosWithUrls.filter((photo) => photo !== undefined).map((photo) => photo.url),
+      };
+    } catch (error) {
+      this.logger.error('Error generating photo URLs:', error);
+      return { photos: [] };
     }
-
-    return right({
-      artisanApplication: {
-        userId: user.id,
-        userName: user.name,
-        userEmail: user.email,
-        userPhone: user.phone,
-        rawMaterial: artisanApplication.rawMaterial,
-        technique: artisanApplication.technique,
-        finalityClassification: artisanApplication.finalityClassification,
-        sicab: artisanApplication.sicab,
-        sicabRegistrationDate: artisanApplication.sicabRegistrationDate,
-        sicabValidUntil: artisanApplication.sicabValidUntil,
-        status: artisanApplication.status,
-      },
-    });
   }
 }

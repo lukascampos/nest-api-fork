@@ -1,33 +1,42 @@
 import {
-  BadRequestException, Controller, Get, NotFoundException, Param, UseGuards,
+  Controller,
+  Get,
+  Param,
+  UseGuards,
+  NotFoundException,
+  BadRequestException,
 } from '@nestjs/common';
+import { Roles as PrismaRoles } from '@prisma/client';
+import { CurrentUser } from '@/domain/_shared/auth/decorators/current-user.decorator';
 import { JwtAuthGuard } from '@/domain/_shared/auth/jwt/jwt-auth.guard';
-import { RolesGuard } from '@/domain/_shared/auth/roles/roles.guard';
-import { Roles } from '@/domain/_shared/auth/decorators/roles.decorator';
-import { UserRole } from '../../core/entities/user.entity';
+import { TokenPayload } from '@/domain/_shared/auth/jwt/jwt.strategy';
+import { ApplicationNotFoundError } from '../../core/errors/application-not-found.error';
 import { GetArtisanApplicationDetailsUseCase } from '../../core/use-cases/get-artisan-application-details.use-case';
-import { SingleUuidParamDto } from '../dtos/single-uuid-param.dto';
-import { ArtisanApplicationNotFoundError } from '../../core/errors/artisan-application-not-found.error';
+import { Roles } from '@/domain/_shared/auth/decorators/roles.decorator';
 
-@Controller('artisan-applications/:id')
-@UseGuards(JwtAuthGuard, RolesGuard)
+@Controller('artisan-applications')
+@UseGuards(JwtAuthGuard)
 export class GetArtisanApplicationDetailsController {
   constructor(
     private readonly getArtisanApplicationDetailsUseCase: GetArtisanApplicationDetailsUseCase,
   ) {}
 
-  @Get()
-  @Roles(UserRole.MODERATOR)
-  async handle(@Param() param: SingleUuidParamDto) {
-    const artisanApplicationId = param.id;
-
-    const result = await this.getArtisanApplicationDetailsUseCase.execute({ artisanApplicationId });
+  @Get(':id')
+  @Roles(PrismaRoles.MODERATOR)
+  async handleOwn(
+    @Param('id') applicationId: string,
+    @CurrentUser() currentUser: TokenPayload,
+  ) {
+    const result = await this.getArtisanApplicationDetailsUseCase.execute({
+      applicationId,
+      userId: currentUser.sub,
+    });
 
     if (result.isLeft()) {
       const error = result.value;
 
       switch (error.constructor) {
-        case ArtisanApplicationNotFoundError:
+        case ApplicationNotFoundError:
           throw new NotFoundException(error.message);
         default:
           throw new BadRequestException(error.message);
