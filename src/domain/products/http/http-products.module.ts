@@ -9,6 +9,14 @@ import { GetProductByIdController } from './controllers/get-product-by-id.contro
 import { GetProductByIdUseCase } from '../core/use-cases/get-product-by-id.use-case';
 import { UpdateProductController } from './controllers/update-product.controller';
 import { UpdateProductUseCase } from '../core/use-cases/update-product.use-case';
+import { GetProductLikeStatusController } from './controllers/get-product-like-status.controller';
+import { ListProductLikesController } from './controllers/list-product-likes.controller';
+import { ToggleProductLikeController } from './controllers/toggle-product-like.controller';
+import { ProductLikesRepository } from '@/domain/repositories/product-likes.repository';
+import { ProductsRepository } from '@/domain/repositories/products.repository';
+import { GetProductLikeStatusUseCase } from '../core/use-cases/get-product-like-status.use-case';
+import { ListProductLikesUseCase } from '../core/use-cases/list-product-likes.use-case';
+import { ToggleProductLikeUseCase } from '../core/use-cases/toggle-product-like.use-case';
 
 @Module({
   imports: [RepositoriesModule, AttachmentsModule],
@@ -17,12 +25,18 @@ import { UpdateProductUseCase } from '../core/use-cases/update-product.use-case'
     GetProductByIdController,
     ListProductsController,
     UpdateProductController,
+    ToggleProductLikeController,
+    GetProductLikeStatusController,
+    ListProductLikesController,
   ],
   providers: [
     CreateProductUseCase,
     GetProductByIdUseCase,
     ListProductsUseCase,
     UpdateProductUseCase,
+    ToggleProductLikeUseCase,
+    GetProductLikeStatusUseCase,
+    ListProductLikesUseCase,
   ],
 })
 export class HttpProductsModule {}
