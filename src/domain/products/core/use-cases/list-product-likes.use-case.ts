@@ -45,8 +45,12 @@ export class ListProductLikesUseCase {
       if (!productExists || !productExists.isActive) {
         return left(new ProductNotFoundError(productId));
       }
-      const likes = await this.productLikesRepository.findManyByProductId(productId, page, limit);
-      const totalLikes = await this.productLikesRepository.countByProductId(productId);
+      const likes = await this.productLikesRepository.findManyByProductId(
+        productExists.id,
+        page,
+        limit,
+      );
+      const totalLikes = await this.productLikesRepository.countByProductId(productExists.id);
       const totalPages = Math.ceil(totalLikes / limit);
 
       return right({

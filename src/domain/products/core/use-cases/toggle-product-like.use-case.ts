@@ -37,16 +37,16 @@ export class ToggleProductLikeUseCase {
       }
 
       const existingLike = await this.productLikesRepository.findByProductAndUser(
-        productId,
+        product.id,
         userId,
       );
 
       const result = await this.prisma.$transaction(async (tx) => {
         if (existingLike) {
-          await this.productLikesRepository.delete(productId, userId);
+          await this.productLikesRepository.delete(product.id, userId);
 
           const updatedProduct = await tx.product.update({
-            where: { id: productId },
+            where: { id: product.id },
             data: { likesCount: { decrement: 1 } },
             select: { likesCount: true },
           });
@@ -54,10 +54,10 @@ export class ToggleProductLikeUseCase {
           return { action: 'unliked', likesCount: updatedProduct.likesCount } as ToggleProductLikeOutput;
         }
 
-        await this.productLikesRepository.create({ productId, userId });
+        await this.productLikesRepository.create({ productId: product.id, userId });
 
         const updatedProduct = await tx.product.update({
-          where: { id: productId },
+          where: { id: product.id },
           data: { likesCount: { increment: 1 } },
           select: { likesCount: true },
         });

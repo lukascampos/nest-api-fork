@@ -35,7 +35,7 @@ export class GetProductLikeStatusUseCase {
         return left(new ProductNotFoundError(productId));
       }
 
-      const like = await this.productLikesRepository.findByProductAndUser(productId, userId);
+      const like = await this.productLikesRepository.findByProductAndUser(productExists.id, userId);
 
       return right({
         isLiked: !!like,
