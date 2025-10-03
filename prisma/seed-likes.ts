@@ -46,6 +46,7 @@ async function main() {
         password: senha,
         roles: [Roles.USER],
         name: 'Test User',
+        phone: '12996575863',
       },
     }),
     prisma.user.create({
@@ -54,6 +55,7 @@ async function main() {
         password: senha,
         roles: [Roles.ADMIN],
         name: 'Admin User',
+        phone: '12996575864',
       },
     }),
     prisma.user.create({
@@ -62,6 +64,7 @@ async function main() {
         password: senha,
         roles: [Roles.MODERATOR],
         name: 'Moderator User',
+        phone: '12996575865',
       },
     }),
     prisma.user.create({
@@ -70,6 +73,7 @@ async function main() {
         password: senha,
         roles: [Roles.ARTISAN],
         name: 'Artisan One',
+        phone: '12996575866',
       },
     }),
     prisma.user.create({
@@ -78,6 +82,7 @@ async function main() {
         password: senha,
         roles: [Roles.ARTISAN],
         name: 'Artisan Two',
+        phone: '12996575867',
       },
     }),
   ]);
