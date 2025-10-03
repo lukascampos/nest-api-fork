@@ -5,11 +5,11 @@ export class ListLikesQueryDto {
     @Type(() => Number)
     @IsInt()
     @Min(1)
-      page: number = 1;
+      page: number;
 
     @Type(() => Number)
     @IsInt()
     @Min(1)
     @Max(50)
-      limit: number = 10;
+      limit: number;
 }
