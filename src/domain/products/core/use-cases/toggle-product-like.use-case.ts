@@ -85,7 +85,7 @@ export class ToggleProductLikeUseCase {
         return left(new Error('Invalid foreign key.'));
       }
 
-      return left(new Error('Erro interno do servidor'));
+      return left(new Error('Internal server error'));
     }
   }
 }
