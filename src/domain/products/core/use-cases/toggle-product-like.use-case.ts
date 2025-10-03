@@ -82,7 +82,7 @@ export class ToggleProductLikeUseCase {
       }
 
       if (error.code === 'P2003') {
-        return left(new Error('Chave estrangeira inválida.'));
+        return left(new Error('Invalid foreign key.'));
       }
 
       return left(new Error('Erro interno do servidor'));
