@@ -43,7 +43,7 @@ export class ToggleProductLikeUseCase {
 
       const result = await this.prisma.$transaction(async (tx) => {
         if (existingLike) {
-          await this.productLikesRepository.delete(product.id, userId);
+          await this.productLikesRepository.delete(product.id, userId, tx);
 
           const updatedProduct = await tx.product.update({
             where: { id: product.id },
@@ -54,7 +54,7 @@ export class ToggleProductLikeUseCase {
           return { action: 'unliked', likesCount: updatedProduct.likesCount } as ToggleProductLikeOutput;
         }
 
-        await this.productLikesRepository.create({ productId: product.id, userId });
+        await this.productLikesRepository.create({ productId: product.id, userId }, tx);
 
         const updatedProduct = await tx.product.update({
           where: { id: product.id },
