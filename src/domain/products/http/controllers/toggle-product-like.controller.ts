@@ -17,7 +17,7 @@ export class ToggleProductLikeController {
 
   @Post(':id/like')
   @UseGuards(JwtAuthGuard, RolesGuard)
-  @Roles(PrismaRoles.ARTISAN, PrismaRoles.ADMIN, PrismaRoles.MODERATOR, PrismaRoles.USER)
+  @Roles(PrismaRoles.USER)
   async handle(@Param('id') productId: string, @CurrentUser() user: TokenPayload) {
     const result = await this.toggleProductLikeUseCase.execute({ productId, userId: user.sub });
     if (result.isLeft()) {
