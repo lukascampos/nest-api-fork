@@ -37,8 +37,8 @@ export class ProductLikesRepository {
     return this.prisma.productLike.findMany({
       where: { productId },
       orderBy: { createdAt: 'desc' },
-      skip: (page - 1) * limit,
-      take: limit,
+      skip: (Number(page) - 1) * Number(limit),
+      take: Number(limit),
       select: {
         id: true,
         createdAt: true,
