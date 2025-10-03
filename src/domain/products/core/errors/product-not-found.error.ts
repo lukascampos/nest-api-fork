@@ -1,6 +1,8 @@
-export class ProductNotFoundError extends Error {
-  constructor(id: string) {
-    super(`Produto com id ${id} não encontrado`);
-    this.name = 'ProductNotFoundError';
+
+import { NotFoundException } from '@nestjs/common/exceptions';
+
+export class ProductNotFoundError extends NotFoundException {
+  constructor(productId: string) {
+    super(`Product with ID ${productId} not found`);
   }
 }
