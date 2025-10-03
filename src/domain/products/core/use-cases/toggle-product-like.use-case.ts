@@ -78,14 +78,14 @@ export class ToggleProductLikeUseCase {
       });
 
       if (error.code === 'P2002') {
-        return left(new Error('Like duplicado detectado.'));
+        return left(new Error('Duplicate like detected.'));
       }
 
       if (error.code === 'P2003') {
-        return left(new Error('Chave estrangeira inválida.'));
+        return left(new Error('Invalid foreign key.'));
       }
 
-      return left(new Error('Erro interno do servidor'));
+      return left(new Error('Internal server error'));
     }
   }
 }

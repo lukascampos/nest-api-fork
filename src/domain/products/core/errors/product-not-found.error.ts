@@ -1,3 +1,4 @@
+
 import { NotFoundException } from '@nestjs/common/exceptions';
 
 export class ProductNotFoundError extends NotFoundException {
