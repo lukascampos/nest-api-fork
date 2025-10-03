@@ -78,7 +78,7 @@ export class ToggleProductLikeUseCase {
       });
 
       if (error.code === 'P2002') {
-        return left(new Error('Like duplicado detectado.'));
+        return left(new Error('Duplicate like detected.'));
       }
 
       if (error.code === 'P2003') {
