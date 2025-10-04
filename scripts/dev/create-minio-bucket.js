@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-require-imports */
 const { S3Client, CreateBucketCommand } = require('@aws-sdk/client-s3');
 
 async function main() {

@@ -1,38 +1,38 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, Logger } from '@nestjs/common';
+import { Roles, RequestStatus, ArtisanApplication } from '@prisma/client';
 import slugify from 'slugify';
 import { Either, left, right } from '@/domain/_shared/utils/either';
-import { PrismaArtisanApplicationsRepository } from '../../persistence/prisma/repositories/prisma-artisan-applications.repository';
-import { PrismaArtisanProfilesRepository } from '../../persistence/prisma/repositories/prisma-artisan-profiles.repository';
-import { ArtisanApplication, ArtisanApplicationStatus } from '../entities/artisan-application.entity';
-import { ArtisanProfile } from '../entities/artisan-profile.entity';
-import { PrismaUsersRepository } from '../../persistence/prisma/repositories/prisma-users.repository';
+import { ArtisanApplicationsRepository } from '@/domain/repositories/artisan-applications.repository';
+import { ArtisanProfilesRepository } from '@/domain/repositories/artisan-profiles.repository';
+import { UsersRepository } from '@/domain/repositories/users.repository';
+import { ApplicationAlreadyModeratedError } from '../errors/application-already-moderated.error';
+import { ApplicationNotFoundError } from '../errors/application-not-found.error';
+import { MissingPropertyError } from '../errors/missing-property.error';
 import { UserNotFoundError } from '../errors/user-not-found.error';
-import { ArtisanApplicationNotFoundError } from '../errors/artisan-application-not-found.error';
-import { ArtisanApplicationAlreadyModeratedError } from '../errors/artisan-application-already-moderated.error';
-import { PropertyMissingError } from '../errors/property-missing.error';
-import { User, UserRole } from '../entities/user.entity';
 
 export interface ModerateArtisanApplicationInput {
   applicationId: string;
-  status: ArtisanApplicationStatus.APPROVED | ArtisanApplicationStatus.REJECTED;
-  rejectionReason: string | null;
+  status: 'APPROVED' | 'REJECTED';
+  rejectionReason?: string;
   reviewerId: string;
 }
 
 type Output = Either<
-  ArtisanApplicationNotFoundError
-  | ArtisanApplicationAlreadyModeratedError
-  | PropertyMissingError
-  | UserNotFoundError,
+  ApplicationNotFoundError |
+  ApplicationAlreadyModeratedError |
+  MissingPropertyError |
+  UserNotFoundError,
   void
->
+>;
 
 @Injectable()
 export class ModerateArtisanApplicationUseCase {
+  private readonly logger = new Logger(ModerateArtisanApplicationUseCase.name);
+
   constructor(
-    private readonly artisanApplicationRepository: PrismaArtisanApplicationsRepository,
-    private readonly artisanRepository: PrismaArtisanProfilesRepository,
-    private readonly userRepository: PrismaUsersRepository,
+    private readonly artisanApplicationsRepository: ArtisanApplicationsRepository,
+    private readonly usersRepository: UsersRepository,
+    private readonly artisanProfilesRepository: ArtisanProfilesRepository,
   ) {}
 
   async execute({
@@ -41,93 +41,88 @@ export class ModerateArtisanApplicationUseCase {
     rejectionReason,
     reviewerId,
   }: ModerateArtisanApplicationInput): Promise<Output> {
-    const application = await this.artisanApplicationRepository.findById(applicationId);
+    try {
+      this.logger.debug(`Moderating application ${applicationId} with status ${status}`);
 
-    if (!application) {
-      return left(new ArtisanApplicationNotFoundError(applicationId));
-    }
+      const application = await this.artisanApplicationsRepository.findById(applicationId);
 
-    if (application.status !== ArtisanApplicationStatus.PENDING) {
-      return left(new ArtisanApplicationAlreadyModeratedError(applicationId));
-    }
-
-    if (status === ArtisanApplicationStatus.APPROVED) {
-      const user = await this.userRepository.findById(application.userId);
-
-      if (!user) {
-        return left(new UserNotFoundError(application.userId));
+      if (!application) {
+        this.logger.warn(`Application not found: ${applicationId}`);
+        return left(new ApplicationNotFoundError());
       }
 
-      await this.approveApplication(application, reviewerId, user);
-    } else {
-      if (!rejectionReason) {
-        return left(new PropertyMissingError('rejectionReason'));
+      if (application.status !== RequestStatus.PENDING) {
+        this.logger.warn(`Application ${applicationId} already moderated`);
+        return left(new ApplicationAlreadyModeratedError());
       }
 
-      await this.rejectApplication(application, rejectionReason, reviewerId);
-    }
+      if (status === 'APPROVED') {
+        await this.approveApplication(application, reviewerId);
+      } else {
+        if (!rejectionReason) {
+          return left(new MissingPropertyError('rejectionReason'));
+        }
+        await this.rejectApplication(application, rejectionReason, reviewerId);
+      }
 
-    return right(undefined);
+      this.logger.log(`Application ${applicationId} ${status.toLowerCase()} successfully`);
+      return right(undefined);
+    } catch (error) {
+      this.logger.error(`Error moderating application ${applicationId}:`, error);
+      return left(new Error('Erro interno do servidor'));
+    }
   }
 
   private async approveApplication(
     application: ArtisanApplication,
     reviewerId: string,
-    user: User,
   ): Promise<void> {
-    const artisanProfile = await this.artisanRepository.findByUserId(application.userId);
+    const user = await this.usersRepository.findById(application.userId);
+
+    if (!user) {
+      throw new UserNotFoundError(application.userId, 'id');
+    }
+
+    const artisanProfile = await this.artisanProfilesRepository.findByUserId(application.userId);
 
     if (artisanProfile) {
-      const updatedArtisanProfile = ArtisanProfile.create(
-        {
-          userId: artisanProfile.userId,
-          userName: artisanProfile.userName,
-          rawMaterial: application.rawMaterial,
-          technique: application.technique,
-          finalityClassification: application.finalityClassification,
-          sicab: application.sicab,
-          sicabRegistrationDate: application.sicabRegistrationDate,
-          sicabValidUntil: application.sicabValidUntil,
-          isDisabled: false,
-          bio: artisanProfile.bio,
-          followersCount: artisanProfile.followersCount,
-          productsCount: artisanProfile.productsCount,
-        },
-        artisanProfile.id,
-        artisanProfile.createdAt,
-        artisanProfile.updatedAt,
-      );
-
-      await this.artisanRepository.save(updatedArtisanProfile);
-    } else {
-      const allArtisanProfiles = await this.artisanRepository.listAll();
-
-      const userName = await this.generateUniqueUserName(user.name, allArtisanProfiles);
-
-      const newArtisanProfile = ArtisanProfile.create({
-        userId: application.userId,
-        userName,
+      await this.artisanProfilesRepository.update(artisanProfile.id, {
         rawMaterial: application.rawMaterial,
         technique: application.technique,
         finalityClassification: application.finalityClassification,
-        sicab: application.sicab,
-        sicabRegistrationDate: application.sicabRegistrationDate,
-        sicabValidUntil: application.sicabValidUntil,
-        bio: null,
+        sicab: application.sicab!,
+        sicabRegistrationDate: application.sicabRegistrationDate!,
+        sicabValidUntil: application.sicabValidUntil!,
+        isDisabled: false,
+      });
+    } else {
+      const userName = await this.generateUniqueUserName(user.name);
+
+      await this.artisanProfilesRepository.create({
+        userId: application.userId,
+        artisanUserName: userName,
+        rawMaterial: application.rawMaterial,
+        technique: application.technique,
+        finalityClassification: application.finalityClassification,
+        sicab: application.sicab!,
+        sicabRegistrationDate: application.sicabRegistrationDate!,
+        sicabValidUntil: application.sicabValidUntil!,
+        bio: application.bio ?? undefined,
         followersCount: 0,
         productsCount: 0,
+        isDisabled: false,
       });
-
-      await this.artisanRepository.save(newArtisanProfile);
     }
 
-    application.approveApplication(reviewerId);
-    await this.artisanApplicationRepository.save(application);
+    await this.artisanApplicationsRepository.moderateApplication(application.id, {
+      status: RequestStatus.APPROVED,
+      reviewerId,
+    });
 
-    if (!user.roles.includes(UserRole.ARTISAN)) {
-      user.roles.push(UserRole.ARTISAN);
+    if (!user.roles.includes(Roles.ARTISAN)) {
+      const updatedRoles = [...user.roles, Roles.ARTISAN];
+      await this.usersRepository.updateRoles(user.id, updatedRoles);
     }
-    await this.userRepository.save(user);
   }
 
   private async rejectApplication(
@@ -135,22 +130,25 @@ export class ModerateArtisanApplicationUseCase {
     rejectionReason: string,
     reviewerId: string,
   ): Promise<void> {
-    application.reject(rejectionReason, reviewerId);
-    await this.artisanApplicationRepository.save(application);
+    await this.artisanApplicationsRepository.moderateApplication(application.id, {
+      status: RequestStatus.REJECTED,
+      rejectionReason,
+      reviewerId,
+    });
   }
 
-  private async generateUniqueUserName(baseName: string, artisanProfiles: ArtisanProfile[]) {
+  private async generateUniqueUserName(baseName: string): Promise<string> {
     const slugBase = slugify(baseName, { lower: true });
     let candidate = slugBase;
     let counter = 1;
 
-    let isDuplicate = artisanProfiles.some((profile) => profile.userName === candidate);
+    let existingProfile = await this.artisanProfilesRepository.findByUserName(candidate);
 
-    while (isDuplicate) {
+    while (existingProfile) {
       candidate = `${slugBase}-${counter}`;
       counter += 1;
-      const currentCandidate = candidate;
-      isDuplicate = artisanProfiles.some((profile) => profile.userName === currentCandidate);
+      // eslint-disable-next-line no-await-in-loop
+      existingProfile = await this.artisanProfilesRepository.findByUserName(candidate);
     }
 
     return candidate;

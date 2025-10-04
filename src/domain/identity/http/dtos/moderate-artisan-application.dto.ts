@@ -1,15 +1,17 @@
 import {
-  IsNotEmpty, IsOptional, IsString,
+  IsEnum, IsString, ValidateIf,
 } from 'class-validator';
-import { ArtisanApplicationStatus } from '../../core/entities/artisan-application.entity';
+
+export enum ModerationStatus {
+  APPROVED = 'APPROVED',
+  REJECTED = 'REJECTED',
+}
 
 export class ModerateArtisanApplicationDto {
-  @IsString()
-  @IsNotEmpty()
-    status: ArtisanApplicationStatus.APPROVED | ArtisanApplicationStatus.REJECTED;
+  @IsEnum(ModerationStatus)
+    status: ModerationStatus;
 
+  @ValidateIf((o) => o.status === ModerationStatus.REJECTED)
   @IsString()
-  @IsNotEmpty()
-  @IsOptional()
     rejectionReason?: string;
 }
