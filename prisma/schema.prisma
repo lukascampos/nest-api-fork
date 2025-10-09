@@ -162,6 +162,7 @@ model ProductCategory {
   id             BigInt   @id @default(autoincrement())
   nameFilter     String   @unique @map("name_filter")
   nameExhibit    String   @map("name_exhibit")
+  imagePath      String?  @map("image_path")
   description    String?
   rawMaterialIds BigInt[] @map("raw_material_ids")
   techniqueIds   BigInt[] @map("technique_ids")
