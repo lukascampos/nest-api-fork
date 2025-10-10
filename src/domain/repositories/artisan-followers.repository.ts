@@ -39,8 +39,10 @@ export class ArtisanFollowersRepository {
   async findByUserIds(
     followerId: string,
     followingId: string,
+    tx?: Prisma.TransactionClient,
   ) {
-    return this.prisma.artisanFollower.findUnique({
+    const client = tx ?? this.prisma;
+    return client.artisanFollower.findUnique({
       where: {
         followerId_followingId: {
           followerId,
@@ -99,16 +101,20 @@ export class ArtisanFollowersRepository {
 
   async countFollowers(
     followingId: string,
+    tx? : Prisma.TransactionClient,
   ) {
-    return this.prisma.artisanFollower.count({
+    const client = tx ?? this.prisma;
+    return client.artisanFollower.count({
       where: { followingId },
     });
   }
 
   async countFollowing(
     followerId: string,
+    tx? : Prisma.TransactionClient,
   ) {
-    return this.prisma.artisanFollower.count({
+    const client = tx ?? this.prisma;
+    return client.artisanFollower.count({
       where: { followerId },
     });
   }
