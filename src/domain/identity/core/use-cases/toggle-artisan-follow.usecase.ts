@@ -25,26 +25,30 @@ export class ToggleArtisanFollowUseCase {
     }
 
     const result = await this.prisma.$transaction(async (tx: Prisma.TransactionClient) => {
-      const existing = await this.artisanFollowersRepository.findByUserIds(followerId, followingId);
+      const existing = await this.artisanFollowersRepository.findByUserIds(
+        followerId,
+        followingId,
+        tx,
+      );
 
       if (existing) {
         await this.artisanFollowersRepository.delete(followerId, followingId, tx);
-        await tx.artisanProfile.update({
+        const updated = await tx.artisanProfile.update({
           where: { userId: followingId },
           data: { followersCount: { decrement: 1 } },
+          select: { followersCount: true },
         });
 
-        const followersCount = await this.artisanFollowersRepository.countFollowers(followingId);
-        return { action: 'unfollowed', followersCount };
+        return { action: 'unfollowed', followersCount: updated.followersCount };
       }
       await this.artisanFollowersRepository.create(followerId, followingId, tx);
-      await tx.artisanProfile.update({
+      const updated = await tx.artisanProfile.update({
         where: { userId: followingId },
         data: { followersCount: { increment: 1 } },
+        select: { followersCount: true },
       });
 
-      const followersCount = await this.artisanFollowersRepository.countFollowers(followingId);
-      return { action: 'followed', followersCount };
+      return { action: 'followed', followersCount: updated.followersCount };
     });
 
     return result;
