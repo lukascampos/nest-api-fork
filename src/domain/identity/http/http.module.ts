@@ -17,6 +17,8 @@ import { GetArtisanApplicationDetailsController } from './controllers/get-artisa
 import { InitiateArtisanApplicationController } from './controllers/initiate-artisan-application.controller';
 import { ModerateArtisanApplicationController } from './controllers/moderate-artisan-application.controller';
 import { SearchUsersController } from './controllers/search-users.controller';
+import { GetArtisanProfileByUsernameController } from './controllers/get-artisan-profile-by-username.controller';
+import { GetArtisanProfileByUsernameUseCase } from '../core/use-cases/get-artisan-profile-by-username.use-case';
 
 @Module({
   imports: [RepositoriesModule, AttachmentsModule],
@@ -26,6 +28,7 @@ import { SearchUsersController } from './controllers/search-users.controller';
     CreateUserController,
     GetAllArtisanApplicationsController,
     GetArtisanApplicationDetailsController,
+    GetArtisanProfileByUsernameController,
     InitiateArtisanApplicationController,
     ModerateArtisanApplicationController,
     SearchUsersController,
@@ -35,6 +38,7 @@ import { SearchUsersController } from './controllers/search-users.controller';
     CompleteArtisanApplicationUseCase,
     CreateUserUseCase,
     GetAllArtisanApplicationsUseCase,
+    GetArtisanProfileByUsernameUseCase,
     GetArtisanApplicationDetailsUseCase,
     InitiateArtisanApplicationUseCase,
     ModerateArtisanApplicationUseCase,
