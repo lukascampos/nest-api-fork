@@ -24,6 +24,7 @@ export interface GetProductByIdOutput {
   likesCount: number;
   averageRating: number;
   photos: string[];
+  photosIds: string[];
   coverPhoto?: string;
 }
 
@@ -95,6 +96,7 @@ export class GetProductByIdUseCase {
         likesCount: product.likesCount,
         averageRating: product.averageRating ?? 0,
         photos,
+        photosIds: product.photos ? product.photos.map((p) => p.attachmentId) : [],
         coverPhoto,
       });
     } catch (error) {
