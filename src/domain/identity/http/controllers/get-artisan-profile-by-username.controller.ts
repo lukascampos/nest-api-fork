@@ -7,6 +7,7 @@ import {
 } from '@nestjs/common';
 import { GetArtisanProfileByUsernameUseCase } from '../../core/use-cases/get-artisan-profile-by-username.use-case';
 import { UserNotFoundError } from '../../core/errors/user-not-found.error';
+import { Public } from '@/domain/_shared/auth/decorators/public.decorator';
 
 @Controller('artisan-profiles/:username')
 export class GetArtisanProfileByUsernameController {
@@ -15,6 +16,7 @@ export class GetArtisanProfileByUsernameController {
   ) {}
 
   @Get()
+  @Public()
   async handleOwn(
     @Param('username') username: string,
   ) {
