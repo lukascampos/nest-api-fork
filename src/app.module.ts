@@ -7,6 +7,7 @@ import { AuthModule } from './domain/_shared/auth/auth.module';
 import { HttpModule as IdentityModule } from './domain/identity/http/http.module';
 import { AttachmentsModule } from './domain/attachments/attachments.module';
 import { HttpProductsModule } from './domain/products/http/http-products.module';
+import { CatalogHttpModule } from './domain/catalog/http/catalog-http.module';
 
 @Module({
   imports: [ConfigModule.forRoot({
@@ -17,6 +18,7 @@ import { HttpProductsModule } from './domain/products/http/http-products.module'
   HttpProductsModule,
   AuthModule,
   AttachmentsModule,
+  CatalogHttpModule,
   ],
   controllers: [AppController],
   providers: [
