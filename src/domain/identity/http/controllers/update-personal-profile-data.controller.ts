@@ -28,12 +28,28 @@ export class UpdatePersonalProfileDataController {
     @Body() body: UpdatePersonalProfileDataDto,
     @CurrentUser() user: TokenPayload,
   ) {
+    const sanitizedName = body.name?.trim();
+    const sanitizedSocialName = body.socialName?.trim();
+    const sanitazedPhone = body.phone.trim();
+    const sanitazedAvatarId = body.avatarId?.trim();
+
+    const processedBody = {
+      name: body.name !== undefined ? sanitizedName || '' : undefined,
+      socialName:
+        body.socialName !== undefined && sanitizedSocialName === ''
+          ? null
+          : sanitizedSocialName,
+      phone: body.phone !== undefined ? sanitazedPhone || '' : undefined,
+      avatarId: body.avatarId !== undefined ? sanitazedAvatarId || '' : undefined,
+
+    };
+
     const result = await this.updatePersonalProfileDataUseCase.execute({
       userId: user.sub,
-      newName: body.name,
-      newSocialName: body.socialName,
-      newPhone: body.phone,
-      newAvatarId: body.avatarId,
+      newName: processedBody.name,
+      newSocialName: processedBody.socialName === '' ? undefined : processedBody.socialName,
+      newPhone: processedBody.phone,
+      newAvatarId: processedBody.avatarId,
     });
 
     if (result.isLeft()) {
