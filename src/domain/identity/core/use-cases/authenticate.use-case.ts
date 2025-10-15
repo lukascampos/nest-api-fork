@@ -20,6 +20,7 @@ export interface AuthenticateOutput {
     name: string;
     socialName?: string;
     email: string;
+    postnedApplication?: boolean;
     roles: Roles[];
   };
   session: {
@@ -84,6 +85,13 @@ export class AuthenticateUseCase {
         return { user, session };
       });
 
+      const hasPostnedArtisanApplication = await this.prisma.artisanApplication.findFirst({
+        where: {
+          userId: user.id,
+          formStatus: 'POSTPONED',
+        },
+      });
+
       const tokenPayload = {
         sub: result.user.id,
         jti: result.session.id,
@@ -104,6 +112,7 @@ export class AuthenticateUseCase {
           name: result.user.name,
           socialName: result.user.socialName ?? undefined,
           email: result.user.email,
+          postnedApplication: !!hasPostnedArtisanApplication,
           roles: result.user.roles,
         },
         session: {
