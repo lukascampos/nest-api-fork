@@ -19,6 +19,8 @@ import { ModerateArtisanApplicationController } from './controllers/moderate-art
 import { SearchUsersController } from './controllers/search-users.controller';
 import { GetArtisanProfileByUsernameController } from './controllers/get-artisan-profile-by-username.controller';
 import { GetArtisanProfileByUsernameUseCase } from '../core/use-cases/get-artisan-profile-by-username.use-case';
+import { UpdatePersonalProfileDataController } from './controllers/update-personal-profile-data.controller';
+import { UpdatePersonalProfileDataUseCase } from '../core/use-cases/update-personal-profile-data.use-case';
 
 @Module({
   imports: [RepositoriesModule, AttachmentsModule],
@@ -32,6 +34,7 @@ import { GetArtisanProfileByUsernameUseCase } from '../core/use-cases/get-artisa
     InitiateArtisanApplicationController,
     ModerateArtisanApplicationController,
     SearchUsersController,
+    UpdatePersonalProfileDataController,
   ],
   providers: [
     AuthenticateUseCase,
@@ -46,6 +49,7 @@ import { GetArtisanProfileByUsernameUseCase } from '../core/use-cases/get-artisa
     AuthenticateUseCase,
     GetArtisanApplicationDetailsUseCase,
     ModerateArtisanApplicationUseCase,
+    UpdatePersonalProfileDataUseCase,
   ],
 })
 export class HttpModule {}

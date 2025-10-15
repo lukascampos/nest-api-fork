@@ -6,6 +6,7 @@ import { Either, left, right } from '@/domain/_shared/utils/either';
 import { UsersRepository } from '@/domain/repositories/users.repository';
 import { PrismaService } from '@/shared/prisma/prisma.service';
 import { InvalidCredentialsError } from '../errors/invalid-credentials.error';
+import { S3StorageService } from '@/domain/attachments/s3-storage.service';
 
 export interface AuthenticateInput {
   email: string;
@@ -23,6 +24,7 @@ export interface AuthenticateOutput {
     postnedApplication?: boolean;
     artisanUsername?: string;
     roles: Roles[];
+    avatar?: string;
   };
   session: {
     id: string;
@@ -39,6 +41,7 @@ export class AuthenticateUseCase {
 
   constructor(
     private readonly usersRepository: UsersRepository,
+    private readonly s3AttachmentsStorage: S3StorageService,
     private readonly prisma: PrismaService,
     private readonly jwtService: JwtService,
   ) {}
@@ -118,6 +121,8 @@ export class AuthenticateUseCase {
 
       this.logger.log(`User authenticated successfully: ${result.user.id}`);
 
+      const avatar = await this.generateAvatarUrl(result.user.avatar);
+
       return right({
         user: {
           id: result.user.id,
@@ -126,6 +131,7 @@ export class AuthenticateUseCase {
           email: result.user.email,
           artisanUsername: artisanUsername?.artisanUserName,
           postnedApplication: !!hasPostnedArtisanApplication,
+          avatar: avatar ?? undefined,
           roles: result.user.roles,
         },
         session: {
@@ -156,6 +162,21 @@ export class AuthenticateUseCase {
       });
     } catch (error) {
       this.logger.error('Failed to cleanup expired sessions:', error);
+    }
+  }
+
+  private async generateAvatarUrl(avatarId: string | null): Promise<string | null> {
+    if (!avatarId) {
+      return null;
+    }
+
+    try {
+      const url = await this.s3AttachmentsStorage.getUrlByFileName(avatarId);
+      this.logger.debug(`Generated avatar URL for attachment: ${avatarId}`);
+      return url;
+    } catch (urlError) {
+      this.logger.warn(`Failed to generate avatar URL for attachment ${avatarId}:`, urlError);
+      return null;
     }
   }
 }
