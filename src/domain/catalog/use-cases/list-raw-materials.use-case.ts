@@ -15,9 +15,6 @@ export class ListRawMaterialsUseCase {
       nameFilter: r.nameFilter,
       nameExhibit: r.nameExhibit,
       description: r.description ?? null,
-      isActive: r.isActive,
-      createdAt: r.createdAt,
-      updatedAt: r.updatedAt,
     }));
   }
 }

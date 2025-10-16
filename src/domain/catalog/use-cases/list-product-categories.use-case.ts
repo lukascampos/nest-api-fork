@@ -14,13 +14,8 @@ export class ListProductCategoriesUseCase {
       id: Number(c.id),
       nameFilter: c.nameFilter,
       nameExhibit: c.nameExhibit,
-      imagePath: c.imagePath ?? null,
       description: c.description ?? null,
-      rawMaterialIds: (c.rawMaterialIds ?? []).map(Number),
-      techniqueIds: (c.techniqueIds ?? []).map(Number),
-      isActive: c.isActive,
-      createdAt: c.createdAt,
-      updatedAt: c.updatedAt,
+      imageUrl: c.imagePath ?? null,
     }));
   }
 }
