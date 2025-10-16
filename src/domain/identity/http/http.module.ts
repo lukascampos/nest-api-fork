@@ -22,6 +22,8 @@ import { GetArtisanProfileByUsernameUseCase } from '../core/use-cases/get-artisa
 import { UpdatePersonalProfileDataController } from './controllers/update-personal-profile-data.controller';
 import { UpdatePersonalProfileDataUseCase } from '../core/use-cases/update-personal-profile-data.use-case';
 import { UpdateArtisanProfileUseCase } from '../core/use-cases/update-artisan-profile.use-case';
+import { GetMyProfileController } from './controllers/get-my-profile.controller';
+import { GetMyProfileUseCase } from '../core/use-cases/get-my-profile.use-case';
 
 @Module({
   imports: [RepositoriesModule, AttachmentsModule],
@@ -32,6 +34,7 @@ import { UpdateArtisanProfileUseCase } from '../core/use-cases/update-artisan-pr
     GetAllArtisanApplicationsController,
     GetArtisanApplicationDetailsController,
     GetArtisanProfileByUsernameController,
+    GetMyProfileController,
     InitiateArtisanApplicationController,
     ModerateArtisanApplicationController,
     SearchUsersController,
@@ -44,6 +47,7 @@ import { UpdateArtisanProfileUseCase } from '../core/use-cases/update-artisan-pr
     GetAllArtisanApplicationsUseCase,
     GetArtisanProfileByUsernameUseCase,
     GetArtisanApplicationDetailsUseCase,
+    GetMyProfileUseCase,
     InitiateArtisanApplicationUseCase,
     ModerateArtisanApplicationUseCase,
     SearchUsersUseCase,
