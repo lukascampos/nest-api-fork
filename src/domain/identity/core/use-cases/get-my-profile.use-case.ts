@@ -17,16 +17,26 @@ export interface GetMyProfileOutput {
   phone: string;
   email: string;
   avatar?: string | null;
-  artisanUserName?: string;
-  bio?: string | null;
-  sicab?: string;
-  sicabRegistrationDate?: Date | null;
-  sicabValidUntil?: Date | null;
-  followersCount?: number;
-  productsCount?: number;
-  rawMaterial?: string[];
-  technique?: string[];
-  finalityClassification?: string[];
+  artisan?: {
+    comercialName: string;
+    zipCode: string;
+    address: string;
+    addressNumber: string;
+    addressComplement?: string;
+    neighborhood: string;
+    city: string;
+    state: string;
+    artisanUserName: string;
+    bio: string | null;
+    sicab: string;
+    sicabRegistrationDate: Date | null;
+    sicabValidUntil: Date | null;
+    followersCount: number;
+    productsCount: number;
+    rawMaterial: string[];
+    technique: string[];
+    finalityClassification: string[];
+  }
 }
 
 type Output = Either<UserNotFoundError, { user: GetMyProfileOutput }>;
@@ -63,6 +73,8 @@ export class GetMyProfileUseCase {
         avatar,
       };
 
+      let artisanProfileData: GetMyProfileOutput['artisan'] | undefined;
+
       if (userRoles.includes('ARTISAN')) {
         this.logger.debug(`User is ARTISAN, fetching artisan profile for user: ${userId}`);
 
@@ -71,7 +83,14 @@ export class GetMyProfileUseCase {
         if (artisanProfile) {
           this.logger.debug(`Found artisan profile for user: ${userId}`);
 
-          Object.assign(profileData, {
+          artisanProfileData = {
+            comercialName: artisanProfile.comercialName,
+            zipCode: artisanProfile.ArtisanProfileAddress!.zipCode,
+            address: artisanProfile.ArtisanProfileAddress!.address,
+            addressNumber: artisanProfile.ArtisanProfileAddress!.addressNumber,
+            neighborhood: artisanProfile.ArtisanProfileAddress!.neighborhood,
+            city: artisanProfile.ArtisanProfileAddress!.city,
+            state: artisanProfile.ArtisanProfileAddress!.state,
             artisanUserName: artisanProfile.artisanUserName,
             bio: artisanProfile.bio,
             sicab: artisanProfile.sicab,
@@ -79,6 +98,27 @@ export class GetMyProfileUseCase {
             sicabValidUntil: artisanProfile.sicabValidUntil,
             followersCount: artisanProfile.followersCount,
             productsCount: artisanProfile.productsCount,
+            rawMaterial: artisanProfile.rawMaterial,
+            technique: artisanProfile.technique,
+            finalityClassification: artisanProfile.finalityClassification,
+          };
+
+          Object.assign(artisanProfileData, {
+            comercialName: artisanProfile.comercialName,
+            zipCode: artisanProfile.ArtisanProfileAddress?.zipCode,
+            address: artisanProfile.ArtisanProfileAddress?.address,
+            addressNumber: artisanProfile.ArtisanProfileAddress?.addressNumber,
+            addressComplement: artisanProfile.ArtisanProfileAddress?.addressComplement,
+            neighborhood: artisanProfile.ArtisanProfileAddress?.neighborhood,
+            city: artisanProfile.ArtisanProfileAddress?.city,
+            state: artisanProfile.ArtisanProfileAddress?.state,
+            artisanUserName: artisanProfile.artisanUserName,
+            bio: artisanProfile.bio,
+            sicab: artisanProfile.sicab ?? '',
+            sicabRegistrationDate: artisanProfile.sicabRegistrationDate ?? null,
+            sicabValidUntil: artisanProfile.sicabValidUntil ?? null,
+            followersCount: artisanProfile.followersCount ?? 0,
+            productsCount: artisanProfile.productsCount ?? 0,
             rawMaterial: artisanProfile.rawMaterial,
             technique: artisanProfile.technique,
             finalityClassification: artisanProfile.finalityClassification,
@@ -91,7 +131,10 @@ export class GetMyProfileUseCase {
       this.logger.debug(`Successfully retrieved profile for user: ${userId}`);
 
       return right({
-        user: profileData,
+        user: {
+          ...profileData,
+          artisan: artisanProfileData,
+        },
       });
     } catch (error) {
       this.logger.error(`Error getting profile for user ${userId}:`, error);
