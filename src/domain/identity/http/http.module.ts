@@ -17,6 +17,14 @@ import { GetArtisanApplicationDetailsController } from './controllers/get-artisa
 import { InitiateArtisanApplicationController } from './controllers/initiate-artisan-application.controller';
 import { ModerateArtisanApplicationController } from './controllers/moderate-artisan-application.controller';
 import { SearchUsersController } from './controllers/search-users.controller';
+import { ToggleArtisanFollowController } from './controllers/toggle-artisan-follow.controller';
+import { GetArtisanFollowStatusController } from './controllers/get-artisan-follow-status.controller';
+import { ListUserFollowingController } from './controllers/list-artisan-following.controller';
+import { ListArtisanFollowersController } from './controllers/list-artisan-followers.controller';
+import { ToggleArtisanFollowUseCase } from '../core/use-cases/toggle-artisan-follow.usecase';
+import { ListArtisanFollowersUseCase } from '../core/use-cases/list-artisan-followers.use-case';
+import { ListArtisanFollowingUseCase } from '../core/use-cases/list-artisan-following.use-case';
+import { GetArtisanFollowStatusUseCase } from '../core/use-cases/get-artisan-follow-status.use-case';
 import { GetArtisanProfileByUsernameController } from './controllers/get-artisan-profile-by-username.controller';
 import { GetArtisanProfileByUsernameUseCase } from '../core/use-cases/get-artisan-profile-by-username.use-case';
 import { UpdatePersonalProfileDataController } from './controllers/update-personal-profile-data.controller';
@@ -38,6 +46,10 @@ import { GetMyProfileUseCase } from '../core/use-cases/get-my-profile.use-case';
     InitiateArtisanApplicationController,
     ModerateArtisanApplicationController,
     SearchUsersController,
+    ListUserFollowingController,
+    ListArtisanFollowersController,
+    ToggleArtisanFollowController,
+    GetArtisanFollowStatusController,
     UpdatePersonalProfileDataController,
   ],
   providers: [
@@ -54,6 +66,10 @@ import { GetMyProfileUseCase } from '../core/use-cases/get-my-profile.use-case';
     AuthenticateUseCase,
     GetArtisanApplicationDetailsUseCase,
     ModerateArtisanApplicationUseCase,
+    ToggleArtisanFollowUseCase,
+    ListArtisanFollowersUseCase,
+    ListArtisanFollowingUseCase,
+    GetArtisanFollowStatusUseCase,
     UpdateArtisanProfileUseCase,
     UpdatePersonalProfileDataUseCase,
   ],
