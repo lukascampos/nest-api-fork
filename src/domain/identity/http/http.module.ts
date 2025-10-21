@@ -17,11 +17,14 @@ import { GetArtisanApplicationDetailsController } from './controllers/get-artisa
 import { InitiateArtisanApplicationController } from './controllers/initiate-artisan-application.controller';
 import { ModerateArtisanApplicationController } from './controllers/moderate-artisan-application.controller';
 import { SearchUsersController } from './controllers/search-users.controller';
-import { ToggleArtisanFollowController } from './controllers/artisan-followers.controller';
+import { ToggleArtisanFollowController } from './controllers/toggle-artisan-follow.controller';
 import { GetArtisanFollowStatusController } from './controllers/get-artisan-follow-status.controller';
 import { ListUserFollowingController } from './controllers/list-artisan-following.controller';
 import { ListArtisanFollowersController } from './controllers/list-artisan-followers.controller';
 import { ToggleArtisanFollowUseCase } from '../core/use-cases/toggle-artisan-follow.usecase';
+import { ListArtisanFollowersUseCase } from '../core/use-cases/list-artisan-followers.use-case';
+import { ListArtisanFollowingUseCase } from '../core/use-cases/list-artisan-following.use-case';
+import { GetArtisanFollowStatusUseCase } from '../core/use-cases/get-artisan-follow-status.use-case';
 
 @Module({
   imports: [RepositoriesModule, AttachmentsModule],
@@ -38,6 +41,9 @@ import { ToggleArtisanFollowUseCase } from '../core/use-cases/toggle-artisan-fol
     ListArtisanFollowersController,
     ToggleArtisanFollowController,
     GetArtisanFollowStatusController,
+    ListArtisanFollowersController,
+    ListUserFollowingController,
+    GetArtisanFollowStatusController,
   ],
   providers: [
     AuthenticateUseCase,
@@ -52,6 +58,9 @@ import { ToggleArtisanFollowUseCase } from '../core/use-cases/toggle-artisan-fol
     GetArtisanApplicationDetailsUseCase,
     ModerateArtisanApplicationUseCase,
     ToggleArtisanFollowUseCase,
+    ListArtisanFollowersUseCase,
+    ListArtisanFollowingUseCase,
+    GetArtisanFollowStatusUseCase,
   ],
 })
 export class HttpModule {}
