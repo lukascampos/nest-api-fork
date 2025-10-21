@@ -111,16 +111,28 @@ async function main() {
   // Testando o caso de uso ToggleArtisanFollowUseCase
   console.log('\n🔹 Testando follow/unfollow...');
 
-  const result1 = await toggleFollowUC.execute(user.id, artisanProfile1.userId);
+  const result1 = await toggleFollowUC.execute({
+    followerId: user.id,
+    followingId: artisanProfile1.userId,
+  });
   console.log('User seguiu artisan1:', result1);
 
-  const result2 = await toggleFollowUC.execute(admin.id, artisanProfile1.userId);
+  const result2 = await toggleFollowUC.execute({
+    followerId: admin.id,
+    followingId: artisanProfile1.userId,
+  });
   console.log('Admin seguiu artisan1:', result2);
 
-  const result3 = await toggleFollowUC.execute(user.id, artisanProfile2.userId);
+  const result3 = await toggleFollowUC.execute({
+    followerId: user.id,
+    followingId: artisanProfile2.userId,
+  });
   console.log('User seguiu artisan2:', result3);
 
-  const result4 = await toggleFollowUC.execute(user.id, artisanProfile2.userId);
+  const result4 = await toggleFollowUC.execute({
+    followerId: user.id,
+    followingId: artisanProfile2.userId,
+  });
   console.log('User deixou de seguir artisan2:', result4);
 
   const artisan1Followers = await prisma.artisanFollower.count({
