@@ -2,13 +2,17 @@ import { Injectable } from '@nestjs/common';
 import { Prisma } from '@prisma/client';
 import { PrismaService } from '@/shared/prisma/prisma.service';
 
+interface FollowInput {
+  followerId: string;
+  followingId: string;
+}
+
 @Injectable()
 export class ArtisanFollowersRepository {
   constructor(private readonly prisma: PrismaService) {}
 
   async create(
-    followerId: string,
-    followingId: string,
+    { followerId, followingId }: FollowInput,
     tx?: Prisma.TransactionClient,
   ) {
     const client = tx ?? this.prisma;
@@ -22,8 +26,7 @@ export class ArtisanFollowersRepository {
   }
 
   async delete(
-    followerId: string,
-    followingId: string,
+    { followerId, followingId }: FollowInput,
     tx?: Prisma.TransactionClient,
   ) {
     const client = tx ?? this.prisma;
@@ -37,8 +40,7 @@ export class ArtisanFollowersRepository {
   }
 
   async findByUserIds(
-    followerId: string,
-    followingId: string,
+    { followerId, followingId }: FollowInput,
     tx?: Prisma.TransactionClient,
   ) {
     const client = tx ?? this.prisma;
