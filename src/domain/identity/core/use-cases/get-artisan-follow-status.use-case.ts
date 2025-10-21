@@ -16,7 +16,7 @@ type GetArtisanFollowStatusOutput = {
     followedAt?: Date | null;
 }
 
-type GetAtisanFollowStatusResult = Either<
+type GetArtisanFollowStatusResult = Either<
     TargetNotArtisanError | Error,
     GetArtisanFollowStatusOutput
 >;
@@ -28,7 +28,7 @@ export class GetArtisanFollowStatusUseCase {
         private readonly artisanFollowersRepository: ArtisanFollowersRepository,
   ) {}
 
-  async execute(input: GetArtisanFollowStatusInput): Promise<GetAtisanFollowStatusResult> {
+  async execute(input: GetArtisanFollowStatusInput): Promise<GetArtisanFollowStatusResult> {
     const { currentUserId, artisanId } = input;
 
     try {
