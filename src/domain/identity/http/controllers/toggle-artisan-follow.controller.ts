@@ -1,36 +1,40 @@
 import {
   Controller,
-  Get,
+  Post,
   Param,
   UseGuards,
+  BadRequestException,
   ForbiddenException,
   NotFoundException,
   InternalServerErrorException,
   HttpCode,
 } from '@nestjs/common';
+
 import { JwtAuthGuard } from '@/domain/_shared/auth/jwt/jwt-auth.guard';
 import { CurrentUser } from '@/domain/_shared/auth/decorators/current-user.decorator';
 import { TokenPayload } from '@/domain/_shared/auth/jwt/jwt.strategy';
-import { GetArtisanFollowStatusUseCase } from '../../core/use-cases/get-artisan-follow-status.use-case';
+
+import { ToggleArtisanFollowUseCase } from '../../core/use-cases/toggle-artisan-follow.usecase';
 import { UserNotFoundError } from '../../core/errors/user-not-found.error';
+import { CannotFollowSelfError } from '../../core/errors/cannot-follow-self.error';
 import { TargetNotArtisanError } from '../../core/errors/target-not-artisan.error';
 
 @Controller('artisans')
 @UseGuards(JwtAuthGuard)
-export class GetArtisanFollowStatusController {
+export class ToggleArtisanFollowController {
   constructor(
-        private readonly getArtisanFollowStatusUseCase: GetArtisanFollowStatusUseCase,
+    private readonly toggleArtisanFollowUseCase: ToggleArtisanFollowUseCase,
   ) {}
 
-  @Get(':id/follow/status')
+  @Post(':id/follow')
   @HttpCode(200)
   async handle(
     @Param('id') artisanId: string,
-    @CurrentUser() currentuser: TokenPayload,
+    @CurrentUser() currentUser: TokenPayload,
   ) {
-    const result = await this.getArtisanFollowStatusUseCase.execute({
-      currentUserId: currentuser.sub,
-      artisanId,
+    const result = await this.toggleArtisanFollowUseCase.execute({
+      followerId: currentUser.sub,
+      followingId: artisanId,
     });
 
     if (result.isLeft()) {
@@ -39,20 +43,24 @@ export class GetArtisanFollowStatusController {
       switch (error.constructor) {
         case UserNotFoundError:
           throw new NotFoundException(error.message);
+        case CannotFollowSelfError:
+          throw new BadRequestException(error.message);
         case TargetNotArtisanError:
           throw new ForbiddenException(error.message);
         default:
-          throw new InternalServerErrorException('An unexpected error occurred');
+          throw new InternalServerErrorException('Erro interno do servidor');
       }
     }
 
-    const { isFollowing, followersCount, followedAt } = result.value;
+    const { action, followersCount } = result.value;
 
     return {
       data: {
-        isFollowing: !!isFollowing,
+        message:
+          action === 'followed'
+            ? 'Usuário passou a seguir o artesão'
+            : 'Usuário deixou de seguir o artesão',
         followersCount,
-        followedAt,
       },
     };
   }
