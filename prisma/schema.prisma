@@ -157,6 +157,7 @@ model ArtisanFollower {
 
   @@unique([followerId, followingId])
   @@map("artisan_followers")
+}
 
 model ArtisanProfileAddress {
   id                BigInt   @id @default(autoincrement())
