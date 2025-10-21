@@ -41,9 +41,6 @@ import { GetArtisanFollowStatusUseCase } from '../core/use-cases/get-artisan-fol
     ListArtisanFollowersController,
     ToggleArtisanFollowController,
     GetArtisanFollowStatusController,
-    ListArtisanFollowersController,
-    ListUserFollowingController,
-    GetArtisanFollowStatusController,
   ],
   providers: [
     AuthenticateUseCase,
