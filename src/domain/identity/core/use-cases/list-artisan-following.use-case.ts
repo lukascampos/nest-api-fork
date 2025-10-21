@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, Logger } from '@nestjs/common';
 import { Either, left, right } from '@/domain/_shared/utils/either';
 import { UserNotFoundError } from '../errors/user-not-found.error';
 import { PrismaService } from '@/shared/prisma/prisma.service';
@@ -39,6 +39,8 @@ type ListArtisanFollowingResult = Either<
 
 @Injectable()
 export class ListArtisanFollowingUseCase {
+  private readonly logger = new Logger(ListArtisanFollowingUseCase.name);
+
   constructor(
         private readonly prisma: PrismaService,
   ) {}
@@ -47,6 +49,9 @@ export class ListArtisanFollowingUseCase {
     const page = Number(input.page ?? 1);
     const limit = Number(input.limit ?? 10);
     const skip = (page - 1) * limit;
+    const startedAt = Date.now();
+
+    this.logger.debug('list-following started', { userId: input.userId, page, limit });
 
     try {
       const user = await this.prisma.user.findUnique({
@@ -55,6 +60,7 @@ export class ListArtisanFollowingUseCase {
       });
 
       if (!user) {
+        this.logger.warn('user not found', { userId: input.userId });
         return left(new UserNotFoundError(input.userId, 'id'));
       }
 
@@ -100,6 +106,9 @@ export class ListArtisanFollowingUseCase {
         },
       }));
       const totalPages = Math.max(1, Math.ceil(total / limit));
+      this.logger.debug(`list-following done in ${Date.now() - startedAt}ms`, {
+        userId: input.userId, page, limit, total,
+      });
       return right({
         following,
         pagination: {
@@ -110,6 +119,7 @@ export class ListArtisanFollowingUseCase {
         },
       });
     } catch (error) {
+      this.logger.error(`list-following failed in ${Date.now() - startedAt}ms`, error instanceof Error ? error.stack : undefined, { userId: input.userId, page, limit });
       return left(error as Error);
     }
   }

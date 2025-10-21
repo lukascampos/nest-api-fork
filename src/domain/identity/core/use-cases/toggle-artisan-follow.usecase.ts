@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, Logger } from '@nestjs/common';
 import { Prisma } from '@prisma/client';
 import { PrismaService } from '@/shared/prisma/prisma.service';
 import { ArtisanFollowersRepository } from '@/domain/repositories/artisan-followers.repository';
@@ -22,6 +22,8 @@ type ToggleArtisanFollowResult = Either< CannotFollowSelfError
 
 @Injectable()
 export class ToggleArtisanFollowUseCase {
+  private readonly logger = new Logger(ToggleArtisanFollowUseCase.name);
+
   constructor(
         private readonly artisanFollowersRepository: ArtisanFollowersRepository,
         private readonly prisma: PrismaService,
@@ -29,8 +31,13 @@ export class ToggleArtisanFollowUseCase {
 
   async execute(input: ToggleArtisanFollowInput): Promise<ToggleArtisanFollowResult> {
     const { followerId, followingId } = input;
+    const startedAt = Date.now();
+
+    this.logger.log('toggle started', { followerId, followingId });
+
     try {
       if (followerId === followingId) {
+        this.logger.warn('cannot follow self', { followerId });
         return left(new CannotFollowSelfError());
       }
 
@@ -40,10 +47,12 @@ export class ToggleArtisanFollowUseCase {
       });
 
       if (!target) {
+        this.logger.warn('target user not found', { followingId });
         return left(new UserNotFoundError(followingId, 'id'));
       }
 
       if (!target?.ArtisanProfile) {
+        this.logger.warn('target is not artisan', { followingId });
         return left(new TargetNotArtisanError());
       }
 
@@ -81,9 +90,12 @@ export class ToggleArtisanFollowUseCase {
           followersCount: updated.followersCount,
         };
       });
-
+      this.logger.log(`toggle done in ${Date.now() - startedAt}ms`, {
+        followerId, followingId, action: payload.action, followersCount: payload.followersCount,
+      });
       return right(payload);
     } catch (error) {
+      this.logger.error(`toggle failed in ${Date.now() - startedAt}ms`, error instanceof Error ? error.stack : undefined, { followerId, followingId });
       return left(error as Error);
     }
   }

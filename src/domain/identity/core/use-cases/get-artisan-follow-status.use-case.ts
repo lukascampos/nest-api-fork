@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, Logger } from '@nestjs/common';
 import { PrismaService } from '@/shared/prisma/prisma.service';
 import { ArtisanFollowersRepository } from '@/domain/repositories/artisan-followers.repository';
 import { Either, left, right } from '@/domain/_shared/utils/either';
@@ -23,6 +23,8 @@ type GetArtisanFollowStatusResult = Either<
 
 @Injectable()
 export class GetArtisanFollowStatusUseCase {
+  private readonly logger = new Logger(GetArtisanFollowStatusUseCase.name);
+
   constructor(
         private readonly prisma: PrismaService,
         private readonly artisanFollowersRepository: ArtisanFollowersRepository,
@@ -30,6 +32,9 @@ export class GetArtisanFollowStatusUseCase {
 
   async execute(input: GetArtisanFollowStatusInput): Promise<GetArtisanFollowStatusResult> {
     const { currentUserId, artisanId } = input;
+    const startedAt = Date.now();
+
+    this.logger.debug('status started', { currentUserId, artisanId });
 
     try {
       const target = await this.prisma.user.findUnique({
@@ -38,10 +43,12 @@ export class GetArtisanFollowStatusUseCase {
       });
 
       if (!target) {
+        this.logger.warn('artisan not found', { artisanId });
         return left(new UserNotFoundError(artisanId, 'id'));
       }
 
       if (!target?.ArtisanProfile) {
+        this.logger.warn('target is not artisan', { artisanId });
         return left(new TargetNotArtisanError());
       }
 
@@ -67,12 +74,17 @@ export class GetArtisanFollowStatusUseCase {
           };
         });
 
+      this.logger.debug(`status done in ${Date.now() - startedAt}ms`, {
+        currentUserId, artisanId, isFollowing: !!followRelation, followersCount,
+      });
+
       return right({
         isFollowing: !!followRelation,
         followersCount,
         followedAt: followRelation?.createdAt ?? null,
       });
     } catch (error) {
+      this.logger.error(`status failed in ${Date.now() - startedAt}ms`, error instanceof Error ? error.stack : undefined, { currentUserId, artisanId });
       return left(error as Error);
     }
   }

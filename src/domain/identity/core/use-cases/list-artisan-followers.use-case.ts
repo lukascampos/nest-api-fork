@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, Logger } from '@nestjs/common';
 import { Either, left, right } from '@/domain/_shared/utils/either';
 import { PrismaService } from '@/shared/prisma/prisma.service';
 import { TargetNotArtisanError } from '../errors/target-not-artisan.error';
@@ -37,6 +37,8 @@ type ListArtisanFollowersResult = Either<
 
 @Injectable()
 export class ListArtisanFollowersUseCase {
+  private readonly logger = new Logger(ListArtisanFollowersUseCase.name);
+
   constructor(
         private readonly prisma: PrismaService,
         private readonly artisanFollowersRepository: ArtisanFollowersRepository,
@@ -47,6 +49,9 @@ export class ListArtisanFollowersUseCase {
     const page = Number(input.page ?? 1);
     const limit = Number(input.limit ?? 10);
     const skip = (page - 1) * limit;
+    const startedAt = Date.now();
+
+    this.logger.debug('list-followers started', { artisanId: input.artisanId, page, limit });
 
     try {
       const target = await this.prisma.user.findUnique({
@@ -55,10 +60,12 @@ export class ListArtisanFollowersUseCase {
       });
 
       if (!target) {
+        this.logger.warn('artisan not found', { artisanId: input.artisanId });
         return left(new UserNotFoundError(artisanId, 'id'));
       }
 
       if (!target.ArtisanProfile) {
+        this.logger.warn('target is not artisan', { artisanId: input.artisanId });
         return left(new TargetNotArtisanError());
       }
 
@@ -89,6 +96,10 @@ export class ListArtisanFollowersUseCase {
 
       const totalPages = Math.max(1, Math.ceil(total / limit));
 
+      this.logger.debug(`list-followers done in ${Date.now() - startedAt}ms`, {
+        artisanId: input.artisanId, page, limit, total,
+      });
+
       return right({
         followers,
         pagination: {
@@ -99,6 +110,7 @@ export class ListArtisanFollowersUseCase {
         },
       });
     } catch (error) {
+      this.logger.error(`list-followers failed in ${Date.now() - startedAt}ms`, error instanceof Error ? error.stack : undefined, { artisanId: input.artisanId, page, limit });
       return left(error as Error);
     }
   }
