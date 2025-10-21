@@ -39,6 +39,24 @@ const CATEGORY_EXHIBIT: Record<CategoryKey, string> = {
   TRADICAO: "Tradição",
 };
 
+const CATEGORY_IMAGE_PATH: Record<CategoryKey, string> = {
+  TEXTIL: "prisma/seeds/images/textil.jpg",
+  COURO: "prisma/seeds/images/couro.jpg",
+  MADEIRA: "prisma/seeds/images/madeira.jpg",
+  PEDRA: "prisma/seeds/images/pedra.jpg",
+  CERAMICA: "prisma/seeds/images/ceramica.jpg",
+  METAL: "prisma/seeds/images/metal.jpg",
+  VIDRO: "prisma/seeds/images/vidro.jpg",
+  PAPEL: "prisma/seeds/images/papel.jpg",
+  PINTURA: "prisma/seeds/images/pintura.jpg",
+  MOSAICO: "prisma/seeds/images/mosaico.jpg",
+  RECICLAGEM: "prisma/seeds/images/reciclagem.jpg",
+  BOTANICA: "prisma/seeds/images/botanica.jpg",
+  TAXIDERMIA: "prisma/seeds/images/taxidermia.jpg",
+  PLASTICOS: "prisma/seeds/images/plastico.jpg",
+  TRADICAO: "prisma/seeds/images/tradicao.jpg",
+};
+
 type RawItem = {
   filter: string;
   exhibit: string;
@@ -596,12 +614,36 @@ async function main() {
     )
   );
 
+  const idFor = (f: string) => {
+    const id = rawMatIdByFilter.get(f);
+    if (!id) throw new Error(`RawMaterial not found for filter: ${f}`);
+    return id;
+  };
+
   const rawIdsByCategory = new Map<CategoryKey, bigint[]>(
     CATEGORIES.map((c) => [c, []])
   );
   const techIdsByCategory = new Map<CategoryKey, bigint[]>(
     CATEGORIES.map((c) => [c, []])
   );
+
+  const EXTRA_RAW_BY_CATEGORY: Partial<Record<CategoryKey, string[]>> = {
+    MOSAICO: ["PEDRA", "VIDRO", "ARGILA", "CERAMICA_BENEFICIADA", "CONCHA"],
+    PAPEL: ["PAPEL_INDUSTRIAL"],
+    RECICLAGEM: [
+      "MADEIRA_NATURAL",
+      "MDF_AGLOMERADO_COMPENSADO",
+      "VIDRO",
+      "BORRACHA",
+      "PAPEL_INDUSTRIAL",
+      "ARGILA",
+      "CERAMICA_BENEFICIADA",
+      "METAL",
+      "MATERIAIS_SINTETICOS",
+      "COURO_SINTETICO",
+      "FIO_E_TECIDO_SINTETICO",
+    ],
+  };
 
   for (const m of RAW_MATERIALS) {
     const id = rawMatIdByFilter.get(m.filter);
@@ -614,26 +656,47 @@ async function main() {
   }
 
   for (const cat of CATEGORIES) {
+    const baseRaw = rawIdsByCategory.get(cat)!;
+    const extras = (EXTRA_RAW_BY_CATEGORY[cat] ?? []).map(idFor);
+    const mergedRaw = Array.from(new Set([...baseRaw, ...extras]));
+
     await prisma.productCategory.upsert({
       where: { nameFilter: cat },
       create: {
         nameFilter: cat,
         nameExhibit: CATEGORY_EXHIBIT[cat],
-        description: null,
-        rawMaterialIds: rawIdsByCategory.get(cat)!,
+        rawMaterialIds: mergedRaw,
         techniqueIds: techIdsByCategory.get(cat)!,
         isActive: true,
+        imagePath: CATEGORY_IMAGE_PATH[cat],
       },
       update: {
-        nameExhibit: CATEGORY_EXHIBIT[cat],
-        rawMaterialIds: rawIdsByCategory.get(cat)!,
+        rawMaterialIds: mergedRaw,
         techniqueIds: techIdsByCategory.get(cat)!,
         isActive: true,
+        imagePath: CATEGORY_IMAGE_PATH[cat],
       },
     });
   }
 
-  console.log("Seed: concluído.");
+  const cats = await prisma.productCategory.findMany({
+    select: { nameFilter: true, rawMaterialIds: true, techniqueIds: true },
+  });
+  for (const c of cats) {
+    console.log(
+      c.nameFilter,
+      "raw:",
+      c.rawMaterialIds.length,
+      "tech:",
+      c.techniqueIds.length
+    );
+  }
+
+  // log individual
+  const mosaico = await prisma.productCategory.findUnique({
+    where: { nameFilter: "MOSAICO" },
+  });
+  console.log("MOSAICO raw IDs:", (mosaico?.rawMaterialIds ?? []).map(String));
 }
 
 main()

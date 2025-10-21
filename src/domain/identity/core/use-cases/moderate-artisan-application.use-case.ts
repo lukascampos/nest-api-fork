@@ -101,6 +101,16 @@ export class ModerateArtisanApplicationUseCase {
       await this.artisanProfilesRepository.create({
         userId: application.userId,
         artisanUserName: userName,
+        comercialName: application.comercialName ?? undefined,
+        address: {
+          zipCode: application.zipCode!,
+          address: application.address!,
+          addressNumber: application.addressNumber!,
+          addressComplement: application.addressComplement!,
+          neighborhood: application.neighborhood!,
+          city: application.city!,
+          state: application.state!,
+        },
         rawMaterial: application.rawMaterial,
         technique: application.technique,
         finalityClassification: application.finalityClassification,

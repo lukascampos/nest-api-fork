@@ -11,6 +11,14 @@ export interface CompleteArtisanApplicationInput {
   userId: string;
   applicationId: string;
   data: {
+    comercialName: string;
+    zipCode: string;
+    address: string;
+    addressNumber: string;
+    addressComplement?: string;
+    neighborhood: string;
+    city: string;
+    state: string;
     rawMaterial: string[];
     technique: string[];
     finalityClassification: string[];
@@ -82,6 +90,14 @@ export class CompleteArtisanApplicationUseCase {
 
       const updatedApplication = await this.artisanApplicationsRepository.update(applicationId, {
         formStatus: 'SUBMITTED',
+        comercialName: data.comercialName,
+        zipCode: data.zipCode,
+        address: data.address,
+        addressNumber: data.addressNumber,
+        addressComplement: data.addressComplement,
+        neighborhood: data.neighborhood,
+        city: data.city,
+        state: data.state,
         rawMaterial: data.rawMaterial,
         technique: data.technique,
         finalityClassification: data.finalityClassification,

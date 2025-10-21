@@ -126,6 +126,7 @@ async function main() {
     prisma.artisanProfile.create({
       data: {
         userId: artisan1.id,
+        comercialName: 'Artesanum 1',
         artisanUserName: 'artesanum1',
         rawMaterial: ['madeira', 'metal'],
         technique: ['escultura', 'soldagem'],
@@ -140,6 +141,7 @@ async function main() {
       data: {
         userId: artisan2.id,
         artisanUserName: 'artesanum2',
+        comercialName: 'Artesanum 2',
         rawMaterial: ['ceramica', 'argila'],
         technique: ['ceramica', 'tornear'],
         finalityClassification: ['decorativo', 'utensilio'],

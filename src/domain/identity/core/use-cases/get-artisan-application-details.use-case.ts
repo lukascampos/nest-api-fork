@@ -24,6 +24,14 @@ export interface GetArtisanApplicationDetailsOutput {
   userId: string;
   formStatus: string;
   status: string;
+  comercialName: string;
+  zipCode: string;
+  address: string;
+  addressNumber: string;
+  addressComplement?: string;
+  neighborhood: string;
+  city: string;
+  state: string;
   rawMaterial: string[];
   technique: string[];
   finalityClassification: string[];
@@ -70,6 +78,14 @@ export class GetArtisanApplicationDetailsUseCase {
         userId: application.userId,
         formStatus: application.formStatus,
         status: application.status,
+        comercialName: application.comercialName ?? '',
+        zipCode: application.zipCode ?? '',
+        address: application.address ?? '',
+        addressNumber: application.addressNumber ?? '',
+        addressComplement: application.addressComplement ?? undefined,
+        neighborhood: application.neighborhood ?? '',
+        city: application.city ?? '',
+        state: application.state ?? '',
         rawMaterial: application.rawMaterial,
         technique: application.technique,
         finalityClassification: application.finalityClassification,

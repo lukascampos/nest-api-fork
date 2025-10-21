@@ -58,6 +58,7 @@ export class InitiateArtisanApplicationUseCase {
         userId,
         formStatus: wantsToCompleteNow ? 'NOT_STARTED' : 'POSTPONED',
         type: 'BE_ARTISAN',
+        comercialName: '',
         rawMaterial: [],
         technique: [],
         finalityClassification: [],
