@@ -2,41 +2,74 @@
 /* eslint-disable no-await-in-loop */
 /* eslint-disable no-restricted-syntax */
 import { PrismaClient } from '@prisma/client';
-import { S3Client } from '@aws-sdk/client-s3';
+import { PutObjectCommand, S3Client } from '@aws-sdk/client-s3';
 import { readFile } from 'node:fs/promises';
 import { basename, extname } from 'node:path';
-import { S3StorageService } from '@/domain/attachments/s3-storage.service';
-import { EnvService } from '@/shared/env/env.service';
+import * as dotenv from 'dotenv';
+
+// Carregar variáveis de ambiente
+dotenv.config();
+
+// Validar variáveis de ambiente necessárias
+const requiredEnvVars = [
+  'STORAGE_URL',
+  'STORAGE_ACCESS_KEY_ID',
+  'STORAGE_SECRET_ACCESS_KEY',
+  'STORAGE_BUCKET_NAME',
+];
+
+for (const envVar of requiredEnvVars) {
+  if (!process.env[envVar]) {
+    console.error(`❌ Variável de ambiente ${envVar} não está definida`);
+    process.exit(1);
+  }
+}
 
 const s3Client = new S3Client({
-  endpoint: process.env.STORAGE_ENDPOINT,
-  region: process.env.STORAGE_REGION,
+  endpoint: process.env.STORAGE_URL,
+  region: 'auto',
   credentials: {
-    accessKeyId: process.env.STORAGE_KEY!,
-    secretAccessKey: process.env.STORAGE_SECRET!,
+    accessKeyId: process.env.STORAGE_ACCESS_KEY_ID!,
+    secretAccessKey: process.env.STORAGE_SECRET_ACCESS_KEY!,
   },
+  forcePathStyle: true, // Necessário para MinIO
+  // Desabilitar verificação SSL se estiver usando HTTP (desenvolvimento)
+  ...(process.env.STORAGE_ENDPOINT?.startsWith('http://') && {
+    tls: false,
+  }),
 });
 
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
-const envService = new EnvService(process.env as unknown as any);
-const s3 = new S3StorageService(s3Client, envService);
+const BUCKET_NAME = process.env.STORAGE_BUCKET_NAME;
 
 async function uploadToMinio(localPath: string, key: string) {
-  const Body = await readFile(localPath);
-  const ext = extname(localPath).toLowerCase();
-  const ContentType = ext === '.png' ? 'image/png'
-    : ext === '.webp' ? 'image/webp'
-      : ext === '.svg' ? 'image/svg+xml'
-        : ext === '.jpg' || ext === '.jpeg' ? 'image/jpeg'
-          : 'application/octet-stream';
+  try {
+    console.log(`⬆️  Uploading: ${key}`);
 
-  await s3.upload({
-    body: Body,
-    fileName: key,
-    fileType: ContentType,
-  });
+    const Body = await readFile(localPath);
+    const ext = extname(localPath).toLowerCase();
+    const ContentType = ext === '.png' ? 'image/png'
+      : ext === '.webp' ? 'image/webp'
+        : ext === '.svg' ? 'image/svg+xml'
+          : ext === '.jpg' || ext === '.jpeg' ? 'image/jpeg'
+            : 'application/octet-stream';
 
-  return key;
+    const command = new PutObjectCommand({
+      Bucket: BUCKET_NAME,
+      Key: key,
+      Body,
+      ContentType,
+      // Remover ACL se o MinIO não suportar
+      // ACL: 'public-read',
+    });
+
+    await s3Client.send(command);
+
+    console.log(`✅ Uploaded: ${key}`);
+    return key;
+  } catch (error) {
+    console.error(`❌ Failed to upload ${key}:`, error.message);
+    throw error;
+  }
 }
 const prisma = new PrismaClient();
 

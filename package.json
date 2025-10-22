@@ -9,7 +9,7 @@
     "seed": "ts-node --transpile-only prisma/seeds/seed.ts"
   },
   "scripts": {
-    "prisma:seed": "ts-node --transpile-only prisma/seeds/seed.ts",
+    "prisma:seed": "ts-node -r tsconfig-paths/register --transpile-only prisma/seeds/seed.ts",
     "db:clean": "npx tsx scripts/dev/clean-database.ts",
     "build": "nest build",
     "start": "nest start",
