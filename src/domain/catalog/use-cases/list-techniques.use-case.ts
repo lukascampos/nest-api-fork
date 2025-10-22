@@ -15,9 +15,6 @@ export class ListTechniquesUseCase {
       nameFilter: t.nameFilter,
       nameExhibit: t.nameExhibit,
       description: t.description ?? null,
-      isActive: t.isActive,
-      createdAt: t.createdAt,
-      updatedAt: t.updatedAt,
     }));
   }
 }
