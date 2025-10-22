@@ -7,10 +7,10 @@ import { ProductCategoriesRepository } from '@/domain/repositories/product-categ
 import { ListRawMaterialsUseCase } from '@/domain/catalog/use-cases/list-raw-materials.use-case';
 import { ListTechniquesUseCase } from '@/domain/catalog/use-cases/list-techniques.use-case';
 import { ListProductCategoriesUseCase } from '@/domain/catalog/use-cases/list-product-categories.use-case';
-import { StorageModule } from '@/domain/attachments/storage.module';
+import { AttachmentsModule } from '@/domain/attachments/attachments.module';
 
 @Module({
-  imports: [StorageModule],
+  imports: [AttachmentsModule],
   controllers: [CatalogController],
   providers: [
     PrismaService,
