@@ -22,7 +22,17 @@ export class S3StorageService {
   constructor(
       private readonly client: S3Client,
       private readonly env: EnvService,
-  ) {}
+  ) {
+    this.client = new S3Client({
+      endpoint: this.env.get('STORAGE_URL'),
+      region: 'auto',
+      forcePathStyle: true,
+      credentials: {
+        accessKeyId: this.env.get('STORAGE_ACCESS_KEY_ID'),
+        secretAccessKey: this.env.get('STORAGE_SECRET_ACCESS_KEY'),
+      },
+    });
+  }
 
   async upload({
     fileName,
