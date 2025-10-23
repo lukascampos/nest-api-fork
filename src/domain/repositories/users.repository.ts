@@ -198,4 +198,12 @@ export class UsersRepository {
       data: { roles },
     });
   }
+
+  async findIsDisabledById(id: string): Promise<boolean | null> {
+    const row = await this.prisma.user.findUnique({
+      where: { id },
+      select: { isDisabled: true },
+    });
+    return row ? row.isDisabled : null;
+  }
 }
