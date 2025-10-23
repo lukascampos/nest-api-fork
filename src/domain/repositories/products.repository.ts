@@ -208,7 +208,7 @@ export class ProductsRepository {
       p.price_in_cents as "priceInCents",
       p.likes_count as "likesCount",
       p.views_count as "viewsCount",
-      p.cover_image_id as "coverImageId",
+      p.fk_cover_image_id as "coverImageId",
       p.fk_artisan_id as "artisanId",
       p.created_at as "createdAt"
     FROM products p
