@@ -192,6 +192,18 @@ export class UsersRepository {
     });
   }
 
+  async findManyByIdsWithoutFilter(ids: string[]): Promise<User[]> {
+    if (ids.length === 0) return [];
+
+    return this.prisma.user.findMany({
+      where: {
+        id: {
+          in: ids,
+        },
+      },
+    });
+  }
+
   async updateRoles(id: string, roles: Roles[]): Promise<User> {
     return this.prisma.user.update({
       where: { id },

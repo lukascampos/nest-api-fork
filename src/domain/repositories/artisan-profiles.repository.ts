@@ -50,6 +50,12 @@ export type ArtisanProfileWithAddress = ArtisanProfile & {
   };
 };
 
+export interface FindNewWithProductsParams {
+  startDate: Date;
+  minProducts: number;
+  limit: number;
+}
+
 @Injectable()
 export class ArtisanProfilesRepository {
   constructor(private readonly prisma: PrismaService) {}
@@ -131,6 +137,18 @@ export class ArtisanProfilesRepository {
     });
   }
 
+  async findManyByUserIds(userIds: string[]): Promise<ArtisanProfile[]> {
+    if (userIds.length === 0) return [];
+
+    return this.prisma.artisanProfile.findMany({
+      where: {
+        userId: {
+          in: userIds,
+        },
+      },
+    });
+  }
+
   async findByUserName(userName: string): Promise<ArtisanProfile | null> {
     return this.prisma.artisanProfile.findUnique({
       where: { artisanUserName: userName },
@@ -175,6 +193,22 @@ export class ArtisanProfilesRepository {
         artisanId,
         ...addressData,
       },
+    });
+  }
+
+  async findNewWithProducts({
+    startDate,
+    minProducts,
+    limit,
+  }: FindNewWithProductsParams): Promise<ArtisanProfile[]> {
+    return this.prisma.artisanProfile.findMany({
+      where: {
+        createdAt: { gte: startDate },
+        productsCount: { gte: minProducts },
+        isDisabled: false,
+      },
+      orderBy: { createdAt: 'desc' },
+      take: limit,
     });
   }
 }
