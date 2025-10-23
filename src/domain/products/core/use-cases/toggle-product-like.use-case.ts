@@ -11,8 +11,8 @@ export interface ToggleProductLikeInput {
 }
 
 export interface ToggleProductLikeOutput {
-   action : 'liked' | 'unliked',
-   likesCount: number;
+  action : 'liked' | 'unliked',
+  likesCount: number;
 }
 
 type Output = Either<Error, ToggleProductLikeOutput>;
@@ -31,7 +31,7 @@ export class ToggleProductLikeUseCase {
 
   async execute({ userId, productId }: ToggleProductLikeInput): Promise<Output> {
     try {
-      const product = await this.productsRepository.findBySlug(productId);
+      const product = await this.productsRepository.findById(productId);
       if (!product || !product.isActive) {
         return left(new ProductNotFoundError(productId));
       }
