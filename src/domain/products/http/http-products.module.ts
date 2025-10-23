@@ -15,6 +15,16 @@ import { ToggleProductLikeController } from './controllers/toggle-product-like.c
 import { GetProductLikeStatusUseCase } from '../core/use-cases/get-product-like-status.use-case';
 import { ListProductLikesUseCase } from '../core/use-cases/list-product-likes.use-case';
 import { ToggleProductLikeUseCase } from '../core/use-cases/toggle-product-like.use-case';
+import { CreateProductReviewUseCase } from '../core/use-cases/create-product-review.use-case';
+import { DeleteProductReviewUseCase } from '../core/use-cases/delete-product-review.use-case';
+import { GetProductReviewAverageUseCase } from '../core/use-cases/get-product-review-average.use-case';
+import { ListProductReviewsUseCase } from '../core/use-cases/list-product-reviews.use-case';
+import { UpdateProductReviewUseCase } from '../core/use-cases/update-product-review.use-case';
+import { CreateProductReviewController } from './controllers/create-product-review.controller';
+import { DeleteProductReviewController } from './controllers/delete-product-review.controller';
+import { GetProductReviewAverageController } from './controllers/get-product-review-average.controller';
+import { ListProductReviewsController } from './controllers/list-product-reviews.controller';
+import { UpdateProductReviewController } from './controllers/update-product-review.controller';
 
 @Module({
   imports: [RepositoriesModule, AttachmentsModule],
@@ -26,6 +36,11 @@ import { ToggleProductLikeUseCase } from '../core/use-cases/toggle-product-like.
     ToggleProductLikeController,
     GetProductLikeStatusController,
     ListProductLikesController,
+    CreateProductReviewController,
+    UpdateProductReviewController,
+    ListProductReviewsController,
+    GetProductReviewAverageController,
+    DeleteProductReviewController,
   ],
   providers: [
     CreateProductUseCase,
@@ -35,6 +50,11 @@ import { ToggleProductLikeUseCase } from '../core/use-cases/toggle-product-like.
     ToggleProductLikeUseCase,
     GetProductLikeStatusUseCase,
     ListProductLikesUseCase,
+    CreateProductReviewUseCase,
+    UpdateProductReviewUseCase,
+    ListProductReviewsUseCase,
+    GetProductReviewAverageUseCase,
+    DeleteProductReviewUseCase,
   ],
 })
 export class HttpProductsModule {}
