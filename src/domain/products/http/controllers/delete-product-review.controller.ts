@@ -32,6 +32,6 @@ export class DeleteProductReviewController {
       }
     }
 
-    return result.value; // { averageRating, totalReviews }
+    return result.value;
   }
 }

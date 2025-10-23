@@ -22,6 +22,6 @@ export class GetProductReviewAverageController {
       }
     }
 
-    return result.value; // { averageRating, totalReviews }
+    return result.value;
   }
 }
