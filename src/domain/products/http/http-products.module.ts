@@ -25,6 +25,8 @@ import { DeleteProductReviewController } from './controllers/delete-product-revi
 import { GetProductReviewAverageController } from './controllers/get-product-review-average.controller';
 import { ListProductReviewsController } from './controllers/list-product-reviews.controller';
 import { UpdateProductReviewController } from './controllers/update-product-review.controller';
+import { AdminDeleteProductReviewController } from './controllers/admin-delete-product-review.controller';
+import { AdminDeleteProductReviewUseCase } from '../core/use-cases/admin-delete-product-review.use-case';
 
 @Module({
   imports: [RepositoriesModule, AttachmentsModule],
@@ -41,6 +43,7 @@ import { UpdateProductReviewController } from './controllers/update-product-revi
     ListProductReviewsController,
     GetProductReviewAverageController,
     DeleteProductReviewController,
+    AdminDeleteProductReviewController,
   ],
   providers: [
     CreateProductUseCase,
@@ -55,6 +58,7 @@ import { UpdateProductReviewController } from './controllers/update-product-revi
     ListProductReviewsUseCase,
     GetProductReviewAverageUseCase,
     DeleteProductReviewUseCase,
+    AdminDeleteProductReviewUseCase,
   ],
 })
 export class HttpProductsModule {}
