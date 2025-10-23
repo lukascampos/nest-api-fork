@@ -39,15 +39,6 @@ export class CompleteArtisanApplicationDto {
   @Transform(({ value }) => value?.map((v: string) => v?.trim()))
     finalityClassification: string[];
 
-  @IsString({ message: 'Nome de usuário do artesão deve ser um texto' })
-  @MinLength(3, { message: 'Nome de usuário deve ter pelo menos 3 caracteres' })
-  @MaxLength(30, { message: 'Nome de usuário deve ter no máximo 30 caracteres' })
-  @Matches(/^[a-z0-9_]+$/, {
-    message: 'Nome de usuário deve conter apenas letras minúsculas, números e underscore',
-  })
-  @Transform(({ value }) => value?.toLowerCase().trim())
-    artisanUserName: string;
-
   @IsString({ message: 'Nome comercial deve ser um texto' })
   @MinLength(2, { message: 'Nome comercial deve ter pelo menos 2 caracteres' })
   @MaxLength(100, { message: 'Nome comercial deve ter no máximo 100 caracteres' })
