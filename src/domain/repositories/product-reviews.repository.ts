@@ -78,7 +78,7 @@ export class ProductReviewsRepository {
 
     const rows = await db.productRating.findMany({
       where: { productId },
-      include: { user: { select: { id: true, name: true, avatar: true } } }, // sem phone
+      include: { user: { select: { id: true, name: true, avatar: true } } },
       orderBy: [{ createdAt: 'desc' }, { id: 'desc' }],
       skip,
       take: limit,
