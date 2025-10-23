@@ -1,5 +1,5 @@
 export class OperationNotAllowedError extends Error {
-  constructor(message = 'Operação não permitida') {
+  constructor(message = 'Operation not allowed') {
     super(message);
     this.name = 'OperationNotAllowedError';
   }
