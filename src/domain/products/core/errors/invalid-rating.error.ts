@@ -1,6 +1,6 @@
 export class InvalidRatingError extends Error {
   constructor() {
-    super('A nota deve estar entre 1 e 5');
+    super('The grade must be between 1 and 5');
     this.name = 'InvalidRatingError';
   }
 }

@@ -1,6 +1,6 @@
 export class ReviewAlreadyExistsError extends Error {
   constructor() {
-    super('Você já avaliou este produto');
+    super('You have already rated this product');
     this.name = 'ReviewAlreadyExistsError';
   }
 }

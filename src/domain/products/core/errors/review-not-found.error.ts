@@ -1,6 +1,6 @@
 export class ReviewNotFoundError extends Error {
   constructor() {
-    super('Avaliação não encontrada para este usuário/produto');
+    super('Rating not found for this user/product');
     this.name = 'ReviewNotFoundError';
   }
 }
