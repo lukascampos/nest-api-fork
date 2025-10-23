@@ -15,11 +15,14 @@ import { ToggleProductLikeController } from './controllers/toggle-product-like.c
 import { GetProductLikeStatusUseCase } from '../core/use-cases/get-product-like-status.use-case';
 import { ListProductLikesUseCase } from '../core/use-cases/list-product-likes.use-case';
 import { ToggleProductLikeUseCase } from '../core/use-cases/toggle-product-like.use-case';
+import { GetFavoritesByUserIdController } from './controllers/get-favorites-by-user-id.controller';
+import { GetFavoritesByUserIdUseCase } from '../core/use-cases/get-favorites-by-user-id.use-case';
 
 @Module({
   imports: [RepositoriesModule, AttachmentsModule],
   controllers: [
     CreateProductController,
+    GetFavoritesByUserIdController,
     GetProductByIdController,
     ListProductsController,
     UpdateProductController,
@@ -29,6 +32,7 @@ import { ToggleProductLikeUseCase } from '../core/use-cases/toggle-product-like.
   ],
   providers: [
     CreateProductUseCase,
+    GetFavoritesByUserIdUseCase,
     GetProductByIdUseCase,
     ListProductsUseCase,
     UpdateProductUseCase,
