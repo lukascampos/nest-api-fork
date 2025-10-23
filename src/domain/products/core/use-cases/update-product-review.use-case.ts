@@ -48,18 +48,18 @@ export class UpdateProductReviewUseCase {
         return left(new ProductNotFoundError(productId));
       }
       if (!product.isActive) {
-        return left(new OperationNotAllowedError('Produto inativo'));
+        return left(new OperationNotAllowedError('Inactive product'));
       }
       if (product.artisanId === currentUserId) {
-        return left(new OperationNotAllowedError('Autor do produto não pode avaliar'));
+        return left(new OperationNotAllowedError('Product owner cannot review'));
       }
 
       const isDisabled = await this.usersRepo.findIsDisabledById(currentUserId);
       if (isDisabled === null) {
-        return left(new OperationNotAllowedError('Usuário inválido'));
+        return left(new OperationNotAllowedError('Invalid user'));
       }
       if (isDisabled) {
-        return left(new OperationNotAllowedError('Usuário desabilitado'));
+        return left(new OperationNotAllowedError('User is disabled'));
       }
 
       const existing = await this.reviewsRepo.findByUserAndProduct(currentUserId, productId);

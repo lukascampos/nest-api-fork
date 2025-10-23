@@ -32,11 +32,11 @@ export class DeleteProductReviewUseCase {
 
       const product = await this.productsRepo.findByIdCore(productId);
       if (!product) return left(new ProductNotFoundError(productId));
-      if (!product.isActive) return left(new OperationNotAllowedError('Produto inativo'));
+      if (!product.isActive) return left(new OperationNotAllowedError('Inactive product'));
 
       const isDisabled = await this.usersRepo.findIsDisabledById(currentUserId);
-      if (isDisabled === null) return left(new OperationNotAllowedError('Usuário inválido'));
-      if (isDisabled) return left(new OperationNotAllowedError('Usuário desabilitado'));
+      if (isDisabled === null) return left(new OperationNotAllowedError('Invalid user'));
+      if (isDisabled) return left(new OperationNotAllowedError('User is disabled'));
 
       const result = await this.prisma.$transaction(async (tx: Prisma.TransactionClient) => {
         await this.reviewsRepo.deleteByUserAndProduct(currentUserId, productId, tx);
