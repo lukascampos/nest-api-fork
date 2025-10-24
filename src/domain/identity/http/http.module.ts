@@ -32,6 +32,8 @@ import { UpdatePersonalProfileDataUseCase } from '../core/use-cases/update-perso
 import { UpdateArtisanProfileUseCase } from '../core/use-cases/update-artisan-profile.use-case';
 import { GetMyProfileController } from './controllers/get-my-profile.controller';
 import { GetMyProfileUseCase } from '../core/use-cases/get-my-profile.use-case';
+import { DeleteAccountController } from './controllers/delete-account.controller';
+import { DeleteAccountUseCase } from '../core/use-cases/delete-account.use-case';
 
 @Module({
   imports: [RepositoriesModule, AttachmentsModule],
@@ -39,6 +41,7 @@ import { GetMyProfileUseCase } from '../core/use-cases/get-my-profile.use-case';
     AuthenticateController,
     CompleteArtisanApplicationController,
     CreateUserController,
+    DeleteAccountController,
     GetAllArtisanApplicationsController,
     GetArtisanApplicationDetailsController,
     GetArtisanProfileByUsernameController,
@@ -56,6 +59,7 @@ import { GetMyProfileUseCase } from '../core/use-cases/get-my-profile.use-case';
     AuthenticateUseCase,
     CompleteArtisanApplicationUseCase,
     CreateUserUseCase,
+    DeleteAccountUseCase,
     GetAllArtisanApplicationsUseCase,
     GetArtisanProfileByUsernameUseCase,
     GetArtisanApplicationDetailsUseCase,
