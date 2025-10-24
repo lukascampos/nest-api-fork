@@ -16,6 +16,8 @@ export interface GetProductByIdOutput {
   authorUserName: string;
   authorId: string;
   authorPhoneNumber: string;
+  authorAvatarUrl?: string;
+  authorProductsCount?: number;
   title: string;
   description: string;
   priceInCents: number;
@@ -68,6 +70,11 @@ export class GetProductByIdUseCase {
         throw new Error(`Usuário com ID ${product.artisanId} não encontrado`);
       }
 
+      const authorProductsCount = (await this.productsRepository.findByArtisanId(author.id)).length;
+      const authorAvatarUrl = author.avatar
+        ? await this.s3StorageService.getUrlByFileName(author.avatar)
+        : undefined;
+
       const artisanProfile = await this.artisanProfilesRepository.findByUserId(
         product.artisanId,
       );
@@ -88,6 +95,8 @@ export class GetProductByIdUseCase {
         authorUserName: artisanProfile.artisanUserName,
         authorId: author.id,
         authorPhoneNumber: author.phone,
+        authorProductsCount,
+        authorAvatarUrl,
         title: product.title,
         description: product.description,
         priceInCents: Number(product.priceInCents),
