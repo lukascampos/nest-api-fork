@@ -122,6 +122,13 @@ export class CreateProductUseCase {
           },
         });
 
+        await tx.artisanProfile.update({
+          where: { id: artisan.id },
+          data: {
+            productsCount: { increment: 1 },
+          },
+        });
+
         return { product };
       });
 
