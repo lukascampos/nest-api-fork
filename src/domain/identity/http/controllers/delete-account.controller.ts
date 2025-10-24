@@ -16,7 +16,7 @@ export class DeleteAccountController {
 
   @Delete()
   async handle(@CurrentUser() user: { sub: string }) {
-    this.logger.log('DELETE /account', { userId: user.sub });
+    this.logger.log('DELETE /users/me', { userId: user.sub });
 
     const result = await this.deleteAccountUseCase.execute({
       userId: user.sub,

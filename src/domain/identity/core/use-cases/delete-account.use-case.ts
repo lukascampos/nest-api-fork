@@ -42,14 +42,11 @@ export class DeleteAccountUseCase {
     this.logger.log('Starting account deletion', { userId });
 
     try {
-      // 1. Verificar se o usuário existe
       const user = await this.usersRepository.findById(userId);
       if (!user) {
         this.logger.warn('User not found for deletion', { userId });
         return left(new UserNotFoundError(userId, 'id'));
       }
-
-      await this.artisanProfilesRepository.findByUserId(userId);
 
       const deletedProducts = await this.deleteUserProducts(userId);
 
@@ -96,7 +93,6 @@ export class DeleteAccountUseCase {
   private async deleteUserProducts(userId: string): Promise<number> {
     this.logger.log('Deleting user products', { userId });
 
-    // Buscar todos os produtos do usuário
     const products = await this.productsRepository.findByArtisanId(userId);
 
     if (products.length === 0) {
