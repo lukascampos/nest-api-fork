@@ -136,4 +136,10 @@ export class AttachmentsRepository {
       },
     });
   }
+
+  async findByEntityId(entityId: string): Promise<Attachment[]> {
+    return this.prisma.attachment.findMany({
+      where: { productId: entityId },
+    });
+  }
 }

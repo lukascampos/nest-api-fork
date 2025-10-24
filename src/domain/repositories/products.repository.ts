@@ -221,4 +221,40 @@ export class ProductsRepository {
 
     return result;
   }
+
+  async findByArtisanId(artisanId: string): Promise<Product[]> {
+    return this.prisma.product.findMany({
+      where: { artisanId },
+    });
+  }
+
+  async delete(productId: string): Promise<void> {
+    await this.prisma.product.delete({
+      where: { id: productId },
+    });
+  }
+
+  async deleteProductLikes(productId: string): Promise<void> {
+    await this.prisma.productLike.deleteMany({
+      where: { productId },
+    });
+  }
+
+  async deleteProductRatings(productId: string): Promise<void> {
+    await this.prisma.productRating.deleteMany({
+      where: { productId },
+    });
+  }
+
+  async deleteUserLikes(userId: string): Promise<void> {
+    await this.prisma.productLike.deleteMany({
+      where: { userId },
+    });
+  }
+
+  async deleteUserRatings(userId: string): Promise<void> {
+    await this.prisma.productRating.deleteMany({
+      where: { userId },
+    });
+  }
 }

@@ -211,4 +211,28 @@ export class ArtisanProfilesRepository {
       take: limit,
     });
   }
+
+  async delete(userId: string): Promise<void> {
+    await this.prisma.artisanProfile.delete({
+      where: { userId },
+    });
+  }
+
+  async deleteAddress(artisanId: string): Promise<void> {
+    await this.prisma.artisanProfileAddress.deleteMany({
+      where: { artisanId },
+    });
+  }
+
+  async deleteFollowerRelationships(userId: string): Promise<void> {
+    await this.prisma.artisanFollower.deleteMany({
+      where: { followerId: userId },
+    });
+  }
+
+  async deleteFollowingRelationships(userId: string): Promise<void> {
+    await this.prisma.artisanFollower.deleteMany({
+      where: { followingId: userId },
+    });
+  }
 }

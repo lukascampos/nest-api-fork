@@ -210,4 +210,16 @@ export class UsersRepository {
       data: { roles },
     });
   }
+
+  async delete(userId: string): Promise<void> {
+    await this.prisma.user.delete({
+      where: { id: userId },
+    });
+  }
+
+  async deleteProfile(userId: string): Promise<void> {
+    await this.prisma.userProfile.delete({
+      where: { userId },
+    });
+  }
 }
