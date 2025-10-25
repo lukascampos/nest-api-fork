@@ -1,16 +1,23 @@
 import { Injectable, Logger } from '@nestjs/common';
 import { Prisma } from '@prisma/client';
 import { Either, left, right } from '@/domain/_shared/utils/either';
-import { ceil1 } from '@/domain/_shared/utils/number.utils';
 import { ProductReviewsRepository } from '@/domain/repositories/product-reviews.repository';
 import { ProductsRepository } from '@/domain/repositories/products.repository';
 import { UsersRepository } from '@/domain/repositories/users.repository';
 import { PrismaService } from '@/shared/prisma/prisma.service';
 import { OperationNotAllowedError } from '../errors/operation-not-allowed.error';
 import { ProductNotFoundError } from '../errors/product-not-found.error';
+import { ReviewNotFoundError } from '../errors/review-not-found.error';
 
-type Input = { currentUserId: string; productId: string };
-type Output = { averageRating: number; totalReviews: number };
+type Input = {
+  currentUserId: string;
+  productId: string
+};
+
+type Output = {
+  averageRating: number;
+  totalReviews: number
+};
 
 @Injectable()
 export class DeleteProductReviewUseCase {
@@ -25,11 +32,12 @@ export class DeleteProductReviewUseCase {
 
   async execute(input: Input): Promise<Either<Error, Output>> {
     const startedAt = Date.now();
-    this.logger.debug({ event: 'start', ...input });
+    const { currentUserId, productId } = input;
+    this.logger.debug({
+      event: 'start', productId, currentUserId, useCase: 'delete-my',
+    });
 
     try {
-      const { currentUserId, productId } = input;
-
       const product = await this.productsRepo.findByIdCore(productId);
       if (!product) return left(new ProductNotFoundError(productId));
       if (!product.isActive) return left(new OperationNotAllowedError('Inactive product'));
@@ -38,31 +46,40 @@ export class DeleteProductReviewUseCase {
       if (isDisabled === null) return left(new OperationNotAllowedError('Invalid user'));
       if (isDisabled) return left(new OperationNotAllowedError('User is disabled'));
 
-      const result = await this.prisma.$transaction(async (tx: Prisma.TransactionClient) => {
+      const existing = await this.reviewsRepo.findByUserAndProduct(currentUserId, productId);
+      if (!existing) return left(new ReviewNotFoundError());
+
+      const out = await this.prisma.$transaction(async (tx: Prisma.TransactionClient) => {
+        await this.reviewsRepo.clearImages(existing.id, tx);
+
         await this.reviewsRepo.deleteByUserAndProduct(currentUserId, productId, tx);
 
         const { avg, count } = await this.reviewsRepo.aggregateByProduct(productId, tx);
         await this.productsRepo.updateAverageRating({ productId, averageRating: avg ?? null }, tx);
 
-        return { averageRating: ceil1(avg ?? 0), totalReviews: count };
+        const averageRating = Math.ceil((avg ?? 0) * 10) / 10;
+        return { averageRating, totalReviews: count };
       });
 
       this.logger.debug({
         event: 'success',
-        durationMs: Date.now() - startedAt,
         productId,
         currentUserId,
-        averageRating: result.averageRating,
-        totalReviews: result.totalReviews,
+        averageRating: out.averageRating,
+        totalReviews: out.totalReviews,
+        durationMs: Date.now() - startedAt,
       });
 
-      return right(result);
+      return right(out);
     } catch (err) {
       const error = err instanceof Error ? err : new Error('Unknown error occurred');
       this.logger.error({
         event: 'error',
-        err: error.message,
+        productId,
+        currentUserId,
+        message: error.message,
         stack: error.stack,
+        durationMs: Date.now() - startedAt,
       });
       return left(error);
     }

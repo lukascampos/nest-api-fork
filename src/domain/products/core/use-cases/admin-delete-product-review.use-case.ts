@@ -5,8 +5,14 @@ import { ProductReviewsRepository } from '@/domain/repositories/product-reviews.
 import { ProductsRepository } from '@/domain/repositories/products.repository';
 import { PrismaService } from '@/shared/prisma/prisma.service';
 import { ProductNotFoundError } from '../errors/product-not-found.error';
+import { ReviewNotFoundError } from '../errors/review-not-found.error';
 
-type Input = { actorId: string; productId: string; targetUserId: string };
+type Input = {
+  actorId: string;
+  productId: string;
+  targetUserId: string
+};
+
 type Output = { averageRating: number; totalReviews: number };
 
 @Injectable()
@@ -21,21 +27,25 @@ export class AdminDeleteProductReviewUseCase {
 
   async execute(input: Input): Promise<Either<Error, Output>> {
     const t0 = Date.now();
+    const { actorId, productId, targetUserId } = input;
     this.logger.debug({
       event: 'start',
       useCase: 'adminDelete',
-      productId: input.productId,
-      targetUserId: input.targetUserId,
-      actorId: input.actorId,
+      productId,
+      targetUserId,
+      actorId,
     });
 
     try {
-      const { actorId, productId, targetUserId } = input;
-
       const product = await this.productsRepo.findByIdCore(productId);
       if (!product) return left(new ProductNotFoundError(productId));
 
+      const existing = await this.reviewsRepo.findByUserAndProduct(targetUserId, productId);
+      if (!existing) return left(new ReviewNotFoundError());
+
       const result = await this.prisma.$transaction(async (tx: Prisma.TransactionClient) => {
+        await this.reviewsRepo.clearImages(existing.id, tx);
+
         await this.reviewsRepo.deleteByUserAndProduct(targetUserId, productId, tx);
 
         const { avg, count } = await this.reviewsRepo.aggregateByProduct(productId, tx);
@@ -62,9 +72,9 @@ export class AdminDeleteProductReviewUseCase {
       this.logger.error({
         event: 'error',
         useCase: 'adminDelete',
-        productId: input.productId,
-        targetUserId: input.targetUserId,
-        actorId: input.actorId,
+        productId,
+        targetUserId,
+        actorId,
         message: error.message,
         stack: error.stack,
         durationMs: Date.now() - t0,

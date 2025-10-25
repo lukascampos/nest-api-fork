@@ -9,9 +9,20 @@ import { InvalidRatingError } from '../errors/invalid-rating.error';
 import { OperationNotAllowedError } from '../errors/operation-not-allowed.error';
 import { ProductNotFoundError } from '../errors/product-not-found.error';
 import { ReviewAlreadyExistsError } from '../errors/review-already-exists.error';
+import { ReviewImagesLimitExceededError } from '../errors/review-images-limit-exceeded.error';
+import { ReviewImageRaceConflictError } from '../errors/review-image-race-conflict.error';
 
-type Input = { currentUserId: string; productId: string; rating: number; comment?: string | null };
-type Output = { averageRating: number; totalReviews: number };
+type Input = {
+  currentUserId: string;
+  productId: string;
+  rating: number;
+  comment?: string | null,
+  imageIds?: string[] | null,
+};
+type Output = {
+  averageRating: number;
+  totalReviews: number
+};
 
 @Injectable()
 export class CreateProductReviewUseCase {
@@ -26,12 +37,22 @@ export class CreateProductReviewUseCase {
 
   async execute(input: Input): Promise<Either<Error, Output>> {
     const t0 = Date.now();
-    this.logger.debug({ event: 'start', ...input, useCase: 'create' });
+    const {
+      currentUserId, productId, rating, comment,
+    } = input;
+    const imageIds = input.imageIds ?? [];
+
+    this.logger.debug({
+      event: 'start',
+      productId,
+      currentUserId,
+      rating,
+      hasComment: !!comment,
+      imagesCount: imageIds?.length,
+      useCase: 'create',
+    });
 
     try {
-      const { currentUserId, productId, rating } = input;
-      const comment = input.comment ?? null;
-
       if (
         !Number.isInteger(rating)
         || rating < 1
@@ -42,6 +63,9 @@ export class CreateProductReviewUseCase {
         return left(new OperationNotAllowedError('Comentário excede 500 caracteres'));
       }
 
+      if (imageIds.length > 5) {
+        return left(new ReviewImagesLimitExceededError());
+      }
       const product = await this.productsRepo.findByIdCore(productId);
 
       if (!product) {
@@ -73,7 +97,24 @@ export class CreateProductReviewUseCase {
       }
 
       const out = await this.prisma.$transaction(async (tx: Prisma.TransactionClient) => {
-        await this.reviewsRepo.create(currentUserId, productId, rating, comment, tx);
+        const created = await this.reviewsRepo.create(
+          currentUserId,
+          productId,
+          rating,
+          comment ?? null,
+          tx,
+        );
+
+        if (imageIds.length > 0) {
+          const linked = await this.reviewsRepo.replaceImagesReturningCount(
+            created.id,
+            imageIds,
+            tx,
+          );
+          if (linked !== imageIds.length) {
+            throw new ReviewImageRaceConflictError();
+          }
+        }
 
         const { avg, count } = await this.reviewsRepo.aggregateByProduct(productId, tx);
         await this.productsRepo.updateAverageRating({ productId, averageRating: avg ?? null }, tx);
@@ -90,6 +131,7 @@ export class CreateProductReviewUseCase {
         action: 'created',
         averageRating: out.averageRating,
         totalReviews: out.totalReviews,
+        imagesCount: imageIds.length,
       });
       return right(out);
     } catch (err) {

@@ -3,7 +3,6 @@ import { Either, left, right } from '@/domain/_shared/utils/either';
 import { ProductReviewsRepository } from '@/domain/repositories/product-reviews.repository';
 import { ProductsRepository } from '@/domain/repositories/products.repository';
 import { ProductNotFoundError } from '../errors/product-not-found.error';
-import { ceil1 } from '@/domain/_shared/utils/number.utils';
 
 type Input = { productId: string };
 type Output = { averageRating: number; totalReviews: number };
@@ -26,22 +25,29 @@ export class GetProductReviewAverageUseCase {
       if (!product) return left(new ProductNotFoundError(input.productId));
 
       const { avg, count } = await this.reviewsRepo.aggregateByProduct(input.productId);
-      const out: Output = { averageRating: ceil1(avg ?? 0), totalReviews: count };
+
+      const averageRatingRaw = avg ?? 0;
+      const averageRating = Math.ceil(averageRatingRaw * 10) / 10; // 1 casa, arredonda para cima
+      const totalReviews = count;
+
+      const out: Output = { averageRating, totalReviews };
 
       this.logger.debug({
         event: 'success',
         durationMs: Date.now() - startedAt,
         productId: input.productId,
-        averageRating: out.averageRating,
-        totalReviews: out.totalReviews,
+        averageRating,
+        totalReviews,
       });
       return right(out);
     } catch (err) {
       const error = err instanceof Error ? err : new Error('Unknown error occurred');
       this.logger.error({
         event: 'error',
-        err: error.message,
+        productId: input.productId,
+        message: error.message,
         stack: error.stack,
+        durationMs: Date.now() - startedAt,
       });
       return left(error);
     }
