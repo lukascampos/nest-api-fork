@@ -1,6 +1,7 @@
 import {
   BadRequestException,
   Body,
+  ConflictException,
   Controller,
   ForbiddenException,
   NotFoundException,
@@ -8,6 +9,7 @@ import {
   Put,
   UseGuards,
 } from '@nestjs/common';
+import { Roles as PrismaRoles } from '@prisma/client';
 import { UpdateProductReviewUseCase } from '../../core/use-cases/update-product-review.use-case';
 import { RolesGuard } from '@/domain/_shared/auth/roles/roles.guard';
 import { CurrentUser } from '@/domain/_shared/auth/decorators/current-user.decorator';
@@ -17,6 +19,9 @@ import { InvalidRatingError } from '../../core/errors/invalid-rating.error';
 import { OperationNotAllowedError } from '../../core/errors/operation-not-allowed.error';
 import { ProductNotFoundError } from '../../core/errors/product-not-found.error';
 import { ReviewNotFoundError } from '../../core/errors/review-not-found.error';
+import { Roles } from '@/domain/_shared/auth/decorators/roles.decorator';
+import { ReviewImagesLimitExceededError } from '../../core/errors/review-images-limit-exceeded.error';
+import { ReviewImageRaceConflictError } from '../../core/errors/review-image-race-conflict.error';
 
 @Controller('products/:id/reviews')
 @UseGuards(RolesGuard)
@@ -24,6 +29,7 @@ export class UpdateProductReviewController {
   constructor(private readonly useCase: UpdateProductReviewUseCase) {}
 
   @Put()
+  @Roles(PrismaRoles.USER, PrismaRoles.ADMIN, PrismaRoles.MODERATOR, PrismaRoles.ARTISAN)
   async handle(
     @Param('id') productId: string,
     @CurrentUser() user: TokenPayload,
@@ -34,6 +40,7 @@ export class UpdateProductReviewController {
       productId,
       rating: body.rating,
       comment: body.comment ?? null,
+      imageIds: body.imageIds ?? [],
     });
 
     if (result.isLeft()) {
@@ -47,6 +54,10 @@ export class UpdateProductReviewController {
           throw new BadRequestException(error.message);
         case ReviewNotFoundError:
           throw new NotFoundException(error.message);
+        case ReviewImagesLimitExceededError:
+          throw new BadRequestException(error.message);
+        case ReviewImageRaceConflictError:
+          throw new ConflictException(error.message);
         default:
           throw new BadRequestException(error.message);
       }

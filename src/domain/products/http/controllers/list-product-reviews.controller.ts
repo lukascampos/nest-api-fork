@@ -14,7 +14,10 @@ export class ListProductReviewsController {
     @Param('id') productId: string,
     @Query() q: PaginateReviewsDto,
   ) {
-    const result = await this.useCase.execute({ productId, page: q.page, limit: q.limit });
+    const page = q.page ? Number(q.page) : undefined;
+    const limit = q.limit ? Number(q.limit) : undefined;
+
+    const result = await this.useCase.execute({ productId, page, limit });
 
     if (result.isLeft()) {
       const error = result.value;
@@ -25,7 +28,6 @@ export class ListProductReviewsController {
           throw error;
       }
     }
-
     return {
       reviews: result.value.reviews,
       pagination: result.value.pagination,

@@ -9,6 +9,7 @@ import {
   Post,
   UseGuards,
 } from '@nestjs/common';
+import { Roles as PrismaRoles } from '@prisma/client';
 import { CreateProductReviewUseCase } from '../../core/use-cases/create-product-review.use-case';
 import { RolesGuard } from '@/domain/_shared/auth/roles/roles.guard';
 import { CurrentUser } from '@/domain/_shared/auth/decorators/current-user.decorator';
@@ -18,6 +19,9 @@ import { InvalidRatingError } from '../../core/errors/invalid-rating.error';
 import { OperationNotAllowedError } from '../../core/errors/operation-not-allowed.error';
 import { ProductNotFoundError } from '../../core/errors/product-not-found.error';
 import { ReviewAlreadyExistsError } from '../../core/errors/review-already-exists.error';
+import { Roles } from '@/domain/_shared/auth/decorators/roles.decorator';
+import { ReviewImagesLimitExceededError } from '../../core/errors/review-images-limit-exceeded.error';
+import { ReviewImageRaceConflictError } from '../../core/errors/review-image-race-conflict.error';
 
 @Controller('products/:id/reviews')
 @UseGuards(RolesGuard)
@@ -25,6 +29,7 @@ export class CreateProductReviewController {
   constructor(private readonly useCase: CreateProductReviewUseCase) {}
 
   @Post()
+  @Roles(PrismaRoles.USER, PrismaRoles.ADMIN, PrismaRoles.MODERATOR, PrismaRoles.ARTISAN)
   async handle(
     @Param('id') productId: string,
     @CurrentUser() user: TokenPayload,
@@ -35,6 +40,7 @@ export class CreateProductReviewController {
       productId,
       rating: body.rating,
       comment: body.comment ?? null,
+      imageIds: body.imageIds ?? [],
     });
 
     if (result.isLeft()) {
@@ -48,11 +54,14 @@ export class CreateProductReviewController {
           throw new BadRequestException(error.message);
         case ReviewAlreadyExistsError:
           throw new ConflictException(error.message);
+        case ReviewImagesLimitExceededError:
+          throw new BadRequestException(error.message);
+        case ReviewImageRaceConflictError:
+          throw new ConflictException(error.message);
         default:
           throw new BadRequestException(error.message);
       }
     }
-
     return result.value;
   }
 }

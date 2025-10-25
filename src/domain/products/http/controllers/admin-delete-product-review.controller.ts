@@ -8,6 +8,7 @@ import { CurrentUser } from '@/domain/_shared/auth/decorators/current-user.decor
 import { TokenPayload } from '@/domain/_shared/auth/jwt/jwt.strategy';
 import { AdminDeleteProductReviewUseCase } from '../../core/use-cases/admin-delete-product-review.use-case';
 import { ProductNotFoundError } from '../../core/errors/product-not-found.error';
+import { ReviewNotFoundError } from '../../core/errors/review-not-found.error';
 
 @Controller('/admin/products/:productId/reviews/:userId')
 @UseGuards(RolesGuard)
@@ -31,6 +32,7 @@ export class AdminDeleteProductReviewController {
       const error = result.value;
       switch (error.constructor) {
         case ProductNotFoundError:
+        case ReviewNotFoundError:
           throw new NotFoundException(error.message);
         default:
           throw new BadRequestException(error.message);
