@@ -230,6 +230,8 @@ model ProductRating {
   product Product @relation(fields: [productId], references: [id], onDelete: Cascade)
   user    User    @relation(fields: [userId], references: [id])
 
+  images  Attachment[] @relation("ReviewImages")
+
   @@unique([productId, userId])
   @@index([productId, createdAt], map: "idx_product_ratings_product_createdat")
   @@map("product_ratings")
@@ -255,13 +257,15 @@ model Attachment {
   productId            String?  @map("fk_product_id")
   fileType             String   @map("file_type")
   fileSize             BigInt   @map("file_size")
+  reviewId             String?  @map("fk_review_id")
   createdAt            DateTime @default(now()) @map("created_at")
 
   user               User?               @relation(fields: [userId], references: [id])
   artisanApplication ArtisanApplication? @relation(fields: [artisanApplicationId], references: [id])
   productCover       Product?            @relation("ProductCoverImage")
   productImages      Product?            @relation("ProductImages", fields: [productId], references: [id])
-
+  reviewImages       ProductRating?      @relation("ReviewImages", fields: [reviewId], references: [id])
+  
   @@index([userId, artisanApplicationId])
   @@map("attachments")
 }
