@@ -218,7 +218,7 @@ export class UsersRepository {
     });
     return row ? row.isDisabled : null;
   }
-  
+
   async delete(userId: string): Promise<void> {
     await this.prisma.user.delete({
       where: { id: userId },
