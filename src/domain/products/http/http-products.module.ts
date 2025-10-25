@@ -15,6 +15,18 @@ import { ToggleProductLikeController } from './controllers/toggle-product-like.c
 import { GetProductLikeStatusUseCase } from '../core/use-cases/get-product-like-status.use-case';
 import { ListProductLikesUseCase } from '../core/use-cases/list-product-likes.use-case';
 import { ToggleProductLikeUseCase } from '../core/use-cases/toggle-product-like.use-case';
+import { CreateProductReviewUseCase } from '../core/use-cases/create-product-review.use-case';
+import { DeleteProductReviewUseCase } from '../core/use-cases/delete-product-review.use-case';
+import { GetProductReviewAverageUseCase } from '../core/use-cases/get-product-review-average.use-case';
+import { ListProductReviewsUseCase } from '../core/use-cases/list-product-reviews.use-case';
+import { UpdateProductReviewUseCase } from '../core/use-cases/update-product-review.use-case';
+import { CreateProductReviewController } from './controllers/create-product-review.controller';
+import { DeleteProductReviewController } from './controllers/delete-product-review.controller';
+import { GetProductReviewAverageController } from './controllers/get-product-review-average.controller';
+import { ListProductReviewsController } from './controllers/list-product-reviews.controller';
+import { UpdateProductReviewController } from './controllers/update-product-review.controller';
+import { AdminDeleteProductReviewController } from './controllers/admin-delete-product-review.controller';
+import { AdminDeleteProductReviewUseCase } from '../core/use-cases/admin-delete-product-review.use-case';
 import { GetFavoritesByUserIdController } from './controllers/get-favorites-by-user-id.controller';
 import { GetFavoritesByUserIdUseCase } from '../core/use-cases/get-favorites-by-user-id.use-case';
 import { GetHomeFeedController } from './controllers/get-home-feed.controller';
@@ -32,6 +44,12 @@ import { GetHomeFeedUseCase } from '../core/use-cases/get-home-feed.use-case';
     ToggleProductLikeController,
     GetProductLikeStatusController,
     ListProductLikesController,
+    CreateProductReviewController,
+    UpdateProductReviewController,
+    ListProductReviewsController,
+    GetProductReviewAverageController,
+    DeleteProductReviewController,
+    AdminDeleteProductReviewController,
   ],
   providers: [
     CreateProductUseCase,
@@ -43,6 +61,12 @@ import { GetHomeFeedUseCase } from '../core/use-cases/get-home-feed.use-case';
     ToggleProductLikeUseCase,
     GetProductLikeStatusUseCase,
     ListProductLikesUseCase,
+    CreateProductReviewUseCase,
+    UpdateProductReviewUseCase,
+    ListProductReviewsUseCase,
+    GetProductReviewAverageUseCase,
+    DeleteProductReviewUseCase,
+    AdminDeleteProductReviewUseCase,
   ],
 })
 export class HttpProductsModule {}
