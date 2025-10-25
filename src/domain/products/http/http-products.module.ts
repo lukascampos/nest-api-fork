@@ -31,6 +31,8 @@ import { GetFavoritesByUserIdController } from './controllers/get-favorites-by-u
 import { GetFavoritesByUserIdUseCase } from '../core/use-cases/get-favorites-by-user-id.use-case';
 import { GetHomeFeedController } from './controllers/get-home-feed.controller';
 import { GetHomeFeedUseCase } from '../core/use-cases/get-home-feed.use-case';
+import { DeleteProductController } from './controllers/delete-product.controller';
+import { DeleteProductUseCase } from '../core/use-cases/delete-product.use-case';
 
 @Module({
   imports: [RepositoriesModule, AttachmentsModule],
@@ -50,6 +52,7 @@ import { GetHomeFeedUseCase } from '../core/use-cases/get-home-feed.use-case';
     GetProductReviewAverageController,
     DeleteProductReviewController,
     AdminDeleteProductReviewController,
+    DeleteProductController,
   ],
   providers: [
     CreateProductUseCase,
@@ -67,6 +70,7 @@ import { GetHomeFeedUseCase } from '../core/use-cases/get-home-feed.use-case';
     GetProductReviewAverageUseCase,
     DeleteProductReviewUseCase,
     AdminDeleteProductReviewUseCase,
+    DeleteProductUseCase,
   ],
 })
 export class HttpProductsModule {}
