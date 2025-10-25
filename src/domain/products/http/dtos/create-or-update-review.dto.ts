@@ -1,5 +1,7 @@
 import {
-  IsInt, IsOptional, IsString, Max, MaxLength, Min,
+  ArrayMaxSize,
+  IsArray,
+  IsInt, IsOptional, IsString, IsUUID, Max, MaxLength, Min,
 } from 'class-validator';
 
 export class CreateOrUpdateReviewDto {
@@ -12,4 +14,10 @@ export class CreateOrUpdateReviewDto {
   @IsString()
   @MaxLength(500)
     comment?: string;
+
+  @IsOptional()
+  @IsArray()
+  @ArrayMaxSize(5)
+  @IsUUID('4', { each: true })
+    imageIds?: string[];
 }
