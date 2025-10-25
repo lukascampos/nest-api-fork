@@ -84,6 +84,7 @@ async function main() {
       data: {
         userId: artisan1.id,
         artisanUserName: 'artesanum1',
+        comercialName: 'Artesanato 1',
         rawMaterial: ['madeira', 'metal'],
         technique: ['escultura', 'soldagem'],
         finalityClassification: ['decorativo', 'utilitario'],
@@ -97,6 +98,7 @@ async function main() {
       data: {
         userId: artisan2.id,
         artisanUserName: 'artesanum2',
+        comercialName: 'Artesanato 1',
         rawMaterial: ['cerâmica', 'argila'],
         technique: ['tornear'],
         finalityClassification: ['decorativo', 'utensílio'],

@@ -126,6 +126,7 @@ async function main() {
     prisma.artisanProfile.create({
       data: {
         userId: artisan1.id,
+        comercialName: 'Artesanum 1',
         artisanUserName: 'artesanum1',
         rawMaterial: ['madeira', 'metal'],
         technique: ['escultura', 'soldagem'],
@@ -140,6 +141,7 @@ async function main() {
       data: {
         userId: artisan2.id,
         artisanUserName: 'artesanum2',
+        comercialName: 'Artesanum 2',
         rawMaterial: ['ceramica', 'argila'],
         technique: ['ceramica', 'tornear'],
         finalityClassification: ['decorativo', 'utensilio'],
@@ -197,21 +199,21 @@ async function main() {
   // User likes product 1
   const like1Result = await toggleUC.execute({
     userId: user.id,
-    productId: product1.slug,
+    productId: product1.id,
   });
   console.log('User curtiu produto 1:', like1Result);
 
   // Admin likes product 2
   const like2Result = await toggleUC.execute({
     userId: admin.id,
-    productId: product2.slug,
+    productId: product2.id,
   });
   console.log('Admin curtiu produto 2:', like2Result);
 
   // User also likes product 2
   const like3Result = await toggleUC.execute({
     userId: user.id,
-    productId: product2.slug,
+    productId: product2.id,
   });
   console.log('User curtiu produto 2:', like3Result);
 
@@ -219,27 +221,27 @@ async function main() {
   console.log('\n🔹 VERIFICANDO status dos likes...');
   const status1 = await statusUC.execute({
     userId: user.id,
-    productId: product1.slug,
+    productId: product1.id,
   });
   console.log('Status produto 1:', status1);
 
   const status2 = await statusUC.execute({
     userId: user.id,
-    productId: product2.slug,
+    productId: product2.id,
   });
   console.log('Status produto 2:', status2);
 
   // Test listing likes for both products
   console.log('\n🔹 LISTANDO likes dos produtos...');
   const list1 = await listUC.execute({
-    productId: product1.slug,
+    productId: product1.id,
     page: 1,
     limit: 10,
   });
   console.log('Likes produto 1:', JSON.stringify(list1, null, 2));
 
   const list2 = await listUC.execute({
-    productId: product2.slug,
+    productId: product2.id,
     page: 1,
     limit: 10,
   });

@@ -7,6 +7,7 @@ import { NotAllowedError } from '@/domain/identity/core/errors/not-allowed.error
 import { AttachmentsRepository } from '@/domain/repositories/attachments.repository';
 import { InvalidAttachmentError } from '@/domain/identity/core/errors/invalid-attachment.error';
 import { PrismaService } from '@/shared/prisma/prisma.service';
+import { InvalidProductDataError } from '../errors/invalid-product-data.error';
 
 export interface UpdateProductInput {
   productId: string;
@@ -85,6 +86,17 @@ export class UpdateProductUseCase {
 
       if (stock !== undefined) {
         product.stock = stock;
+      }
+
+      const hasDeletedAllPhotos = product.photos.map(
+        (p) => p.attachmentId,
+      ).every((id) => deletedPhotos?.includes(id));
+
+      if (hasDeletedAllPhotos && (!newPhotos || newPhotos.length === 0) && !coverPhotoId) {
+        this.logger.warn(
+          `Usuário ${authorId} tentou atualizar produto ${productId} removendo todas as fotos`,
+        );
+        return left(new InvalidProductDataError('Um produto deve ter ao menos uma foto ou uma foto de capa'));
       }
 
       if (deletedPhotos && deletedPhotos.length > 0) {

@@ -192,6 +192,18 @@ export class UsersRepository {
     });
   }
 
+  async findManyByIdsWithoutFilter(ids: string[]): Promise<User[]> {
+    if (ids.length === 0) return [];
+
+    return this.prisma.user.findMany({
+      where: {
+        id: {
+          in: ids,
+        },
+      },
+    });
+  }
+
   async updateRoles(id: string, roles: Roles[]): Promise<User> {
     return this.prisma.user.update({
       where: { id },
@@ -205,5 +217,27 @@ export class UsersRepository {
       select: { isDisabled: true },
     });
     return row ? row.isDisabled : null;
+  }
+  
+  async delete(userId: string): Promise<void> {
+    await this.prisma.user.delete({
+      where: { id: userId },
+    });
+  }
+
+  async deleteProfile(userId: string): Promise<void> {
+    await this.prisma.userProfile.delete({
+      where: { userId },
+    });
+  }
+
+  async updatePassword(userId: string, hashedPassword: string): Promise<void> {
+    await this.prisma.user.update({
+      where: { id: userId },
+      data: {
+        password: hashedPassword,
+        updatedAt: new Date(),
+      },
+    });
   }
 }

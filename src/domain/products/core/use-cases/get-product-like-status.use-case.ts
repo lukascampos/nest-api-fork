@@ -30,7 +30,7 @@ export class GetProductLikeStatusUseCase {
 
   async execute({ userId, productId }: GetProductLikeStatusInput): Promise<Output> {
     try {
-      const productExists = await this.productsRepository.findBySlug(productId.toString());
+      const productExists = await this.productsRepository.findById(productId.toString());
       if (!productExists || !productExists.isActive) {
         return left(new ProductNotFoundError(productId));
       }

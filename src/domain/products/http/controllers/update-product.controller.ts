@@ -29,10 +29,16 @@ export class UpdateProductController {
       throw new BadRequestException('Invalid request body');
     }
 
+    const updateBody = { ...body };
+
+    if (updateBody.coverPhotoId === '' || updateBody.coverPhotoId === null) {
+      updateBody.coverPhotoId = undefined;
+    }
+
     const result = await this.updateProductUseCase.execute({
       productId: param.id,
       authorId: user.sub,
-      ...body,
+      ...updateBody,
     });
 
     if (result.isLeft()) {

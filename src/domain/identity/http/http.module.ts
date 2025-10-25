@@ -25,6 +25,17 @@ import { ToggleArtisanFollowUseCase } from '../core/use-cases/toggle-artisan-fol
 import { ListArtisanFollowersUseCase } from '../core/use-cases/list-artisan-followers.use-case';
 import { ListArtisanFollowingUseCase } from '../core/use-cases/list-artisan-following.use-case';
 import { GetArtisanFollowStatusUseCase } from '../core/use-cases/get-artisan-follow-status.use-case';
+import { GetArtisanProfileByUsernameController } from './controllers/get-artisan-profile-by-username.controller';
+import { GetArtisanProfileByUsernameUseCase } from '../core/use-cases/get-artisan-profile-by-username.use-case';
+import { UpdatePersonalProfileDataController } from './controllers/update-personal-profile-data.controller';
+import { UpdatePersonalProfileDataUseCase } from '../core/use-cases/update-personal-profile-data.use-case';
+import { UpdateArtisanProfileUseCase } from '../core/use-cases/update-artisan-profile.use-case';
+import { GetMyProfileController } from './controllers/get-my-profile.controller';
+import { GetMyProfileUseCase } from '../core/use-cases/get-my-profile.use-case';
+import { DeleteAccountController } from './controllers/delete-account.controller';
+import { DeleteAccountUseCase } from '../core/use-cases/delete-account.use-case';
+import { UpdateOwnPasswordController } from './controllers/update-own-password.controller';
+import { UpdateOwnPasswordUseCase } from '../core/use-cases/update-own-password.use-case';
 
 @Module({
   imports: [RepositoriesModule, AttachmentsModule],
@@ -32,8 +43,11 @@ import { GetArtisanFollowStatusUseCase } from '../core/use-cases/get-artisan-fol
     AuthenticateController,
     CompleteArtisanApplicationController,
     CreateUserController,
+    DeleteAccountController,
     GetAllArtisanApplicationsController,
     GetArtisanApplicationDetailsController,
+    GetArtisanProfileByUsernameController,
+    GetMyProfileController,
     InitiateArtisanApplicationController,
     ModerateArtisanApplicationController,
     SearchUsersController,
@@ -41,13 +55,18 @@ import { GetArtisanFollowStatusUseCase } from '../core/use-cases/get-artisan-fol
     ListArtisanFollowersController,
     ToggleArtisanFollowController,
     GetArtisanFollowStatusController,
+    UpdateOwnPasswordController,
+    UpdatePersonalProfileDataController,
   ],
   providers: [
     AuthenticateUseCase,
     CompleteArtisanApplicationUseCase,
     CreateUserUseCase,
+    DeleteAccountUseCase,
     GetAllArtisanApplicationsUseCase,
+    GetArtisanProfileByUsernameUseCase,
     GetArtisanApplicationDetailsUseCase,
+    GetMyProfileUseCase,
     InitiateArtisanApplicationUseCase,
     ModerateArtisanApplicationUseCase,
     SearchUsersUseCase,
@@ -58,6 +77,9 @@ import { GetArtisanFollowStatusUseCase } from '../core/use-cases/get-artisan-fol
     ListArtisanFollowersUseCase,
     ListArtisanFollowingUseCase,
     GetArtisanFollowStatusUseCase,
+    UpdateArtisanProfileUseCase,
+    UpdateOwnPasswordUseCase,
+    UpdatePersonalProfileDataUseCase,
   ],
 })
 export class HttpModule {}

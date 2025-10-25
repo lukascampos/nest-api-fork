@@ -12,6 +12,14 @@ export interface CreateArtisanApplicationData {
   rawMaterial: string[];
   technique: string[];
   finalityClassification: string[];
+  comercialName?: string;
+  zipCode?: string;
+  address?: string;
+  addressNumber?: string;
+  addressComplement?: string;
+  neighborhood?: string;
+  city?: string;
+  state?: string;
   bio?: string;
   sicab?: string;
   sicabRegistrationDate?: Date;
@@ -20,6 +28,14 @@ export interface CreateArtisanApplicationData {
 
 export interface UpdateArtisanApplicationData {
   formStatus?: FormStatus;
+  comercialName: string;
+  zipCode: string;
+  address: string;
+  addressNumber: string;
+  addressComplement?: string;
+  neighborhood: string;
+  city: string;
+  state: string;
   rawMaterial?: string[];
   technique?: string[];
   finalityClassification?: string[];

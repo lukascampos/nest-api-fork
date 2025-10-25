@@ -92,6 +92,14 @@ model ArtisanApplication {
   userId                 String          @map("fk_user_id")
   formStatus             FormStatus      @default(NOT_STARTED) @map("form_status")
   type                   ApplicationType @default(BE_ARTISAN) @map("type")
+  comercialName          String?         @map("commercial_name")
+  zipCode                String?         @map("zip_code")
+  address                String?
+  addressNumber          String?         @map("address_number")
+  addressComplement      String?         @map("address_complement")
+  neighborhood           String?
+  city                   String?
+  state                  String?
   rawMaterial            String[]        @map("raw_material")
   technique              String[]
   finalityClassification String[]        @map("finality_classification")
@@ -117,6 +125,7 @@ model ArtisanProfile {
   id                     String   @id @default(uuid())
   userId                 String   @unique @map("fk_user_id")
   artisanUserName        String   @unique @map("artisan_user_name")
+  comercialName          String   @map("commercial_name")
   rawMaterial            String[] @map("raw_material")
   technique              String[]
   finalityClassification String[] @map("finality_classification")
@@ -130,8 +139,9 @@ model ArtisanProfile {
   createdAt              DateTime @default(now()) @map("created_at")
   updatedAt              DateTime @updatedAt @map("updated_at")
 
-  user    User      @relation(fields: [userId], references: [id], onDelete: Cascade)
-  Product Product[]
+  user                  User                   @relation(fields: [userId], references: [id], onDelete: Cascade)
+  Product               Product[]
+  ArtisanProfileAddress ArtisanProfileAddress?
 
   @@map("artisan_profiles")
 }
@@ -147,6 +157,24 @@ model ArtisanFollower {
 
   @@unique([followerId, followingId])
   @@map("artisan_followers")
+}
+
+model ArtisanProfileAddress {
+  id                BigInt   @id @default(autoincrement())
+  artisanId         String   @unique @map("fk_artisan_id")
+  zipCode           String   @map("zip_code")
+  address           String
+  addressNumber     String   @map("address_number")
+  addressComplement String?  @map("address_complement")
+  neighborhood      String
+  city              String
+  state             String
+  createdAt         DateTime @default(now()) @map("created_at")
+  updatedAt         DateTime @updatedAt @map("updated_at")
+
+  artisan ArtisanProfile @relation(fields: [artisanId], references: [id], onDelete: Cascade)
+
+  @@map("artisan_profile_addresses")
 }
 
 model RawMaterial {
@@ -177,6 +205,7 @@ model ProductCategory {
   id             BigInt   @id @default(autoincrement())
   nameFilter     String   @unique @map("name_filter")
   nameExhibit    String   @map("name_exhibit")
+  imagePath      String?  @map("image_path")
   description    String?
   rawMaterialIds BigInt[] @map("raw_material_ids")
   techniqueIds   BigInt[] @map("technique_ids")

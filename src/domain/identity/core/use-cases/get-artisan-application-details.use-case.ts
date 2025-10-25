@@ -5,6 +5,7 @@ import { S3StorageService } from '@/domain/attachments/s3-storage.service';
 import { ArtisanApplicationsRepository } from '@/domain/repositories/artisan-applications.repository';
 import { AttachmentsRepository } from '@/domain/repositories/attachments.repository';
 import { ApplicationNotFoundError } from '../errors/application-not-found.error';
+import { UsersRepository } from '@/domain/repositories/users.repository';
 
 export interface GetArtisanApplicationDetailsInput {
   applicationId: string;
@@ -24,6 +25,18 @@ export interface GetArtisanApplicationDetailsOutput {
   userId: string;
   formStatus: string;
   status: string;
+  artisanName: string;
+  comercialName: string;
+  artisanPhone: string;
+  artisanEmail: string;
+  artisanAvatarUrl: string | null;
+  zipCode: string;
+  address: string;
+  addressNumber: string;
+  addressComplement?: string;
+  neighborhood: string;
+  city: string;
+  state: string;
   rawMaterial: string[];
   technique: string[];
   finalityClassification: string[];
@@ -42,6 +55,7 @@ export class GetArtisanApplicationDetailsUseCase {
 
   constructor(
     private readonly artisanApplicationsRepository: ArtisanApplicationsRepository,
+    private readonly usersRepository: UsersRepository,
     private readonly attachmentsRepository: AttachmentsRepository,
     private readonly s3StorageService: S3StorageService,
   ) {}
@@ -65,11 +79,37 @@ export class GetArtisanApplicationDetailsUseCase {
 
       this.logger.debug(`Retrieved application details: ${applicationId} with ${photosWithUrls.photos.length} photos`);
 
+      const userData = await this.usersRepository.findById(application.userId);
+
+      let artisanAvatarUrl: string | null = null;
+
+      if (userData && userData.avatar) {
+        try {
+          artisanAvatarUrl = await this
+            .s3StorageService
+            .getUrlByFileName(userData.avatar!);
+        } catch (avatarError) {
+          this.logger.warn(`Failed to generate avatar URL for user ${userData.id}:`, avatarError);
+        }
+      }
+
       return right({
         id: application.id,
         userId: application.userId,
         formStatus: application.formStatus,
         status: application.status,
+        comercialName: application.comercialName ?? '',
+        artisanName: userData!.name,
+        artisanPhone: userData!.phone,
+        artisanEmail: userData!.email,
+        artisanAvatarUrl: artisanAvatarUrl ?? null,
+        zipCode: application.zipCode ?? '',
+        address: application.address ?? '',
+        addressNumber: application.addressNumber ?? '',
+        addressComplement: application.addressComplement ?? undefined,
+        neighborhood: application.neighborhood ?? '',
+        city: application.city ?? '',
+        state: application.state ?? '',
         rawMaterial: application.rawMaterial,
         technique: application.technique,
         finalityClassification: application.finalityClassification,

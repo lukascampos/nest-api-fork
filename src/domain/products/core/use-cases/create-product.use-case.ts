@@ -122,6 +122,13 @@ export class CreateProductUseCase {
           },
         });
 
+        await tx.artisanProfile.update({
+          where: { id: artisan.id },
+          data: {
+            productsCount: { increment: 1 },
+          },
+        });
+
         return { product };
       });
 
@@ -166,19 +173,23 @@ export class CreateProductUseCase {
     techniqueIds: number[],
   ) {
     const matchingCategories = categories.map((categorie) => {
-      const categoryRawMaterialIds = categorie.rawMaterialIds.map((id) => Number(id));
-      const categoryTechniqueIds = categorie.techniqueIds.map((id) => Number(id));
+      const categoryRawMaterialIds = categorie.rawMaterialIds.map((id) => id);
+      const categoryTechniqueIds = categorie.techniqueIds.map((id) => id);
 
-      const hasAnyRawMaterial = rawMaterialIds.some((id) => categoryRawMaterialIds.includes(id));
-      const hasAnyTechnique = techniqueIds.some((id) => categoryTechniqueIds.includes(id));
+      const hasAnyRawMaterial = rawMaterialIds.some(
+        (id) => categoryRawMaterialIds.includes(BigInt(id)),
+      );
+      const hasAnyTechnique = techniqueIds.some(
+        (id) => categoryTechniqueIds.includes(BigInt(id)),
+      );
 
-      if (hasAnyRawMaterial && hasAnyTechnique) {
+      if (hasAnyRawMaterial || hasAnyTechnique) {
         return categorie;
       }
-      return null;
+      return undefined;
     });
 
-    return matchingCategories;
+    return matchingCategories.splice(0).filter((c) => c !== undefined);
   }
 
   private async validateAndLinkAttachments(

@@ -27,11 +27,17 @@ import { ListProductReviewsController } from './controllers/list-product-reviews
 import { UpdateProductReviewController } from './controllers/update-product-review.controller';
 import { AdminDeleteProductReviewController } from './controllers/admin-delete-product-review.controller';
 import { AdminDeleteProductReviewUseCase } from '../core/use-cases/admin-delete-product-review.use-case';
+import { GetFavoritesByUserIdController } from './controllers/get-favorites-by-user-id.controller';
+import { GetFavoritesByUserIdUseCase } from '../core/use-cases/get-favorites-by-user-id.use-case';
+import { GetHomeFeedController } from './controllers/get-home-feed.controller';
+import { GetHomeFeedUseCase } from '../core/use-cases/get-home-feed.use-case';
 
 @Module({
   imports: [RepositoriesModule, AttachmentsModule],
   controllers: [
     CreateProductController,
+    GetFavoritesByUserIdController,
+    GetHomeFeedController,
     GetProductByIdController,
     ListProductsController,
     UpdateProductController,
@@ -47,6 +53,8 @@ import { AdminDeleteProductReviewUseCase } from '../core/use-cases/admin-delete-
   ],
   providers: [
     CreateProductUseCase,
+    GetFavoritesByUserIdUseCase,
+    GetHomeFeedUseCase,
     GetProductByIdUseCase,
     ListProductsUseCase,
     UpdateProductUseCase,
