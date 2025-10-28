@@ -1,10 +1,5 @@
 import {
-  BadRequestException,
-  Controller,
-  Delete,
-  NotFoundException,
-  Param,
-  UseGuards,
+  BadRequestException, Controller, Delete, NotFoundException, Param, UseGuards,
 } from '@nestjs/common';
 import { Roles as PrismaRoles } from '@prisma/client';
 import { SoftDeleteReportUseCase } from '../../core/use-cases/soft-delete-report.use-case';
@@ -17,18 +12,17 @@ import { ReportNotFoundError } from '../../core/errors/report-not-found.error';
 @Controller('reports/:id')
 @UseGuards(JwtAuthGuard, RolesGuard)
 export class SoftDeleteReportController {
-  constructor(private readonly softDeleteReportUseCase: SoftDeleteReportUseCase) {}
+  constructor(private readonly useCase: SoftDeleteReportUseCase) {}
 
   @Delete()
   @Roles(PrismaRoles.USER, PrismaRoles.ARTISAN, PrismaRoles.MODERATOR, PrismaRoles.ADMIN)
   async handle(@Param() { id }: ReportIdParamDto) {
-    try {
-      return await this.softDeleteReportUseCase.execute({ reportId: id });
-    } catch (error) {
-      if (error instanceof ReportNotFoundError) {
-        throw new NotFoundException(error.message);
-      }
+    const result = await this.useCase.execute({ reportId: id });
+    if (result.isLeft()) {
+      const error = result.value;
+      if (error instanceof ReportNotFoundError) throw new NotFoundException(error.message);
       throw new BadRequestException(error.message);
     }
+    return { ok: true };
   }
 }

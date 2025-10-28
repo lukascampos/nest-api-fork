@@ -13,54 +13,102 @@ export class ReportRepository {
   constructor(private readonly prisma: PrismaService) {}
 
   async createForProduct(input: CreateBase & { productId: string }) {
-    return this.prisma.report.create({
-      data: {
-        reporterId: input.reporterId,
-        reason: input.reason,
-        description: input.description ?? null,
-        product: { create: { productId: input.productId } },
-      },
-      include: {
-        product: { include: { product: true } },
-        productRating: { include: { productRating: true } },
-        ReportUser: { include: { user: true } },
-        reporter: true,
-      },
+    const result = await this.prisma.$transaction(async (tx) => {
+      const report = await tx.report.create({
+        data: {
+          reporterId: input.reporterId,
+          reason: input.reason,
+          description: input.description ?? null,
+        },
+        select: { id: true },
+      });
+
+      await tx.reportProduct.create({
+        data: {
+          reportId: report.id,
+          productId: input.productId,
+          reporterId: input.reporterId,
+        },
+      });
+
+      return tx.report.findUniqueOrThrow({
+        where: { id: report.id },
+        include: {
+          product: { include: { product: true } },
+          productRating: { include: { productRating: true } },
+          ReportUser: { include: { user: true } },
+          reporter: true,
+        },
+      });
     });
+
+    return result;
   }
 
   async createForProductRating(input: CreateBase & { productRatingId: string }) {
-    return this.prisma.report.create({
-      data: {
-        reporterId: input.reporterId,
-        reason: input.reason,
-        description: input.description ?? null,
-        productRating: { create: { productRatingId: input.productRatingId } },
-      },
-      include: {
-        product: { include: { product: true } },
-        productRating: { include: { productRating: true } },
-        ReportUser: { include: { user: true } },
-        reporter: true,
-      },
+    const result = await this.prisma.$transaction(async (tx) => {
+      const report = await tx.report.create({
+        data: {
+          reporterId: input.reporterId,
+          reason: input.reason,
+          description: input.description ?? null,
+        },
+        select: { id: true },
+      });
+
+      await tx.reportProductRating.create({
+        data: {
+          reportId: report.id,
+          productRatingId: input.productRatingId,
+          reporterId: input.reporterId,
+        },
+      });
+
+      return tx.report.findUniqueOrThrow({
+        where: { id: report.id },
+        include: {
+          product: { include: { product: true } },
+          productRating: { include: { productRating: true } },
+          ReportUser: { include: { user: true } },
+          reporter: true,
+        },
+      });
     });
+
+    return result;
   }
 
   async createForUser(input: CreateBase & { reportedUserId: string }) {
-    return this.prisma.report.create({
-      data: {
-        reporterId: input.reporterId,
-        reason: input.reason,
-        description: input.description ?? null,
-        ReportUser: { create: { reportedUserId: input.reportedUserId } },
-      },
-      include: {
-        product: { include: { product: true } },
-        productRating: { include: { productRating: true } },
-        ReportUser: { include: { user: true } },
-        reporter: true,
-      },
+    const result = await this.prisma.$transaction(async (tx) => {
+      const report = await tx.report.create({
+        data: {
+          reporterId: input.reporterId,
+          reason: input.reason,
+          description: input.description ?? null,
+        },
+        select: { id: true },
+      });
+
+      await tx.reportUser.create({
+        data: {
+          reportId: report.id,
+          reportedUserId: input.reportedUserId,
+          reporterId: input.reporterId,
+        },
+      });
+
+      return tx.report.findUniqueOrThrow({
+        where: { id: report.id },
+        include: {
+          product: { include: { product: true } },
+          productRating: { include: { productRating: true } },
+          ReportUser: { include: { user: true } },
+          reporter: true,
+        },
+      });
     });
+
+    return result;
   }
 
   async solve(reportId: string) {
@@ -96,12 +144,9 @@ export class ReportRepository {
     take?: number;
     skip?: number;
   }) {
-    const where: Prisma.ReportWhereInput = {
-      isDeleted: false,
-    };
+    const where: Prisma.ReportWhereInput = { isDeleted: false };
     if (params.isSolved !== undefined) where.isSolved = params.isSolved;
     if (params.reporterId) where.reporterId = params.reporterId;
-
     if (params.targetType === 'product') where.product = { isNot: null };
     if (params.targetType === 'productRating') where.productRating = { isNot: null };
     if (params.targetType === 'user') where.ReportUser = { some: {} };

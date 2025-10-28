@@ -287,29 +287,35 @@ model Report {
 model ReportUser {
   reportId       String @id @map("fk_report_id")
   reportedUserId String @map("fk_reported_user_id")
+  reporterId     String
 
   report Report @relation("ReportToUser", fields: [reportId], references: [id], onDelete: Cascade)
   user   User   @relation(fields: [reportedUserId], references: [id])
 
+  @@unique([reporterId, reportedUserId], name: "uniq_reporter_user")
   @@map("reports_users")
 }
 
 model ReportProduct {
   reportId  String @id @map("fk_report_id")
   productId String @map("fk_product_id")
+  reporterId String
 
   report  Report  @relation(fields: [reportId], references: [id], onDelete: Cascade)
   product Product @relation(fields: [productId], references: [id])
 
+  @@unique([reporterId, productId], name: "uniq_reporter_product")
   @@map("reports_products")
 }
 
 model ReportProductRating {
   reportId        String @id @map("fk_report_id")
   productRatingId String @map("fk_product_rating_id")
+  reporterId      String
 
   report        Report        @relation(fields: [reportId], references: [id], onDelete: Cascade)
   productRating ProductRating @relation(fields: [productRatingId], references: [id])
 
+  @@unique([reporterId, productRatingId], name: "uniq_reporter_rating")
   @@map("reports_product_ratings")
 }
