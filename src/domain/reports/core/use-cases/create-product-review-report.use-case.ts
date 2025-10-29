@@ -1,11 +1,11 @@
 import { Injectable, Logger } from '@nestjs/common';
 import { $Enums } from '@prisma/client';
 import { Either, left, right } from '@/domain/_shared/utils/either';
-import { ReportRepository } from '../../repositories/report.repository';
-import { ProductRatingsRepository } from '@/domain/repositories/product-ratings.repository';
+import { ReportRepository } from '../../../repositories/report.repository';
 import { TargetNotFoundError } from '../errors/target-not-found.error';
 import { DuplicateReportError } from '../errors/duplicate-report.error';
 import { SelfReportNotAllowedError } from '../errors/self-report-not-allowed.error';
+import { ProductReviewsRepository } from '@/domain/repositories/product-reviews.repository';
 
 export interface CreateProductRatingReportInput {
   reporterId: string;
@@ -24,7 +24,7 @@ export class CreateProductRatingReportUseCase {
 
   constructor(
     private readonly reports: ReportRepository,
-    private readonly ratings: ProductRatingsRepository,
+    private readonly review: ProductReviewsRepository,
   ) {
     this.logger.log('CreateProductRatingReportUseCase initialized');
   }
@@ -38,7 +38,7 @@ export class CreateProductRatingReportUseCase {
     const ctx = { reporterId, productRatingId, reason };
 
     try {
-      const rating = await this.ratings.findById(productRatingId);
+      const rating = await this.review.findById(productRatingId);
       if (!rating) {
         this.logger.warn('Product rating not found', ctx);
         return left(new TargetNotFoundError('productRating', productRatingId));

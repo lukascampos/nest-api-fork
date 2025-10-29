@@ -1,7 +1,7 @@
 import { Injectable, Logger } from '@nestjs/common';
 import { $Enums } from '@prisma/client';
 import { Either, left, right } from '@/domain/_shared/utils/either';
-import { ReportRepository } from '../../repositories/report.repository';
+import { ReportRepository } from '../../../repositories/report.repository';
 import { ProductsRepository } from '@/domain/repositories/products.repository';
 import { TargetNotFoundError } from '../errors/target-not-found.error';
 import { DuplicateReportError } from '../errors/duplicate-report.error';

@@ -1,5 +1,5 @@
 import { Module } from '@nestjs/common';
-import { ReportRepository } from '../repositories/report.repository';
+import { ReportRepository } from '../../repositories/report.repository';
 
 import { CreateProductReportUseCase } from '../core/use-cases/create-product-report.use-case';
 import { CreateUserReportUseCase } from '../core/use-cases/create-user-report.use-case';
@@ -15,7 +15,7 @@ import { SoftDeleteReportController } from './controller/soft-delete-report.cont
 import { GetReportByIdController } from './controller/get-report-by-id.controller';
 import { ListReportsController } from './controller/list-reports.controller';
 import { PrismaService } from '@/shared/prisma/prisma.service';
-import { CreateProductRatingReportUseCase } from '../core/use-cases/create-product-rating-report.use-case';
+import { CreateProductRatingReportUseCase } from '../core/use-cases/create-product-review-report.use-case';
 
 @Module({
   controllers: [

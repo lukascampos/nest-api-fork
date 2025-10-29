@@ -2,7 +2,7 @@ import {
   BadRequestException, Body, Controller, NotFoundException, Post, UseGuards,
 } from '@nestjs/common';
 import { Roles as PrismaRoles } from '@prisma/client';
-import { CreateProductRatingReportUseCase } from '../../core/use-cases/create-product-rating-report.use-case';
+import { CreateProductRatingReportUseCase } from '../../core/use-cases/create-product-review-report.use-case';
 import { JwtAuthGuard } from '@/domain/_shared/auth/jwt/jwt-auth.guard';
 import { RolesGuard } from '@/domain/_shared/auth/roles/roles.guard';
 import { Roles } from '@/domain/_shared/auth/decorators/roles.decorator';

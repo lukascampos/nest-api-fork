@@ -1,6 +1,6 @@
 import { Injectable, Logger } from '@nestjs/common';
 import { Either, left, right } from '@/domain/_shared/utils/either';
-import { ReportRepository } from '../../repositories/report.repository';
+import { ReportRepository } from '../../../repositories/report.repository';
 import { ReportNotFoundError } from '../errors/report-not-found.error';
 
 export interface SoftDeleteReportInput {
