@@ -1,6 +1,6 @@
 import { Injectable, Logger } from '@nestjs/common';
 import { Either, left, right } from '@/domain/_shared/utils/either';
-import { ReportRepository } from '../../repositories/report.repository';
+import { ReportRepository } from '../../../repositories/report.repository';
 
 export interface ListReportsInput {
   isSolved?: boolean;

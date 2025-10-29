@@ -1,5 +1,5 @@
 import { Injectable } from '@nestjs/common';
-import { Prisma, PrismaClient } from '@prisma/client';
+import { Prisma, PrismaClient, ProductRating } from '@prisma/client';
 import { PrismaService } from '@/shared/prisma/prisma.service';
 
 @Injectable()
@@ -213,5 +213,9 @@ export class ProductReviewsRepository {
     });
 
     return res.count;
+  }
+
+  async findById(id: string): Promise<ProductRating | null> {
+    return this.prisma.productRating.findUnique({ where: { id } });
   }
 }
