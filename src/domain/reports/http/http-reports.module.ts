@@ -1,6 +1,4 @@
 import { Module } from '@nestjs/common';
-import { ReportRepository } from '../../repositories/report.repository';
-
 import { CreateProductReportUseCase } from '../core/use-cases/create-product-report.use-case';
 import { CreateUserReportUseCase } from '../core/use-cases/create-user-report.use-case';
 import { SolveReportUseCase } from '../core/use-cases/solve-report.use-case';
@@ -14,10 +12,11 @@ import { SolveReportController } from './controller/solve-report.controller';
 import { SoftDeleteReportController } from './controller/soft-delete-report.controller';
 import { GetReportByIdController } from './controller/get-report-by-id.controller';
 import { ListReportsController } from './controller/list-reports.controller';
-import { PrismaService } from '@/shared/prisma/prisma.service';
 import { CreateProductRatingReportUseCase } from '../core/use-cases/create-product-review-report.use-case';
+import { RepositoriesModule } from '@/domain/repositories/repositories.module';
 
 @Module({
+  imports: [RepositoriesModule],
   controllers: [
     CreateProductReportController,
     CreateProductRatingReportController,
@@ -28,8 +27,6 @@ import { CreateProductRatingReportUseCase } from '../core/use-cases/create-produ
     ListReportsController,
   ],
   providers: [
-    PrismaService,
-    ReportRepository,
     CreateProductReportUseCase,
     CreateProductRatingReportUseCase,
     CreateUserReportUseCase,
