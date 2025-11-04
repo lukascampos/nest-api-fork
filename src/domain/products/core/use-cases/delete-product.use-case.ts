@@ -5,6 +5,7 @@ import { AttachmentsRepository } from '@/domain/repositories/attachments.reposit
 import { S3StorageService } from '@/domain/attachments/s3-storage.service';
 import { ProductNotFoundError } from '../errors/product-not-found.error';
 import { UnauthorizedProductAccessError } from '../errors/unauthorized-product-access.error';
+import { ReportRepository } from '@/domain/repositories/report.repository';
 
 export interface DeleteProductInput {
   productId: string;
@@ -32,6 +33,7 @@ export class DeleteProductUseCase {
   constructor(
     private readonly productsRepository: ProductsRepository,
     private readonly attachmentsRepository: AttachmentsRepository,
+    private readonly reportsRepository: ReportRepository,
     private readonly s3StorageService: S3StorageService,
   ) {}
 
@@ -61,10 +63,10 @@ export class DeleteProductUseCase {
       await this.productsRepository.deleteProductLikes(productId);
       const likesCount = fullProduct?.likesCount || 0;
 
-      // 6. Deletar ratings e suas imagens
       const deletedRatings = await this.deleteProductRatings(productId);
 
-      // 7. Deletar o produto
+      await this.reportsRepository.deleteAllProductReports(product.id);
+
       await this.productsRepository.delete(productId);
 
       this.logger.log('Product deleted successfully', {
