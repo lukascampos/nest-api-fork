@@ -22,6 +22,7 @@ export interface AuthenticateOutput {
     socialName?: string;
     email: string;
     postnedApplication?: boolean;
+    applicationId?: string;
     artisanUsername?: string;
     roles: Roles[];
     avatar?: string;
@@ -131,6 +132,7 @@ export class AuthenticateUseCase {
           email: result.user.email,
           artisanUsername: artisanUsername?.artisanUserName,
           postnedApplication: !!hasPostnedArtisanApplication,
+          applicationId: hasPostnedArtisanApplication?.id ?? undefined,
           avatar: avatar ?? undefined,
           roles: result.user.roles,
         },
