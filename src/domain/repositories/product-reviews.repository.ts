@@ -199,7 +199,7 @@ export class ProductReviewsRepository {
     imageIds: string[],
     tx: Prisma.TransactionClient,
   ): Promise<number> {
-    await tx.attachment.updateMany({ where: { reviewId }, data: { reviewId: null } });
+    await tx.attachment.updateMany({ where: { reviewId }, data: { reviewId } });
 
     if (!imageIds?.length) return 0;
 
