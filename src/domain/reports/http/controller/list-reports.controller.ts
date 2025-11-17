@@ -20,8 +20,8 @@ export class ListReportsController {
       isSolved: q.isSolved !== undefined ? q.isSolved === 'true' : undefined,
       reporterId: q.reporterId,
       targetType: q.targetType,
-      take: q.take,
-      skip: q.skip,
+      take: q.take ? Number(q.take) : undefined,
+      skip: q.skip ? Number(q.skip) : undefined,
     });
 
     if (result.isLeft()) {

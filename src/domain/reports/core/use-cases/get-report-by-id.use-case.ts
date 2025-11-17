@@ -22,7 +22,31 @@ export class GetReportByIdUseCase {
         return left(new ReportNotFoundError());
       }
 
-      return right(report);
+      const sanitizedReport = {
+        id: report.id,
+        reason: report.reason,
+        isSolved: report.isSolved,
+        description: report.description,
+        createdAt: report.createdAt,
+        updatedAt: report.updatedAt,
+        reporterId: report.reporterId,
+        reporter: {
+          id: report.reporter.id,
+          name: report.reporter.name,
+          email: report.reporter.email,
+        },
+        product: report.product?.product ? {
+          id: report.product.product.id,
+          title: report.product.product.title,
+          description: report.product.product.description,
+          priceInCents: Number(report.product.product.priceInCents),
+          stock: report.product.product.stock,
+          slug: report.product.product.slug,
+          artisanId: report.product.product.artisanId,
+        } : null,
+      };
+
+      return right(sanitizedReport);
     } catch (err) {
       const error = err as Error;
       this.logger.error('Error fetching report by id', { id, error: error.message });
