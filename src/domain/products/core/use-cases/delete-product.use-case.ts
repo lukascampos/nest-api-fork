@@ -6,6 +6,7 @@ import { S3StorageService } from '@/domain/attachments/s3-storage.service';
 import { ProductNotFoundError } from '../errors/product-not-found.error';
 import { UnauthorizedProductAccessError } from '../errors/unauthorized-product-access.error';
 import { ReportRepository } from '@/domain/repositories/report.repository';
+import { UsersRepository } from '@/domain/repositories/users.repository';
 
 export interface DeleteProductInput {
   productId: string;
@@ -32,6 +33,7 @@ export class DeleteProductUseCase {
 
   constructor(
     private readonly productsRepository: ProductsRepository,
+    private readonly usersRepository: UsersRepository,
     private readonly attachmentsRepository: AttachmentsRepository,
     private readonly reportsRepository: ReportRepository,
     private readonly s3StorageService: S3StorageService,
@@ -42,13 +44,14 @@ export class DeleteProductUseCase {
 
     try {
       const product = await this.productsRepository.findByIdCore(productId);
+      const user = await this.usersRepository.findById(userId);
 
       if (!product) {
         this.logger.warn('Product not found', { productId });
         return left(new ProductNotFoundError(productId));
       }
 
-      if (product.artisanId !== userId) {
+      if (product.artisanId !== userId && !user?.roles.includes('MODERATOR')) {
         this.logger.warn('Unauthorized product access', { productId, userId, ownerId: product.artisanId });
         return left(new UnauthorizedProductAccessError());
       }
