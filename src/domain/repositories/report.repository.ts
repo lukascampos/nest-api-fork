@@ -135,6 +135,14 @@ export class ReportRepository {
     });
   }
 
+  async deleteAllUserReports(userId: string) {
+    return this.prisma.report.deleteMany({
+      where: {
+        reporterId: userId,
+      },
+    });
+  }
+
   async findById(reportId: string) {
     return this.prisma.report.findFirst({
       where: { id: reportId, isDeleted: false },
