@@ -155,6 +155,40 @@ export class ReportRepository {
     });
   }
 
+  async listWithPagination(params: {
+  isSolved?: boolean;
+  reporterId?: string;
+  targetType?: 'product' | 'productRating' | 'user';
+  take?: number;
+  skip?: number;
+}) {
+    const where: Prisma.ReportWhereInput = { isDeleted: false };
+
+    if (params.isSolved !== undefined) where.isSolved = params.isSolved;
+    if (params.reporterId) where.reporterId = params.reporterId;
+    if (params.targetType === 'product') where.product = { isNot: null };
+    if (params.targetType === 'productRating') where.productRating = { isNot: null };
+    if (params.targetType === 'user') where.ReportUser = { some: {} };
+
+    const [reports, total] = await Promise.all([
+      this.prisma.report.findMany({
+        where,
+        include: {
+          product: { include: { product: true } },
+          productRating: { include: { productRating: true } },
+          ReportUser: { include: { user: true } },
+          reporter: true,
+        },
+        orderBy: { createdAt: 'desc' },
+        take: params.take ?? 20,
+        skip: params.skip ?? 0,
+      }),
+      this.prisma.report.count({ where }),
+    ]);
+
+    return { reports, total };
+  }
+
   async list(params: {
     isSolved?: boolean;
     reporterId?: string;
