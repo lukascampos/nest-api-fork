@@ -19,21 +19,23 @@ export class ListReportsQueryDto {
     reporterId?: string;
 
   @IsOptional()
-  @IsIn(['product', 'productRating', 'user'], { message: 'Tipo de alvo é inválido' })
+  @IsIn(['product', 'productRating', 'user'], {
+    message: 'Tipo de alvo é inválido. Valores aceitos: product, productRating, user',
+  })
     targetType?: 'product' | 'productRating' | 'user';
 
   @IsOptional()
   @Type(() => Number)
-  @IsInt({ message: 'Take deve ser um número inteiro' })
-  @Min(1, { message: 'Take deve ser no mínimo 1' })
-  @Max(100, { message: 'Take deve ser no máximo 100' })
-    take?: number;
+  @IsInt({ message: 'Página deve ser um número inteiro' })
+  @Min(1, { message: 'Página deve ser no mínimo 1' })
+    page?: number;
 
   @IsOptional()
   @Type(() => Number)
-  @IsInt({ message: 'Skip deve ser um número inteiro' })
-  @Min(0, { message: 'Skip não pode ser negativo' })
-    skip?: number;
+  @IsInt({ message: 'Limit deve ser um número inteiro' })
+  @Min(1, { message: 'Limit deve ser no mínimo 1' })
+  @Max(100, { message: 'Limit deve ser no máximo 100' })
+    limit?: number;
 
   @IsOptional()
   @Transform(({ value }) => (typeof value === 'string' ? value.trim() : value))

@@ -10,7 +10,6 @@ import {
 } from 'class-validator';
 
 export class UpdatePersonalProfileDataDto {
-  // Dados pessoais (comuns a todos os usuários)
   @IsOptional()
   @IsString()
   @MinLength(2, { message: 'Nome deve ter pelo menos 2 caracteres' })
@@ -31,7 +30,6 @@ export class UpdatePersonalProfileDataDto {
   @IsString()
     avatarId?: string;
 
-  // Dados específicos do artesão (opcionais, só processados se user.roles.includes('ARTISAN'))
   @IsOptional()
   @IsString()
   @MinLength(3, { message: 'Nome de usuário deve ter pelo menos 3 caracteres' })
@@ -60,7 +58,6 @@ export class UpdatePersonalProfileDataDto {
   @IsDateString({}, { message: 'Data de validade SICAB deve ser uma data válida' })
     sicabValidUntil?: string;
 
-  // Dados de endereço do artesão (opcionais, só processados se user.roles.includes('ARTISAN'))
   @IsOptional()
   @IsString()
   @Matches(/^\d{5}-?\d{3}$/, {
