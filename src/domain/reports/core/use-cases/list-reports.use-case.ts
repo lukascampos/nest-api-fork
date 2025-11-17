@@ -31,7 +31,6 @@ export class ListReportsUseCase {
         description: report.description,
         createdAt: report.createdAt,
         updatedAt: report.updatedAt,
-        reporterId: report.reporterId,
         reporter: {
           id: report.reporter.id,
           name: report.reporter.name,
