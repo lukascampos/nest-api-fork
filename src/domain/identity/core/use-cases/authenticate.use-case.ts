@@ -101,7 +101,7 @@ export class AuthenticateUseCase {
 
       let applicationStatus: AuthenticateOutput['user']['applicationStatus'];
 
-      if (application?.formStatus !== 'SUBMITTED') {
+      if (application && application?.formStatus !== 'SUBMITTED') {
         applicationStatus = 'NOT_FINISHED';
       } else if (application?.formStatus === 'SUBMITTED') {
         applicationStatus = application.status as RequestStatus;
