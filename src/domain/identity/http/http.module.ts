@@ -36,6 +36,8 @@ import { DeleteAccountController } from './controllers/delete-account.controller
 import { DeleteAccountUseCase } from '../core/use-cases/delete-account.use-case';
 import { UpdateOwnPasswordController } from './controllers/update-own-password.controller';
 import { UpdateOwnPasswordUseCase } from '../core/use-cases/update-own-password.use-case';
+import { ChangeUserPasswordByAdminUseCase } from '../core/use-cases/change-user-password-by-admin.use-case';
+import { ChangeUserPasswordByAdminController } from './controllers/chenge-user-password-by-admin.controller';
 
 @Module({
   imports: [RepositoriesModule, AttachmentsModule],
@@ -57,6 +59,7 @@ import { UpdateOwnPasswordUseCase } from '../core/use-cases/update-own-password.
     GetArtisanFollowStatusController,
     UpdateOwnPasswordController,
     UpdatePersonalProfileDataController,
+    ChangeUserPasswordByAdminController,
   ],
   providers: [
     AuthenticateUseCase,
@@ -80,6 +83,7 @@ import { UpdateOwnPasswordUseCase } from '../core/use-cases/update-own-password.
     UpdateArtisanProfileUseCase,
     UpdateOwnPasswordUseCase,
     UpdatePersonalProfileDataUseCase,
+    ChangeUserPasswordByAdminUseCase,
   ],
 })
 export class HttpModule {}
