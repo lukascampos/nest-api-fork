@@ -38,6 +38,10 @@ import { UpdateOwnPasswordController } from './controllers/update-own-password.c
 import { UpdateOwnPasswordUseCase } from '../core/use-cases/update-own-password.use-case';
 import { ChangeUserPasswordByAdminUseCase } from '../core/use-cases/change-user-password-by-admin.use-case';
 import { ChangeUserPasswordByAdminController } from './controllers/chenge-user-password-by-admin.controller';
+import { ListAdminUsersUseCase } from '../core/use-cases/list-admin-users.use-case';
+import { UpdateMyPasswordUseCase } from '../core/use-cases/update-my-password.use-case';
+import { ListAdminUsersController } from './controllers/list-admin-users.controller';
+import { UpdateMyPasswordController } from './controllers/update-my-password.controller';
 
 @Module({
   imports: [RepositoriesModule, AttachmentsModule],
@@ -60,6 +64,8 @@ import { ChangeUserPasswordByAdminController } from './controllers/chenge-user-p
     UpdateOwnPasswordController,
     UpdatePersonalProfileDataController,
     ChangeUserPasswordByAdminController,
+    UpdateMyPasswordController,
+    ListAdminUsersController,
   ],
   providers: [
     AuthenticateUseCase,
@@ -84,6 +90,8 @@ import { ChangeUserPasswordByAdminController } from './controllers/chenge-user-p
     UpdateOwnPasswordUseCase,
     UpdatePersonalProfileDataUseCase,
     ChangeUserPasswordByAdminUseCase,
+    ListAdminUsersUseCase,
+    UpdateMyPasswordUseCase,
   ],
 })
 export class HttpModule {}
