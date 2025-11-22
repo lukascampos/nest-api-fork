@@ -29,6 +29,25 @@ export interface SearchUsersResult {
   total: number;
 }
 
+export type AdminListedUser = Prisma.UserGetPayload<{
+  include: {
+    profile: {
+      select: {
+        cpf: true;
+        phone: true;
+      };
+    };
+    ArtisanProfile: {
+      select: {
+        artisanUserName: true;
+        comercialName: true;
+        followersCount: true;
+        productsCount: true;
+      };
+    };
+  };
+}>;
+
 @Injectable()
 export class UsersRepository {
   constructor(private readonly prisma: PrismaService) {}
@@ -204,6 +223,50 @@ export class UsersRepository {
     });
   }
 
+  async findManyAdminUsers(params: {
+  skip: number;
+  take: number;
+}): Promise<AdminListedUser[]> {
+    const { skip, take } = params;
+
+    return this.prisma.user.findMany({
+      skip,
+      take,
+      orderBy: { createdAt: 'desc' },
+      include: {
+        profile: {
+          select: {
+            cpf: true,
+            phone: true,
+          },
+        },
+        ArtisanProfile: {
+          select: {
+            artisanUserName: true,
+            comercialName: true,
+            followersCount: true,
+            productsCount: true,
+          },
+        },
+      },
+    });
+  }
+
+  async countAdminUsers(): Promise<number> {
+    return this.prisma.user.count();
+  }
+
+  async updatePasswordAndDisableFlag(userId: string, hashedPassword: string): Promise<void> {
+    await this.prisma.user.update({
+      where: { id: userId },
+      data: {
+        password: hashedPassword,
+        mustChangePassword: false,
+        updatedAt: new Date(),
+      },
+    });
+  }
+
   async updateRoles(id: string, roles: Roles[]): Promise<User> {
     return this.prisma.user.update({
       where: { id },
@@ -218,7 +281,7 @@ export class UsersRepository {
     });
     return row ? row.isDisabled : null;
   }
-  
+
   async delete(userId: string): Promise<void> {
     await this.prisma.user.delete({
       where: { id: userId },
