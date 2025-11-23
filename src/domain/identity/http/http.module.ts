@@ -36,6 +36,7 @@ import { DeleteAccountController } from './controllers/delete-account.controller
 import { DeleteAccountUseCase } from '../core/use-cases/delete-account.use-case';
 import { UpdateOwnPasswordController } from './controllers/update-own-password.controller';
 import { UpdateOwnPasswordUseCase } from '../core/use-cases/update-own-password.use-case';
+import { LogoutUseCase } from '../core/use-cases/logout.use-case';
 
 @Module({
   imports: [RepositoriesModule, AttachmentsModule],
@@ -60,6 +61,7 @@ import { UpdateOwnPasswordUseCase } from '../core/use-cases/update-own-password.
   ],
   providers: [
     AuthenticateUseCase,
+    LogoutUseCase,
     CompleteArtisanApplicationUseCase,
     CreateUserUseCase,
     DeleteAccountUseCase,
