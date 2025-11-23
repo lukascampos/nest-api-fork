@@ -173,7 +173,7 @@ export class ProductsRepository {
       data: { averageRating },
     });
   }
-  
+
   async findRecentWithArtisan(limit: number): Promise<Partial<Product>[]> {
     return this.prisma.product.findMany({
       where: { isActive: true },

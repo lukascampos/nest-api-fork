@@ -6,14 +6,24 @@ import {
 export class PaginateReviewsDto {
   @IsOptional()
   @Transform(({ value }) => Number(value))
-  @IsInt()
-  @Min(1)
+  @IsInt({
+    message: 'Página deve ser um número inteiro',
+  })
+  @Min(1, {
+    message: 'Página deve ser no mínimo 1',
+  })
     page: number = 1;
 
   @IsOptional()
   @Transform(({ value }) => Math.min(Number(value), 50))
-  @IsInt()
-  @Min(1)
-  @Max(50)
+  @IsInt({
+    message: 'Limit deve ser um número inteiro',
+  })
+  @Min(1, {
+    message: 'Limit deve ser no mínimo 1',
+  })
+  @Max(50, {
+    message: 'Limit deve ser no máximo 50',
+  })
     limit: number = 10;
 }

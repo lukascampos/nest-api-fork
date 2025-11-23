@@ -42,6 +42,7 @@ import { ListAdminUsersUseCase } from '../core/use-cases/list-admin-users.use-ca
 import { UpdateMyPasswordUseCase } from '../core/use-cases/update-my-password.use-case';
 import { ListAdminUsersController } from './controllers/list-admin-users.controller';
 import { UpdateMyPasswordController } from './controllers/update-my-password.controller';
+import { LogoutUseCase } from '../core/use-cases/logout.use-case';
 
 @Module({
   imports: [RepositoriesModule, AttachmentsModule],
@@ -69,6 +70,7 @@ import { UpdateMyPasswordController } from './controllers/update-my-password.con
   ],
   providers: [
     AuthenticateUseCase,
+    LogoutUseCase,
     CompleteArtisanApplicationUseCase,
     CreateUserUseCase,
     DeleteAccountUseCase,

@@ -1,5 +1,5 @@
 import { Injectable } from '@nestjs/common';
-import { Prisma, PrismaClient } from '@prisma/client';
+import { Prisma, PrismaClient, ProductRating } from '@prisma/client';
 import { PrismaService } from '@/shared/prisma/prisma.service';
 
 @Injectable()
@@ -101,6 +101,58 @@ export class ProductReviewsRepository {
     return db.productRating.count({ where: { productId } });
   }
 
+  async countByArtisan(artisanId: string): Promise<number> {
+    return this.prisma.productRating.count({
+      where: {
+        product: {
+          artisanId,
+        },
+      },
+    });
+  }
+
+  async listByArtisanWithDetails(
+    artisanId: string,
+    page: number,
+    limit: number,
+  ) {
+    const skip = (page - 1) * limit;
+
+    return this.prisma.productRating.findMany({
+      where: {
+        product: {
+          artisanId,
+        },
+      },
+      include: {
+        user: {
+          select: {
+            id: true,
+            name: true,
+            avatar: true,
+          },
+        },
+        product: {
+          select: {
+            id: true,
+            title: true,
+            slug: true,
+          },
+        },
+        images: {
+          select: {
+            id: true,
+          },
+        },
+      },
+      orderBy: {
+        createdAt: 'desc',
+      },
+      skip,
+      take: limit,
+    });
+  }
+
   async aggregateByProduct(
     productId: string,
     tx?: Prisma.TransactionClient,
@@ -199,7 +251,7 @@ export class ProductReviewsRepository {
     imageIds: string[],
     tx: Prisma.TransactionClient,
   ): Promise<number> {
-    await tx.attachment.updateMany({ where: { reviewId }, data: { reviewId: null } });
+    await tx.attachment.updateMany({ where: { reviewId }, data: { reviewId } });
 
     if (!imageIds?.length) return 0;
 
@@ -213,5 +265,9 @@ export class ProductReviewsRepository {
     });
 
     return res.count;
+  }
+
+  async findById(id: string): Promise<ProductRating | null> {
+    return this.prisma.productRating.findUnique({ where: { id } });
   }
 }

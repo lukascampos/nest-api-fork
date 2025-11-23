@@ -3,6 +3,7 @@ import { Either, left, right } from '@/domain/_shared/utils/either';
 import { ProductReviewsRepository } from '@/domain/repositories/product-reviews.repository';
 import { ProductsRepository } from '@/domain/repositories/products.repository';
 import { ProductNotFoundError } from '../errors/product-not-found.error';
+import { S3StorageService } from '@/domain/attachments/s3-storage.service';
 
 type Input = {
   productId: string;
@@ -20,7 +21,7 @@ type ReviewItem = {
     name: string;
     avatar: string | null
   };
-  images: Array<{ attachmentId: string }>;
+  images: string[];
 };
 type Output = {
   reviews: ReviewItem[];
@@ -34,6 +35,7 @@ export class ListProductReviewsUseCase {
   constructor(
     private readonly reviewsRepo: ProductReviewsRepository,
     private readonly productsRepo: ProductsRepository,
+    private readonly s3StorageService: S3StorageService,
   ) {}
 
   async execute(input: Input): Promise<Either<Error, Output>> {
@@ -57,18 +59,31 @@ export class ListProductReviewsUseCase {
         this.reviewsRepo.listByProductWithUsers(input.productId, page, limit),
       ]);
 
-      const reviews: ReviewItem[] = items.map((r) => ({
-        id: r.id,
-        rating: r.rating,
-        comment: r.comment,
-        createdAt: r.createdAt,
-        user: {
-          id: r.user.id,
-          name: r.user.name,
-          avatar: r.user.avatar,
-        },
-        images: (r.images ?? []).map((img) => ({ attachmentId: img.id })),
-      }));
+      const reviews: ReviewItem[] = await Promise.all(
+        items.map(async (r) => {
+          const [userAvatar, reviewImages] = await Promise.all([
+            r.user.avatar
+              ? this.s3StorageService.getUrlByFileName(r.user.avatar)
+              : Promise.resolve(null),
+            Promise.all(
+              (r.images ?? []).map((img) => this.s3StorageService.getUrlByFileName(img.id)),
+            ),
+          ]);
+
+          return {
+            id: r.id,
+            rating: r.rating,
+            comment: r.comment,
+            createdAt: r.createdAt,
+            user: {
+              id: r.user.id,
+              name: r.user.name,
+              avatar: userAvatar,
+            },
+            images: reviewImages,
+          };
+        }),
+      );
 
       const totalPages = Math.max(1, Math.ceil(total / limit));
       const out: Output = {
