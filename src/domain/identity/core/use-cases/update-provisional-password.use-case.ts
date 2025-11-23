@@ -18,8 +18,8 @@ export interface UpdateMyPasswordOutput {
 type Output = Either<UserNotFoundError | Error, UpdateMyPasswordOutput>;
 
 @Injectable()
-export class UpdateMyPasswordUseCase {
-  private readonly logger = new Logger(UpdateMyPasswordUseCase.name);
+export class UpdateProvisionalPasswordUseCase {
+  private readonly logger = new Logger(UpdateProvisionalPasswordUseCase.name);
 
   constructor(private readonly usersRepository: UsersRepository) {}
 

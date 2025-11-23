@@ -10,17 +10,16 @@ import {
 import { JwtAuthGuard } from '@/domain/_shared/auth/jwt/jwt-auth.guard';
 import { CurrentUser } from '@/domain/_shared/auth/decorators/current-user.decorator';
 import { TokenPayload } from '@/domain/_shared/auth/jwt/jwt.strategy';
-
 import { UpdateMyPasswordDto } from '../dtos/update-my-password.dto';
-import { UpdateMyPasswordUseCase } from '../../core/use-cases/update-my-password.use-case';
+import { UpdateProvisionalPasswordUseCase } from '../../core/use-cases/update-provisional-password.use-case';
 import { UserNotFoundError } from '../../core/errors/user-not-found.error';
 
 @Controller('users/me')
 @UseGuards(JwtAuthGuard)
-export class UpdateMyPasswordController {
-  constructor(private readonly updateMyPasswordUseCase: UpdateMyPasswordUseCase) {}
+export class UpdateProvisionalPasswordController {
+  constructor(private readonly updateMyPasswordUseCase: UpdateProvisionalPasswordUseCase) {}
 
-  @Put('password')
+  @Put('provisional-password')
   async handle(
     @Body() body: UpdateMyPasswordDto,
     @CurrentUser() currentUser: TokenPayload,
