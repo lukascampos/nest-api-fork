@@ -39,10 +39,10 @@ import { UpdateOwnPasswordUseCase } from '../core/use-cases/update-own-password.
 import { ChangeUserPasswordByAdminUseCase } from '../core/use-cases/change-user-password-by-admin.use-case';
 import { ChangeUserPasswordByAdminController } from './controllers/chenge-user-password-by-admin.controller';
 import { ListAdminUsersUseCase } from '../core/use-cases/list-admin-users.use-case';
-import { UpdateMyPasswordUseCase } from '../core/use-cases/update-my-password.use-case';
 import { ListAdminUsersController } from './controllers/list-admin-users.controller';
-import { UpdateMyPasswordController } from './controllers/update-my-password.controller';
 import { LogoutUseCase } from '../core/use-cases/logout.use-case';
+import { UpdateProvisionalPasswordController } from './controllers/update-provisional-password.controller';
+import { UpdateProvisionalPasswordUseCase } from '../core/use-cases/update-provisional-password.use-case';
 
 @Module({
   imports: [RepositoriesModule, AttachmentsModule],
@@ -65,7 +65,7 @@ import { LogoutUseCase } from '../core/use-cases/logout.use-case';
     UpdateOwnPasswordController,
     UpdatePersonalProfileDataController,
     ChangeUserPasswordByAdminController,
-    UpdateMyPasswordController,
+    UpdateProvisionalPasswordController,
     ListAdminUsersController,
   ],
   providers: [
@@ -93,7 +93,7 @@ import { LogoutUseCase } from '../core/use-cases/logout.use-case';
     UpdatePersonalProfileDataUseCase,
     ChangeUserPasswordByAdminUseCase,
     ListAdminUsersUseCase,
-    UpdateMyPasswordUseCase,
+    UpdateProvisionalPasswordUseCase,
   ],
 })
 export class HttpModule {}

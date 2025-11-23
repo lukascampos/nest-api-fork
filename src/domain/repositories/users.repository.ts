@@ -30,7 +30,18 @@ export interface SearchUsersResult {
 }
 
 export type AdminListedUser = Prisma.UserGetPayload<{
-  include: {
+  select: {
+    id: true;
+    email: true;
+    roles: true;
+    name: true;
+    phone: true;
+    socialName: true;
+    avatar: true;
+    isDisabled: true;
+    createdAt: true;
+    updatedAt: true;
+    mustChangePassword: true;
     profile: {
       select: {
         cpf: true;
@@ -226,14 +237,25 @@ export class UsersRepository {
   async findManyAdminUsers(params: {
   skip: number;
   take: number;
-}): Promise<AdminListedUser[]> {
+}) {
     const { skip, take } = params;
 
     return this.prisma.user.findMany({
       skip,
       take,
       orderBy: { createdAt: 'desc' },
-      include: {
+      select: {
+        id: true,
+        email: true,
+        roles: true,
+        name: true,
+        phone: true,
+        socialName: true,
+        avatar: true,
+        isDisabled: true,
+        createdAt: true,
+        updatedAt: true,
+        mustChangePassword: true,
         profile: {
           select: {
             cpf: true,

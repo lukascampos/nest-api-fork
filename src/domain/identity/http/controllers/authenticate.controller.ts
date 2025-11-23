@@ -80,6 +80,7 @@ export class AuthenticateController {
         applicationId: user.applicationId,
         applicationStatus: user.applicationStatus,
         roles: user.roles,
+        mustChangePassword: user.mustChangePassword,
       },
       session: {
         id: session.id,
